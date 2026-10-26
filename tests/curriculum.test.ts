@@ -30,7 +30,7 @@ describe('100-Lesson Curriculum Integrity', () => {
   });
 
   it('verifies Lesson 1 starts with simple two-letter and three-letter words', () => {
-    const lesson1Path = path.resolve(__dirname, '../src/data/lessons/lesson-001.json');
+    const lesson1Path = path.resolve(__dirname, '../server/data/lessons/lesson-001.json');
     const lesson1 = JSON.parse(fs.readFileSync(lesson1Path, 'utf-8'));
 
     const firstFewSentences = lesson1.sentences.slice(0, 10).map((s: any) => s.text).join(' ');
@@ -41,10 +41,10 @@ describe('100-Lesson Curriculum Integrity', () => {
     expect(firstFewSentences).toContain('is');
   });
 
-  it('verifies all lesson files exist on disk with valid JSON schema', () => {
+  it('verifies all lesson files exist on disk with valid JSON schema in backend server', () => {
     for (let i = 1; i <= 100; i++) {
       const padId = String(i).padStart(3, '0');
-      const fpath = path.resolve(__dirname, `../src/data/lessons/lesson-${padId}.json`);
+      const fpath = path.resolve(__dirname, `../server/data/lessons/lesson-${padId}.json`);
       expect(fs.existsSync(fpath)).toBe(true);
 
       const content = JSON.parse(fs.readFileSync(fpath, 'utf-8'));

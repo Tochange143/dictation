@@ -14,18 +14,25 @@ export interface LessonSummary {
 
 export const LESSON_MANIFEST: LessonSummary[] = manifestData as LessonSummary[];
 
-// Vite dynamic glob import for on-demand lazy loading of lessons
-const lessonModules = import.meta.glob<{ default: Lesson }>('./lessons/lesson-*.json');
+// In-memory cache for lessons fetched from backend server
+const lessonCache = new Map<number, Lesson>();
 
 export async function fetchLessonById(id: number): Promise<Lesson> {
-  const padId = String(id).padStart(3, '0');
-  const path = `./lessons/lesson-${padId}.json`;
-  const loader = lessonModules[path];
-  if (!loader) {
-    throw new Error(`Lesson ${id} not found at ${path}`);
+  if (lessonCache.has(id)) {
+    return lessonCache.get(id)!;
   }
-  const module = await loader();
-  return module.default;
+
+  const res = await fetch(`/api/lessons/${id}`, {
+    signal: AbortSignal.timeout(3000)
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch lesson ${id} from backend server (status ${res.status})`);
+  }
+
+  const lesson: Lesson = await res.json();
+  lessonCache.set(id, lesson);
+  return lesson;
 }
 
 export function getLessonSummary(id: number): LessonSummary | undefined {

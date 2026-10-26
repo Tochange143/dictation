@@ -63,6 +63,20 @@ describe('Backend Server API Endpoints', () => {
       res.json({ success: true, lastActive: req.body });
     });
 
+    // Lessons routes
+    app.get('/api/lessons', (req, res) => {
+      res.json([{ id: 1, title: 'Sam and His Cat', level: 1 }]);
+    });
+
+    app.get('/api/lessons/:id', (req, res) => {
+      const id = parseInt(req.params.id, 10);
+      if (id === 1) {
+        res.json({ id: 1, title: 'Sam and His Cat', sentences: [{ id: 's-1', text: 'I am Sam.' }] });
+      } else {
+        res.status(404).json({ error: 'Not found' });
+      }
+    });
+
     await new Promise<void>((resolve) => {
       server = app.listen(PORT, () => resolve());
     });
@@ -130,5 +144,19 @@ describe('Backend Server API Endpoints', () => {
     expect(data.lessonId).toBe(3);
     expect(data.typedText).toBe('I see a cat.');
     expect(data.activeChunkIndex).toBe(1);
+  });
+
+  it('serves lesson manifest and lesson content via /api/lessons', async () => {
+    const manifestRes = await fetch(`http://localhost:${PORT}/api/lessons`);
+    expect(manifestRes.ok).toBe(true);
+    const manifest = await manifestRes.json();
+    expect(Array.isArray(manifest)).toBe(true);
+    expect(manifest[0].id).toBe(1);
+
+    const lessonRes = await fetch(`http://localhost:${PORT}/api/lessons/1`);
+    expect(lessonRes.ok).toBe(true);
+    const lesson = await lessonRes.json();
+    expect(lesson.title).toBe('Sam and His Cat');
+    expect(lesson.sentences.length).toBeGreaterThan(0);
   });
 });

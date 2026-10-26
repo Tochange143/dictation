@@ -46,6 +46,29 @@ function serverApiPlugin(): Plugin {
           return;
         }
 
+        if (url === '/api/lessons') {
+          const manifest = readJson('lessonsManifest.json', []);
+          res.end(JSON.stringify(manifest));
+          return;
+        }
+
+        const lessonMatch = url.match(/^\/api\/lessons\/(\d+)$/);
+        if (lessonMatch) {
+          const id = parseInt(lessonMatch[1], 10);
+          const padded = String(id).padStart(3, '0');
+          const lessonFile = path.join(dataDir, 'lessons', `lesson-${padded}.json`);
+          if (fs.existsSync(lessonFile)) {
+            try {
+              const data = fs.readFileSync(lessonFile, 'utf-8');
+              res.end(data);
+              return;
+            } catch {}
+          }
+          res.statusCode = 404;
+          res.end(JSON.stringify({ error: `Lesson ${id} not found` }));
+          return;
+        }
+
         if (url === '/api/last-active') {
           if (req.method === 'GET') {
             const data = readJson('lastActive.json', { lessonId: 1, sentenceIndex: 0, activeChunkIndex: 0, typedText: '' });

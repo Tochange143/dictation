@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
 import { Lesson, LessonProgress, SentenceEvaluation, UserSettings, WordFeedback } from './types';
 import { fetchLessonById } from './data/lessonsIndex';
 import { getLiveFeedback, evaluateSentence, tokenizeSentence } from './utils/evaluator';
@@ -6,7 +7,6 @@ import { getStoryChunks, StoryChunk } from './utils/chunker';
 import { speechEngine, SpeechState } from './services/speechEngine';
 import { 
   loadAllProgress, 
-  saveLessonProgress, 
   loadSettings, 
   saveSettings, 
   loadLastActive, 
@@ -25,30 +25,25 @@ import { LessonSummaryModal } from './components/LessonSummaryModal';
 import { ShortcutsModal } from './components/ShortcutsModal';
 import { SettingsModal } from './components/SettingsModal';
 
-function getLessonIdFromUrl(): number | null {
-  if (typeof window === 'undefined') return null;
-  const match = window.location.pathname.match(/\/lesson\/(\d+)/i);
-  if (match && match[1]) {
-    const id = parseInt(match[1], 10);
-    if (id >= 1 && id <= 100) return id;
-  }
-  return null;
-}
+const RootRedirect: React.FC = () => {
+  const lastActive = loadLastActive();
+  const targetId = (lastActive && lastActive.lessonId >= 1 && lastActive.lessonId <= 100)
+    ? lastActive.lessonId
+    : 1;
+  return <Navigate to={`/lesson/${targetId}`} replace />;
+};
 
-export const App: React.FC = () => {
-  // Read lesson from URL (e.g. http://localhost:5173/lesson/1) or fallback to last active
-  const initialLessonId = useMemo(() => {
-    const urlId = getLessonIdFromUrl();
-    if (urlId) return urlId;
-    const lastActive = loadLastActive();
-    if (lastActive && lastActive.lessonId >= 1 && lastActive.lessonId <= 100) {
-      return lastActive.lessonId;
-    }
-    return 1;
-  }, []);
+export const DictationPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
-  // Application State
-  const [currentLessonId, setCurrentLessonId] = useState<number>(initialLessonId);
+  // Validate lesson ID from React Router params (between 1 and 100)
+  const currentLessonId = useMemo(() => {
+    const parsed = parseInt(id || '1', 10);
+    return !isNaN(parsed) && parsed >= 1 && parsed <= 100 ? parsed : 1;
+  }, [id]);
+
+  // Current Lesson state fetched from backend
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [isLoadingLesson, setIsLoadingLesson] = useState<boolean>(true);
 
@@ -97,34 +92,8 @@ export const App: React.FC = () => {
       if (data.progress && Object.keys(data.progress).length > 0) {
         setProgressMap(data.progress);
       }
-      const urlId = getLessonIdFromUrl();
-      if (!urlId && data.lastActive && data.lastActive.lessonId >= 1) {
-        setCurrentLessonId(data.lastActive.lessonId);
-      }
     });
   }, []);
-
-  // Update browser URL (e.g. /lesson/1) without page reload
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const targetPath = `/lesson/${currentLessonId}`;
-      if (window.location.pathname !== targetPath) {
-        window.history.pushState({ lessonId: currentLessonId }, '', targetPath);
-      }
-    }
-  }, [currentLessonId]);
-
-  // Handle browser Back / Forward buttons
-  useEffect(() => {
-    const handlePopState = () => {
-      const id = getLessonIdFromUrl();
-      if (id && id !== currentLessonId) {
-        setCurrentLessonId(id);
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [currentLessonId]);
 
   // Initialize Speech Engine settings
   useEffect(() => {
@@ -151,7 +120,6 @@ export const App: React.FC = () => {
   }, [fullLessonStory]);
 
   // Story chunks across the entire lesson
-  // Splits each sentence into exact N words (default 3 words at once)
   const storyChunks: StoryChunk[] = useMemo(() => {
     if (!currentLesson) return [];
     return getStoryChunks(currentLesson.sentences, settings.wordsPerChunk);
@@ -172,7 +140,7 @@ export const App: React.FC = () => {
     return currentChunk.text;
   }, [currentChunk, currentLesson]);
 
-  // Fetch lesson data when lesson ID changes
+  // Fetch lesson data from backend server when route param changes
   useEffect(() => {
     let isCancelled = false;
     setIsLoadingLesson(true);
@@ -186,12 +154,10 @@ export const App: React.FC = () => {
           setSessionStartTime(Date.now());
           setSessionRetries(0);
           setMisspelledTracker({});
-          setTypedInput('');
-          setActiveChunkIndex(0);
           setCurrentEvaluation(null);
           setIsSummaryOpen(false);
 
-          // Restore saved typed story for this lesson only (each lesson is strictly isolated)
+          // Restore saved typed story strictly for this lesson ID
           const savedStory = loadLessonTypedStory(data.id);
           const restoredText = (savedStory && typeof savedStory.typedText === 'string')
             ? savedStory.typedText
@@ -212,7 +178,7 @@ export const App: React.FC = () => {
             setActiveChunkIndex(restoredChunkIdx);
             lastSpokenChunkRef.current = restoredChunkIdx;
           } else {
-            // First time loading lesson: start fresh and teacher starts dictating first 3 words
+            // Fresh lesson: teacher starts reading first 3 words
             setTypedInput('');
             setActiveChunkIndex(0);
             lastSpokenChunkRef.current = 0;
@@ -227,7 +193,7 @@ export const App: React.FC = () => {
         }
       })
       .catch((err) => {
-        console.error('Failed to load lesson', err);
+        console.error('Failed to load lesson from backend', err);
         if (!isCancelled) {
           setIsLoadingLesson(false);
         }
@@ -239,11 +205,9 @@ export const App: React.FC = () => {
     };
   }, [currentLessonId, settings.wordsPerChunk]);
 
-  // Save typed text immediately to localStorage and debounced to server
+  // Save typed text immediately to localStorage and debounced to backend server
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    // CRITICAL: Only save when currentLesson is loaded and strictly matches currentLessonId!
-    // This prevents text from a previous lesson bleeding into a newly opened lesson.
     if (!currentLesson || currentLesson.id !== currentLessonId) return;
 
     // Instant local save (zero latency, offline resilient)
@@ -283,8 +247,7 @@ export const App: React.FC = () => {
     };
   }, [currentLessonId, currentChunk, activeChunkIndex, typedInput, currentLesson]);
 
-  // Compute live word-by-word feedback for the continuous story!
-  // All typed words remain in the paragraph in green/red/missing. Trailing untyped words stay invisible.
+  // Compute live word-by-word feedback for continuous story
   const liveFeedbacks: WordFeedback[] = useMemo(() => {
     if (!fullLessonStory || !typedInput.trim()) return [];
     return getLiveFeedback(fullLessonStory, typedInput);
@@ -337,14 +300,12 @@ export const App: React.FC = () => {
       misspelledWordCounts: { ...(progressMap[currentLesson.id]?.misspelledWordCounts || {}), ...misspelledTracker }
     };
 
-    saveLessonProgress(updatedProgress);
+    saveLessonTypedStory(currentLesson.id, typedInput, activeChunkIndex);
     setProgressMap(prev => ({ ...prev, [currentLesson.id]: updatedProgress }));
     setIsSummaryOpen(true);
-  }, [currentLesson, fullLessonStory, typedInput, progressMap, sessionStartTime, misspelledTracker]);
+  }, [currentLesson, fullLessonStory, typedInput, activeChunkIndex, progressMap, sessionStartTime, misspelledTracker]);
 
-  // REAL-TIME AUDIO TRIGGER:
-  // "it will dictate the three words at once, after user write them after that only next three word will sound"
-  // When user writes the words of the current chunk, teacher reads the NEXT chunk automatically!
+  // Real-time audio trigger: speak next 3 words when user finishes current words
   useEffect(() => {
     if (!currentLesson || storyChunks.length === 0) return;
 
@@ -361,12 +322,10 @@ export const App: React.FC = () => {
       }
     }
 
-    // Keep activeChunkIndex in sync
     if (targetChunkIdx !== activeChunkIndex) {
       setActiveChunkIndex(targetChunkIdx);
     }
 
-    // If targetChunkIdx has not been spoken yet, trigger teacher speech immediately!
     if (targetChunkIdx > lastSpokenChunkRef.current && targetChunkIdx < storyChunks.length) {
       lastSpokenChunkRef.current = targetChunkIdx;
       speechEngine.speakDiscreteChunk(
@@ -381,7 +340,6 @@ export const App: React.FC = () => {
     ) {
       finishLesson();
     } else if (targetChunkIdx < lastSpokenChunkRef.current) {
-      // User deleted/backspaced text: rewind spoken pointer so typing forward speaks again
       lastSpokenChunkRef.current = targetChunkIdx;
     }
   }, [typedInput, storyChunks, activeChunkIndex, currentLesson, isSummaryOpen, finishLesson]);
@@ -401,7 +359,7 @@ export const App: React.FC = () => {
     }
   }, [liveFeedbacks]);
 
-  // Controls Handlers
+  // Navigate cleanly using React Router
   const handleSelectLesson = useCallback((newLessonId: number) => {
     if (newLessonId === currentLessonId) {
       setIsSidebarOpen(false);
@@ -411,20 +369,12 @@ export const App: React.FC = () => {
     if (currentLesson && currentLesson.id === currentLessonId) {
       saveLessonTypedStory(currentLesson.id, typedInput, activeChunkIndex);
     }
-    // Immediately clear typed input so previous lesson text never bleeds over
     setTypedInput('');
     setActiveChunkIndex(0);
     lastSpokenChunkRef.current = -1;
-    setCurrentLessonId(newLessonId);
-
-    if (typeof window !== 'undefined') {
-      const targetPath = `/lesson/${newLessonId}`;
-      if (window.location.pathname !== targetPath) {
-        window.history.pushState({ lessonId: newLessonId }, '', targetPath);
-      }
-    }
     setIsSidebarOpen(false);
-  }, [currentLesson, currentLessonId, typedInput, activeChunkIndex]);
+    navigate(`/lesson/${newLessonId}`);
+  }, [currentLesson, currentLessonId, typedInput, activeChunkIndex, navigate]);
 
   const handlePreviousChunk = useCallback(() => {
     if (activeChunkIndex > 0) {
@@ -451,7 +401,6 @@ export const App: React.FC = () => {
       setActiveChunkIndex(0);
       setTypedInput('');
       setSessionRetries(prev => prev + 1);
-      // Reset saved text for this lesson on restart
       saveLessonTypedStory(currentLessonId, '', 0);
       setTimeout(() => {
         lastSpokenChunkRef.current = 0;
@@ -490,11 +439,11 @@ export const App: React.FC = () => {
   const handleResetAllProgress = useCallback(() => {
     resetAllProgress();
     setProgressMap({});
-    setCurrentLessonId(1);
     setTypedInput('');
     setActiveChunkIndex(0);
     setIsSettingsOpen(false);
-  }, []);
+    navigate('/lesson/1');
+  }, [navigate]);
 
   // Global Keyboard Shortcuts
   useEffect(() => {
@@ -554,7 +503,6 @@ export const App: React.FC = () => {
         currentLessonId={currentLessonId}
         onSelectLesson={handleSelectLesson}
         progressMap={progressMap}
-        lastActive={{ lessonId: currentLessonId, sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0 }}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
@@ -711,6 +659,16 @@ export const App: React.FC = () => {
         onClose={() => setIsSettingsOpen(false)}
       />
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<RootRedirect />} />
+      <Route path="/lesson/:id" element={<DictationPage />} />
+      <Route path="*" element={<Navigate to="/lesson/1" replace />} />
+    </Routes>
   );
 };
 

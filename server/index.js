@@ -52,6 +52,32 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', serverTime: new Date().toISOString() });
 });
 
+// Lessons Endpoints (Served directly from backend data)
+const LESSONS_DIR = path.join(DATA_DIR, 'lessons');
+const MANIFEST_FILE = path.join(DATA_DIR, 'lessonsManifest.json');
+
+app.get('/api/lessons', (req, res) => {
+  const manifest = readJsonFile(MANIFEST_FILE, []);
+  res.json(manifest);
+});
+
+app.get('/api/lessons/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id) || id < 1 || id > 100) {
+    return res.status(404).json({ error: 'Lesson not found' });
+  }
+  const padded = String(id).padStart(3, '0');
+  const lessonFile = path.join(LESSONS_DIR, `lesson-${padded}.json`);
+  if (!fs.existsSync(lessonFile)) {
+    return res.status(404).json({ error: `Lesson ${id} file not found` });
+  }
+  const lessonData = readJsonFile(lessonFile, null);
+  if (!lessonData) {
+    return res.status(500).json({ error: `Error reading lesson ${id}` });
+  }
+  res.json(lessonData);
+});
+
 // Progress Endpoints
 app.get('/api/progress', (req, res) => {
   const progress = readJsonFile(PROGRESS_FILE, {});
