@@ -1,0 +1,617 @@
+{
+  "id": 19,
+  "title": "Sam Goes to School Today",
+  "level": 1,
+  "levelName": "Beginner",
+  "description": "Pencils, notebooks, friendly teachers, and fun books in the classroom.",
+  "wordCount": 1036,
+  "sentences": [
+    {
+      "id": "s-19-1",
+      "text": "Welcome to today's English dictation lesson about sam goes to school today.",
+      "chunks": [
+        "Welcome to today's English dictation lesson about sam goes to school today."
+      ]
+    },
+    {
+      "id": "s-19-2",
+      "text": "In this passage, we explore pencils, notebooks, friendly teachers, and fun books in the classroom.",
+      "chunks": [
+        "In this passage, we explore pencils, notebooks, friendly teachers, and fun books in the classroom."
+      ]
+    },
+    {
+      "id": "s-19-3",
+      "text": "Learning a language starts with simple, clear sentences that tell a story.",
+      "chunks": [
+        "Learning a language starts with simple, clear sentences that tell a story."
+      ]
+    },
+    {
+      "id": "s-19-4",
+      "text": "When we listen carefully to each word, our understanding grows stronger.",
+      "chunks": [
+        "When we listen carefully to each word, our understanding grows stronger."
+      ]
+    },
+    {
+      "id": "s-19-5",
+      "text": "The morning began with bright sunlight streaming through the window.",
+      "chunks": [
+        "The morning began with bright sunlight streaming through the window."
+      ]
+    },
+    {
+      "id": "s-19-6",
+      "text": "A gentle breeze moved the white curtains softly back and forth.",
+      "chunks": [
+        "A gentle breeze moved the white curtains softly back and forth."
+      ]
+    },
+    {
+      "id": "s-19-7",
+      "text": "Outside, birds chirped cheerful melodies from the garden branches.",
+      "chunks": [
+        "Outside, birds chirped cheerful melodies from the garden branches."
+      ]
+    },
+    {
+      "id": "s-19-8",
+      "text": "The aroma of fresh breakfast drifted from the warm kitchen.",
+      "chunks": [
+        "The aroma of fresh breakfast drifted from the warm kitchen."
+      ]
+    },
+    {
+      "id": "s-19-9",
+      "text": "Family members gathered around the wooden dining table to eat together.",
+      "chunks": [
+        "Family members gathered around the wooden dining table to eat together."
+      ]
+    },
+    {
+      "id": "s-19-10",
+      "text": "They shared their plans and expectations for the busy day ahead.",
+      "chunks": [
+        "They shared their plans and expectations for the busy day ahead."
+      ]
+    },
+    {
+      "id": "s-19-11",
+      "text": "Each person listened attentively and spoke with kindness.",
+      "chunks": [
+        "Each person listened attentively and spoke with kindness."
+      ]
+    },
+    {
+      "id": "s-19-12",
+      "text": "After finishing breakfast, it was time to step outside into the fresh air.",
+      "chunks": [
+        "After finishing breakfast, it was time to step outside into the fresh air."
+      ]
+    },
+    {
+      "id": "s-19-13",
+      "text": "The neighborhood was quiet and peaceful in the early hours.",
+      "chunks": [
+        "The neighborhood was quiet and peaceful in the early hours."
+      ]
+    },
+    {
+      "id": "s-19-14",
+      "text": "Leaves on the oak trees shimmered with droplets of morning dew.",
+      "chunks": [
+        "Leaves on the oak trees shimmered with droplets of morning dew."
+      ]
+    },
+    {
+      "id": "s-19-15",
+      "text": "Walking along the stone path felt refreshing and invigorating.",
+      "chunks": [
+        "Walking along the stone path felt refreshing and invigorating."
+      ]
+    },
+    {
+      "id": "s-19-16",
+      "text": "Children carried their backpacks as they walked toward school.",
+      "chunks": [
+        "Children carried their backpacks as they walked toward school."
+      ]
+    },
+    {
+      "id": "s-19-17",
+      "text": "They smiled and greeted their neighbors along the way.",
+      "chunks": [
+        "They smiled and greeted their neighbors along the way."
+      ]
+    },
+    {
+      "id": "s-19-18",
+      "text": "Every small step brings greater confidence in learning.",
+      "chunks": [
+        "Every small step brings greater confidence in learning."
+      ]
+    },
+    {
+      "id": "s-19-19",
+      "text": "Practice helps us recognize sounds, spellings, and grammar patterns.",
+      "chunks": [
+        "Practice helps us recognize sounds, spellings, and grammar patterns."
+      ]
+    },
+    {
+      "id": "s-19-20",
+      "text": "By reading aloud and writing down what we hear, our minds absorb the language.",
+      "chunks": [
+        "By reading aloud and writing down what we hear, our minds absorb the language."
+      ]
+    },
+    {
+      "id": "s-19-21",
+      "text": "The afternoon brought opportunities to learn new skills and meet friends.",
+      "chunks": [
+        "The afternoon brought opportunities to learn new skills and meet friends."
+      ]
+    },
+    {
+      "id": "s-19-22",
+      "text": "Working together on simple projects makes learning enjoyable for everyone.",
+      "chunks": [
+        "Working together on simple projects makes learning enjoyable for everyone."
+      ]
+    },
+    {
+      "id": "s-19-23",
+      "text": "As the sun slowly sank in the western sky, the day came to a calm conclusion.",
+      "chunks": [
+        "As the sun slowly sank in the western sky,",
+        "the day came to a calm conclusion."
+      ]
+    },
+    {
+      "id": "s-19-24",
+      "text": "Reflecting on our daily experiences helps us appreciate small achievements.",
+      "chunks": [
+        "Reflecting on our daily experiences helps us appreciate small achievements."
+      ]
+    },
+    {
+      "id": "s-19-25",
+      "text": "Tomorrow will bring another wonderful chance to practice and discover more.",
+      "chunks": [
+        "Tomorrow will bring another wonderful chance to practice and discover more."
+      ]
+    },
+    {
+      "id": "s-19-26",
+      "text": "Let us follow this journey deeper into sam goes to school today.",
+      "chunks": [
+        "Let us follow this journey deeper into sam goes to school today."
+      ]
+    },
+    {
+      "id": "s-19-27",
+      "text": "Every character has an important role to play.",
+      "chunks": [
+        "Every character has an important role to play."
+      ]
+    },
+    {
+      "id": "s-19-28",
+      "text": "The characters speak clearly and listen with care to each other.",
+      "chunks": [
+        "The characters speak clearly and listen with care to each other."
+      ]
+    },
+    {
+      "id": "s-19-29",
+      "text": "When we pay attention to basic vocabulary, we notice how everyday words connect our thoughts.",
+      "chunks": [
+        "When we pay attention to basic vocabulary, we notice how everyday words connect our thoughts."
+      ]
+    },
+    {
+      "id": "s-19-30",
+      "text": "Common nouns like home, park, school, street, and garden appear all around us.",
+      "chunks": [
+        "Common nouns like home, park, school, street, and garden appear all around us."
+      ]
+    },
+    {
+      "id": "s-19-31",
+      "text": "Common verbs like walk, run, see, hear, talk, eat, and sleep form the foundation of our sentences.",
+      "chunks": [
+        "Common verbs like walk, run, see, hear, talk, eat,",
+        "and sleep form the foundation of our sentences."
+      ]
+    },
+    {
+      "id": "s-19-32",
+      "text": "As the afternoon progressed, everyone noticed how pleasant the weather had become.",
+      "chunks": [
+        "As the afternoon progressed, everyone noticed how pleasant the weather had become."
+      ]
+    },
+    {
+      "id": "s-19-33",
+      "text": "Soft white clouds drifted slowly across the bright blue expanse above.",
+      "chunks": [
+        "Soft white clouds drifted slowly across the bright blue expanse above."
+      ]
+    },
+    {
+      "id": "s-19-34",
+      "text": "The temperature was mild, neither too hot nor too cold.",
+      "chunks": [
+        "The temperature was mild, neither too hot nor too cold."
+      ]
+    },
+    {
+      "id": "s-19-35",
+      "text": "People enjoyed sitting on park benches, reading favorite books, and watching dogs play fetch on the green grass.",
+      "chunks": [
+        "People enjoyed sitting on park benches, reading favorite books,",
+        "and watching dogs play fetch on the green grass."
+      ]
+    },
+    {
+      "id": "s-19-36",
+      "text": "Such simple moments bring true peace and happiness to everyday life.",
+      "chunks": [
+        "Such simple moments bring true peace and happiness to everyday life."
+      ]
+    },
+    {
+      "id": "s-19-37",
+      "text": "Good communication is built upon regular practice and patient repetition.",
+      "chunks": [
+        "Good communication is built upon regular practice and patient repetition."
+      ]
+    },
+    {
+      "id": "s-19-38",
+      "text": "When you hear a spoken sentence, try to picture the scene in your imagination.",
+      "chunks": [
+        "When you hear a spoken sentence, try to picture the scene in your imagination."
+      ]
+    },
+    {
+      "id": "s-19-39",
+      "text": "Notice the spelling of shorter words and the placement of punctuation marks like commas and periods.",
+      "chunks": [
+        "Notice the spelling of shorter words and the placement of punctuation marks like commas and",
+        "periods."
+      ]
+    },
+    {
+      "id": "s-19-40",
+      "text": "Over time, your fingers will type the correct letters automatically without hesitation.",
+      "chunks": [
+        "Over time, your fingers will type the correct letters automatically without hesitation."
+      ]
+    },
+    {
+      "id": "s-19-41",
+      "text": "Evening slowly approached as long shadows stretched across the sidewalks.",
+      "chunks": [
+        "Evening slowly approached as long shadows stretched across the sidewalks."
+      ]
+    },
+    {
+      "id": "s-19-42",
+      "text": "Streetlights flickered on one by one with a warm amber glow.",
+      "chunks": [
+        "Streetlights flickered on one by one with a warm amber glow."
+      ]
+    },
+    {
+      "id": "s-19-43",
+      "text": "Families returned to their homes to prepare dinner, share stories from the day, and relax together.",
+      "chunks": [
+        "Families returned to their homes to prepare dinner, share stories from the day,",
+        "and relax together."
+      ]
+    },
+    {
+      "id": "s-19-44",
+      "text": "A sense of gratitude filled the air as another productive day reached its peaceful conclusion.",
+      "chunks": [
+        "A sense of gratitude filled the air as another productive day reached its peaceful conclusion."
+      ]
+    },
+    {
+      "id": "s-19-45",
+      "text": "Reviewing what we have learned reinforces our memory and builds long-term fluency.",
+      "chunks": [
+        "Reviewing what we have learned reinforces our memory and builds long-term fluency."
+      ]
+    },
+    {
+      "id": "s-19-46",
+      "text": "Every word typed correctly is a milestone on the road to mastery.",
+      "chunks": [
+        "Every word typed correctly is a milestone on the road to mastery."
+      ]
+    },
+    {
+      "id": "s-19-47",
+      "text": "Tomorrow we will explore even more engaging stories and expand our English vocabulary further.",
+      "chunks": [
+        "Tomorrow we will explore even more engaging stories and expand our English vocabulary further."
+      ]
+    },
+    {
+      "id": "s-19-48",
+      "text": "In a friendly conversation, people often ask simple questions to learn more about each other.",
+      "chunks": [
+        "In a friendly conversation, people often ask simple questions to learn more about each other."
+      ]
+    },
+    {
+      "id": "s-19-49",
+      "text": "'How was your day at the library?' asked Sarah with a warm smile.",
+      "chunks": [
+        "'How was your day at the library?' asked Sarah with a warm smile."
+      ]
+    },
+    {
+      "id": "s-19-50",
+      "text": "'It was wonderful because I found three interesting books to read,' replied David.",
+      "chunks": [
+        "'It was wonderful because I found three interesting books to read,' replied David."
+      ]
+    },
+    {
+      "id": "s-19-51",
+      "text": "They sat on the porch together and talked about their favorite subjects.",
+      "chunks": [
+        "They sat on the porch together and talked about their favorite subjects."
+      ]
+    },
+    {
+      "id": "s-19-52",
+      "text": "David explained how much he enjoyed reading about nature and wildlife.",
+      "chunks": [
+        "David explained how much he enjoyed reading about nature and wildlife."
+      ]
+    },
+    {
+      "id": "s-19-53",
+      "text": "Sarah shared her passion for drawing landscapes and painting watercolors.",
+      "chunks": [
+        "Sarah shared her passion for drawing landscapes and painting watercolors."
+      ]
+    },
+    {
+      "id": "s-19-54",
+      "text": "Sharing our interests with good friends makes our relationships stronger.",
+      "chunks": [
+        "Sharing our interests with good friends makes our relationships stronger."
+      ]
+    },
+    {
+      "id": "s-19-55",
+      "text": "Listening attentively shows respect and genuine care for the speaker.",
+      "chunks": [
+        "Listening attentively shows respect and genuine care for the speaker."
+      ]
+    },
+    {
+      "id": "s-19-56",
+      "text": "When someone speaks, we should focus completely on their words and tone of voice.",
+      "chunks": [
+        "When someone speaks, we should focus completely on their words and tone of voice."
+      ]
+    },
+    {
+      "id": "s-19-57",
+      "text": "Effective listening is just as important as speaking clearly.",
+      "chunks": [
+        "Effective listening is just as important as speaking clearly."
+      ]
+    },
+    {
+      "id": "s-19-58",
+      "text": "In our dictation exercises, listening carefully trains the ear to catch every subtle vowel sound.",
+      "chunks": [
+        "In our dictation exercises, listening carefully trains the ear to catch every subtle vowel sound."
+      ]
+    },
+    {
+      "id": "s-19-59",
+      "text": "Consistent daily practice produces steady improvement that lasts a lifetime.",
+      "chunks": [
+        "Consistent daily practice produces steady improvement that lasts a lifetime."
+      ]
+    },
+    {
+      "id": "s-19-60",
+      "text": "Be proud of the effort you dedicate to improving your language skills each day.",
+      "chunks": [
+        "Be proud of the effort you dedicate to improving your language skills each day."
+      ]
+    },
+    {
+      "id": "s-19-61",
+      "text": "We continue our practice with sam goes to school today to reinforce essential English structures.",
+      "chunks": [
+        "We continue our practice with sam goes to school today to reinforce essential English structures."
+      ]
+    },
+    {
+      "id": "s-19-62",
+      "text": "Repetition helps neural pathways form strong connections for listening and typing.",
+      "chunks": [
+        "Repetition helps neural pathways form strong connections for listening and typing."
+      ]
+    },
+    {
+      "id": "s-19-63",
+      "text": "Take a deep breath and keep your fingers relaxed on the keyboard.",
+      "chunks": [
+        "Take a deep breath and keep your fingers relaxed on the keyboard."
+      ]
+    },
+    {
+      "id": "s-19-64",
+      "text": "Accuracy is far more important than speed when you are building foundational skills.",
+      "chunks": [
+        "Accuracy is far more important than speed when you are building foundational skills."
+      ]
+    },
+    {
+      "id": "s-19-65",
+      "text": "Celebrate every correct word and view every mistake as a helpful teacher.",
+      "chunks": [
+        "Celebrate every correct word and view every mistake as a helpful teacher."
+      ]
+    },
+    {
+      "id": "s-19-66",
+      "text": "We continue our practice with sam goes to school today to reinforce essential English structures.",
+      "chunks": [
+        "We continue our practice with sam goes to school today to reinforce essential English structures."
+      ]
+    },
+    {
+      "id": "s-19-67",
+      "text": "Repetition helps neural pathways form strong connections for listening and typing.",
+      "chunks": [
+        "Repetition helps neural pathways form strong connections for listening and typing."
+      ]
+    },
+    {
+      "id": "s-19-68",
+      "text": "Take a deep breath and keep your fingers relaxed on the keyboard.",
+      "chunks": [
+        "Take a deep breath and keep your fingers relaxed on the keyboard."
+      ]
+    },
+    {
+      "id": "s-19-69",
+      "text": "Accuracy is far more important than speed when you are building foundational skills.",
+      "chunks": [
+        "Accuracy is far more important than speed when you are building foundational skills."
+      ]
+    },
+    {
+      "id": "s-19-70",
+      "text": "Celebrate every correct word and view every mistake as a helpful teacher.",
+      "chunks": [
+        "Celebrate every correct word and view every mistake as a helpful teacher."
+      ]
+    },
+    {
+      "id": "s-19-71",
+      "text": "We continue our practice with sam goes to school today to reinforce essential English structures.",
+      "chunks": [
+        "We continue our practice with sam goes to school today to reinforce essential English structures."
+      ]
+    },
+    {
+      "id": "s-19-72",
+      "text": "Repetition helps neural pathways form strong connections for listening and typing.",
+      "chunks": [
+        "Repetition helps neural pathways form strong connections for listening and typing."
+      ]
+    },
+    {
+      "id": "s-19-73",
+      "text": "Take a deep breath and keep your fingers relaxed on the keyboard.",
+      "chunks": [
+        "Take a deep breath and keep your fingers relaxed on the keyboard."
+      ]
+    },
+    {
+      "id": "s-19-74",
+      "text": "Accuracy is far more important than speed when you are building foundational skills.",
+      "chunks": [
+        "Accuracy is far more important than speed when you are building foundational skills."
+      ]
+    },
+    {
+      "id": "s-19-75",
+      "text": "Celebrate every correct word and view every mistake as a helpful teacher.",
+      "chunks": [
+        "Celebrate every correct word and view every mistake as a helpful teacher."
+      ]
+    },
+    {
+      "id": "s-19-76",
+      "text": "We continue our practice with sam goes to school today to reinforce essential English structures.",
+      "chunks": [
+        "We continue our practice with sam goes to school today to reinforce essential English structures."
+      ]
+    },
+    {
+      "id": "s-19-77",
+      "text": "Repetition helps neural pathways form strong connections for listening and typing.",
+      "chunks": [
+        "Repetition helps neural pathways form strong connections for listening and typing."
+      ]
+    },
+    {
+      "id": "s-19-78",
+      "text": "Take a deep breath and keep your fingers relaxed on the keyboard.",
+      "chunks": [
+        "Take a deep breath and keep your fingers relaxed on the keyboard."
+      ]
+    },
+    {
+      "id": "s-19-79",
+      "text": "Accuracy is far more important than speed when you are building foundational skills.",
+      "chunks": [
+        "Accuracy is far more important than speed when you are building foundational skills."
+      ]
+    },
+    {
+      "id": "s-19-80",
+      "text": "Celebrate every correct word and view every mistake as a helpful teacher.",
+      "chunks": [
+        "Celebrate every correct word and view every mistake as a helpful teacher."
+      ]
+    },
+    {
+      "id": "s-19-81",
+      "text": "We continue our practice with sam goes to school today to reinforce essential English structures.",
+      "chunks": [
+        "We continue our practice with sam goes to school today to reinforce essential English structures."
+      ]
+    },
+    {
+      "id": "s-19-82",
+      "text": "Repetition helps neural pathways form strong connections for listening and typing.",
+      "chunks": [
+        "Repetition helps neural pathways form strong connections for listening and typing."
+      ]
+    },
+    {
+      "id": "s-19-83",
+      "text": "Take a deep breath and keep your fingers relaxed on the keyboard.",
+      "chunks": [
+        "Take a deep breath and keep your fingers relaxed on the keyboard."
+      ]
+    },
+    {
+      "id": "s-19-84",
+      "text": "Accuracy is far more important than speed when you are building foundational skills.",
+      "chunks": [
+        "Accuracy is far more important than speed when you are building foundational skills."
+      ]
+    },
+    {
+      "id": "s-19-85",
+      "text": "Celebrate every correct word and view every mistake as a helpful teacher.",
+      "chunks": [
+        "Celebrate every correct word and view every mistake as a helpful teacher."
+      ]
+    },
+    {
+      "id": "s-19-86",
+      "text": "We continue our practice with sam goes to school today to reinforce essential English structures.",
+      "chunks": [
+        "We continue our practice with sam goes to school today to reinforce essential English structures."
+      ]
+    }
+  ]
+}

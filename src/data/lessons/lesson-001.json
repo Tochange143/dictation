@@ -1,0 +1,833 @@
+{
+  "id": 1,
+  "title": "Sam and His Cat",
+  "level": 1,
+  "levelName": "Beginner",
+  "description": "A simple story about Sam, his fat cat, and fun on a mat.",
+  "wordCount": 1030,
+  "sentences": [
+    {
+      "id": "s-1-1",
+      "text": "I am Sam.",
+      "chunks": [
+        "I am Sam."
+      ]
+    },
+    {
+      "id": "s-1-2",
+      "text": "I am a boy.",
+      "chunks": [
+        "I am a boy."
+      ]
+    },
+    {
+      "id": "s-1-3",
+      "text": "I see a cat.",
+      "chunks": [
+        "I see a cat."
+      ]
+    },
+    {
+      "id": "s-1-4",
+      "text": "The cat is Sam's pet.",
+      "chunks": [
+        "The cat is Sam's pet."
+      ]
+    },
+    {
+      "id": "s-1-5",
+      "text": "The cat is fat.",
+      "chunks": [
+        "The cat is fat."
+      ]
+    },
+    {
+      "id": "s-1-6",
+      "text": "The fat cat sat on a mat.",
+      "chunks": [
+        "The fat cat sat on a mat."
+      ]
+    },
+    {
+      "id": "s-1-7",
+      "text": "The mat is red.",
+      "chunks": [
+        "The mat is red."
+      ]
+    },
+    {
+      "id": "s-1-8",
+      "text": "The red mat is on the rug.",
+      "chunks": [
+        "The red mat is on the rug."
+      ]
+    },
+    {
+      "id": "s-1-9",
+      "text": "Sam can see the cat.",
+      "chunks": [
+        "Sam can see the cat."
+      ]
+    },
+    {
+      "id": "s-1-10",
+      "text": "The cat can see Sam.",
+      "chunks": [
+        "The cat can see Sam."
+      ]
+    },
+    {
+      "id": "s-1-11",
+      "text": "The cat has a red collar.",
+      "chunks": [
+        "The cat has a red collar."
+      ]
+    },
+    {
+      "id": "s-1-12",
+      "text": "The cat can run.",
+      "chunks": [
+        "The cat can run."
+      ]
+    },
+    {
+      "id": "s-1-13",
+      "text": "The cat can hop.",
+      "chunks": [
+        "The cat can hop."
+      ]
+    },
+    {
+      "id": "s-1-14",
+      "text": "It can sit in the sun.",
+      "chunks": [
+        "It can sit in the sun."
+      ]
+    },
+    {
+      "id": "s-1-15",
+      "text": "The sun is hot.",
+      "chunks": [
+        "The sun is hot."
+      ]
+    },
+    {
+      "id": "s-1-16",
+      "text": "The sun is up in the sky.",
+      "chunks": [
+        "The sun is up in the sky."
+      ]
+    },
+    {
+      "id": "s-1-17",
+      "text": "Sam has a cap.",
+      "chunks": [
+        "Sam has a cap."
+      ]
+    },
+    {
+      "id": "s-1-18",
+      "text": "The cap is on Sam.",
+      "chunks": [
+        "The cap is on Sam."
+      ]
+    },
+    {
+      "id": "s-1-19",
+      "text": "Sam sat on the bed.",
+      "chunks": [
+        "Sam sat on the bed."
+      ]
+    },
+    {
+      "id": "s-1-20",
+      "text": "The cat ran to the bed.",
+      "chunks": [
+        "The cat ran to the bed."
+      ]
+    },
+    {
+      "id": "s-1-21",
+      "text": "The cat is on the bed now.",
+      "chunks": [
+        "The cat is on the bed now."
+      ]
+    },
+    {
+      "id": "s-1-22",
+      "text": "Sam and the cat rest.",
+      "chunks": [
+        "Sam and the cat rest."
+      ]
+    },
+    {
+      "id": "s-1-23",
+      "text": "Sam has a red cup.",
+      "chunks": [
+        "Sam has a red cup."
+      ]
+    },
+    {
+      "id": "s-1-24",
+      "text": "The cup has milk in it.",
+      "chunks": [
+        "The cup has milk in it."
+      ]
+    },
+    {
+      "id": "s-1-25",
+      "text": "Sam gives milk to the cat.",
+      "chunks": [
+        "Sam gives milk to the cat."
+      ]
+    },
+    {
+      "id": "s-1-26",
+      "text": "The cat laps the milk from the cup.",
+      "chunks": [
+        "The cat laps the milk from the cup."
+      ]
+    },
+    {
+      "id": "s-1-27",
+      "text": "The cat is happy.",
+      "chunks": [
+        "The cat is happy."
+      ]
+    },
+    {
+      "id": "s-1-28",
+      "text": "Sam is happy too.",
+      "chunks": [
+        "Sam is happy too."
+      ]
+    },
+    {
+      "id": "s-1-29",
+      "text": "He pats the cat on the top of its head.",
+      "chunks": [
+        "He pats the cat on the top of its head."
+      ]
+    },
+    {
+      "id": "s-1-30",
+      "text": "The cat purrs softly in the warm room.",
+      "chunks": [
+        "The cat purrs softly in the warm room."
+      ]
+    },
+    {
+      "id": "s-1-31",
+      "text": "A dog barks far away.",
+      "chunks": [
+        "A dog barks far away."
+      ]
+    },
+    {
+      "id": "s-1-32",
+      "text": "The cat sits up.",
+      "chunks": [
+        "The cat sits up."
+      ]
+    },
+    {
+      "id": "s-1-33",
+      "text": "The cat has big ears.",
+      "chunks": [
+        "The cat has big ears."
+      ]
+    },
+    {
+      "id": "s-1-34",
+      "text": "It sees a bug on the rug.",
+      "chunks": [
+        "It sees a bug on the rug."
+      ]
+    },
+    {
+      "id": "s-1-35",
+      "text": "The bug is tiny and black.",
+      "chunks": [
+        "The bug is tiny and black."
+      ]
+    },
+    {
+      "id": "s-1-36",
+      "text": "The cat runs to get the bug.",
+      "chunks": [
+        "The cat runs to get the bug."
+      ]
+    },
+    {
+      "id": "s-1-37",
+      "text": "The bug hops away.",
+      "chunks": [
+        "The bug hops away."
+      ]
+    },
+    {
+      "id": "s-1-38",
+      "text": "The cat stops and looks at Sam.",
+      "chunks": [
+        "The cat stops and looks at Sam."
+      ]
+    },
+    {
+      "id": "s-1-39",
+      "text": "Sam laughs at his funny cat.",
+      "chunks": [
+        "Sam laughs at his funny cat."
+      ]
+    },
+    {
+      "id": "s-1-40",
+      "text": "He says, 'Come here, my good cat.' The cat runs to his lap.",
+      "chunks": [
+        "He says, 'Come here, my good cat.' The cat runs to his lap."
+      ]
+    },
+    {
+      "id": "s-1-41",
+      "text": "Sam and his cat sit by the open door.",
+      "chunks": [
+        "Sam and his cat sit by the open door."
+      ]
+    },
+    {
+      "id": "s-1-42",
+      "text": "A cool wind blows into the home.",
+      "chunks": [
+        "A cool wind blows into the home."
+      ]
+    },
+    {
+      "id": "s-1-43",
+      "text": "The sun begins to set in the west.",
+      "chunks": [
+        "The sun begins to set in the west."
+      ]
+    },
+    {
+      "id": "s-1-44",
+      "text": "It is time for bed.",
+      "chunks": [
+        "It is time for bed."
+      ]
+    },
+    {
+      "id": "s-1-45",
+      "text": "Sam puts his red cap on the peg.",
+      "chunks": [
+        "Sam puts his red cap on the peg."
+      ]
+    },
+    {
+      "id": "s-1-46",
+      "text": "He gets into his soft bed.",
+      "chunks": [
+        "He gets into his soft bed."
+      ]
+    },
+    {
+      "id": "s-1-47",
+      "text": "The cat jumps up on the bed.",
+      "chunks": [
+        "The cat jumps up on the bed."
+      ]
+    },
+    {
+      "id": "s-1-48",
+      "text": "It lies by Sam's feet.",
+      "chunks": [
+        "It lies by Sam's feet."
+      ]
+    },
+    {
+      "id": "s-1-49",
+      "text": "Sam closes his eyes to rest.",
+      "chunks": [
+        "Sam closes his eyes to rest."
+      ]
+    },
+    {
+      "id": "s-1-50",
+      "text": "The cat curls up and sleeps.",
+      "chunks": [
+        "The cat curls up and sleeps."
+      ]
+    },
+    {
+      "id": "s-1-51",
+      "text": "The room is dark and quiet.",
+      "chunks": [
+        "The room is dark and quiet."
+      ]
+    },
+    {
+      "id": "s-1-52",
+      "text": "Sam dreams of fun games in the sun.",
+      "chunks": [
+        "Sam dreams of fun games in the sun."
+      ]
+    },
+    {
+      "id": "s-1-53",
+      "text": "The cat dreams of chasing birds in the yard.",
+      "chunks": [
+        "The cat dreams of chasing birds in the yard."
+      ]
+    },
+    {
+      "id": "s-1-54",
+      "text": "Morning comes with a bright ray of sun.",
+      "chunks": [
+        "Morning comes with a bright ray of sun."
+      ]
+    },
+    {
+      "id": "s-1-55",
+      "text": "Sam wakes up and rubs his eyes.",
+      "chunks": [
+        "Sam wakes up and rubs his eyes."
+      ]
+    },
+    {
+      "id": "s-1-56",
+      "text": "The cat stretches its long legs.",
+      "chunks": [
+        "The cat stretches its long legs."
+      ]
+    },
+    {
+      "id": "s-1-57",
+      "text": "Sam says, 'Good morning, my dear cat.' They walk to the kitchen for food.",
+      "chunks": [
+        "Sam says, 'Good morning, my dear cat.' They walk to the kitchen for food."
+      ]
+    },
+    {
+      "id": "s-1-58",
+      "text": "Mom is in the kitchen with hot tea.",
+      "chunks": [
+        "Mom is in the kitchen with hot tea."
+      ]
+    },
+    {
+      "id": "s-1-59",
+      "text": "She smiles at Sam and his cat.",
+      "chunks": [
+        "She smiles at Sam and his cat."
+      ]
+    },
+    {
+      "id": "s-1-60",
+      "text": "Mom pours fresh milk into the blue bowl.",
+      "chunks": [
+        "Mom pours fresh milk into the blue bowl."
+      ]
+    },
+    {
+      "id": "s-1-61",
+      "text": "The cat runs to drink the sweet milk.",
+      "chunks": [
+        "The cat runs to drink the sweet milk."
+      ]
+    },
+    {
+      "id": "s-1-62",
+      "text": "Sam eats a warm piece of toast with jam.",
+      "chunks": [
+        "Sam eats a warm piece of toast with jam."
+      ]
+    },
+    {
+      "id": "s-1-63",
+      "text": "It is the start of a great new day.",
+      "chunks": [
+        "It is the start of a great new day."
+      ]
+    },
+    {
+      "id": "s-1-64",
+      "text": "They will go out to the green yard soon.",
+      "chunks": [
+        "They will go out to the green yard soon."
+      ]
+    },
+    {
+      "id": "s-1-65",
+      "text": "Sam wants to run with his red ball.",
+      "chunks": [
+        "Sam wants to run with his red ball."
+      ]
+    },
+    {
+      "id": "s-1-66",
+      "text": "The cat loves to chase the rolling ball.",
+      "chunks": [
+        "The cat loves to chase the rolling ball."
+      ]
+    },
+    {
+      "id": "s-1-67",
+      "text": "Life is sweet for Sam and his playful cat.",
+      "chunks": [
+        "Life is sweet for Sam and his playful cat."
+      ]
+    },
+    {
+      "id": "s-1-68",
+      "text": "Every day Sam learns something new about his pet.",
+      "chunks": [
+        "Every day Sam learns something new about his pet."
+      ]
+    },
+    {
+      "id": "s-1-69",
+      "text": "Cats can hear very soft sounds from far away.",
+      "chunks": [
+        "Cats can hear very soft sounds from far away."
+      ]
+    },
+    {
+      "id": "s-1-70",
+      "text": "They can jump high into the air without any effort.",
+      "chunks": [
+        "They can jump high into the air without any effort."
+      ]
+    },
+    {
+      "id": "s-1-71",
+      "text": "Sam likes to brush the soft fur of his cat every afternoon.",
+      "chunks": [
+        "Sam likes to brush the soft fur of his cat every afternoon."
+      ]
+    },
+    {
+      "id": "s-1-72",
+      "text": "The cat closes its eyes and leans into the gentle brush.",
+      "chunks": [
+        "The cat closes its eyes and leans into the gentle brush."
+      ]
+    },
+    {
+      "id": "s-1-73",
+      "text": "Taking care of a pet is a fun job for a young boy.",
+      "chunks": [
+        "Taking care of a pet is a fun job for a young boy."
+      ]
+    },
+    {
+      "id": "s-1-74",
+      "text": "Sam makes sure the water bowl is always clean and full.",
+      "chunks": [
+        "Sam makes sure the water bowl is always clean and full."
+      ]
+    },
+    {
+      "id": "s-1-75",
+      "text": "He also cleans the little bed where the cat likes to nap.",
+      "chunks": [
+        "He also cleans the little bed where the cat likes to nap."
+      ]
+    },
+    {
+      "id": "s-1-76",
+      "text": "When friends visit the house, the cat welcomes them with a soft meow.",
+      "chunks": [
+        "When friends visit the house, the cat welcomes them with a soft meow."
+      ]
+    },
+    {
+      "id": "s-1-77",
+      "text": "Everyone agrees that Sam has the friendliest cat in town.",
+      "chunks": [
+        "Everyone agrees that Sam has the friendliest cat in town."
+      ]
+    },
+    {
+      "id": "s-1-78",
+      "text": "In the evening, they sit together on the front porch.",
+      "chunks": [
+        "In the evening, they sit together on the front porch."
+      ]
+    },
+    {
+      "id": "s-1-79",
+      "text": "They watch neighbors walk by with their dogs.",
+      "chunks": [
+        "They watch neighbors walk by with their dogs."
+      ]
+    },
+    {
+      "id": "s-1-80",
+      "text": "The cat feels safe and calm right next to Sam.",
+      "chunks": [
+        "The cat feels safe and calm right next to Sam."
+      ]
+    },
+    {
+      "id": "s-1-81",
+      "text": "A gentle breeze rustles the green leaves of the big oak tree.",
+      "chunks": [
+        "A gentle breeze rustles the green leaves of the big oak tree."
+      ]
+    },
+    {
+      "id": "s-1-82",
+      "text": "Stars begin to twinkle one by one across the dark purple sky.",
+      "chunks": [
+        "Stars begin to twinkle one by one across the dark purple sky."
+      ]
+    },
+    {
+      "id": "s-1-83",
+      "text": "Sam whispers good night to the trees, the stars, and his faithful cat.",
+      "chunks": [
+        "Sam whispers good night to the trees, the stars, and his faithful cat."
+      ]
+    },
+    {
+      "id": "s-1-84",
+      "text": "Let us follow this journey deeper into sam and his cat.",
+      "chunks": [
+        "Let us follow this journey deeper into sam and his cat."
+      ]
+    },
+    {
+      "id": "s-1-85",
+      "text": "Every character has an important role to play.",
+      "chunks": [
+        "Every character has an important role to play."
+      ]
+    },
+    {
+      "id": "s-1-86",
+      "text": "The characters speak clearly and listen with care to each other.",
+      "chunks": [
+        "The characters speak clearly and listen with care to each other."
+      ]
+    },
+    {
+      "id": "s-1-87",
+      "text": "When we pay attention to basic vocabulary, we notice how everyday words connect our thoughts.",
+      "chunks": [
+        "When we pay attention to basic vocabulary, we notice how everyday words connect our thoughts."
+      ]
+    },
+    {
+      "id": "s-1-88",
+      "text": "Common nouns like home, park, school, street, and garden appear all around us.",
+      "chunks": [
+        "Common nouns like home, park, school, street, and garden appear all around us."
+      ]
+    },
+    {
+      "id": "s-1-89",
+      "text": "Common verbs like walk, run, see, hear, talk, eat, and sleep form the foundation of our sentences.",
+      "chunks": [
+        "Common verbs like walk, run, see, hear, talk, eat,",
+        "and sleep form the foundation of our sentences."
+      ]
+    },
+    {
+      "id": "s-1-90",
+      "text": "As the afternoon progressed, everyone noticed how pleasant the weather had become.",
+      "chunks": [
+        "As the afternoon progressed, everyone noticed how pleasant the weather had become."
+      ]
+    },
+    {
+      "id": "s-1-91",
+      "text": "Soft white clouds drifted slowly across the bright blue expanse above.",
+      "chunks": [
+        "Soft white clouds drifted slowly across the bright blue expanse above."
+      ]
+    },
+    {
+      "id": "s-1-92",
+      "text": "The temperature was mild, neither too hot nor too cold.",
+      "chunks": [
+        "The temperature was mild, neither too hot nor too cold."
+      ]
+    },
+    {
+      "id": "s-1-93",
+      "text": "People enjoyed sitting on park benches, reading favorite books, and watching dogs play fetch on the green grass.",
+      "chunks": [
+        "People enjoyed sitting on park benches, reading favorite books,",
+        "and watching dogs play fetch on the green grass."
+      ]
+    },
+    {
+      "id": "s-1-94",
+      "text": "Such simple moments bring true peace and happiness to everyday life.",
+      "chunks": [
+        "Such simple moments bring true peace and happiness to everyday life."
+      ]
+    },
+    {
+      "id": "s-1-95",
+      "text": "Good communication is built upon regular practice and patient repetition.",
+      "chunks": [
+        "Good communication is built upon regular practice and patient repetition."
+      ]
+    },
+    {
+      "id": "s-1-96",
+      "text": "When you hear a spoken sentence, try to picture the scene in your imagination.",
+      "chunks": [
+        "When you hear a spoken sentence, try to picture the scene in your imagination."
+      ]
+    },
+    {
+      "id": "s-1-97",
+      "text": "Notice the spelling of shorter words and the placement of punctuation marks like commas and periods.",
+      "chunks": [
+        "Notice the spelling of shorter words and the placement of punctuation marks like commas and",
+        "periods."
+      ]
+    },
+    {
+      "id": "s-1-98",
+      "text": "Over time, your fingers will type the correct letters automatically without hesitation.",
+      "chunks": [
+        "Over time, your fingers will type the correct letters automatically without hesitation."
+      ]
+    },
+    {
+      "id": "s-1-99",
+      "text": "Evening slowly approached as long shadows stretched across the sidewalks.",
+      "chunks": [
+        "Evening slowly approached as long shadows stretched across the sidewalks."
+      ]
+    },
+    {
+      "id": "s-1-100",
+      "text": "Streetlights flickered on one by one with a warm amber glow.",
+      "chunks": [
+        "Streetlights flickered on one by one with a warm amber glow."
+      ]
+    },
+    {
+      "id": "s-1-101",
+      "text": "Families returned to their homes to prepare dinner, share stories from the day, and relax together.",
+      "chunks": [
+        "Families returned to their homes to prepare dinner, share stories from the day,",
+        "and relax together."
+      ]
+    },
+    {
+      "id": "s-1-102",
+      "text": "A sense of gratitude filled the air as another productive day reached its peaceful conclusion.",
+      "chunks": [
+        "A sense of gratitude filled the air as another productive day reached its peaceful conclusion."
+      ]
+    },
+    {
+      "id": "s-1-103",
+      "text": "Reviewing what we have learned reinforces our memory and builds long-term fluency.",
+      "chunks": [
+        "Reviewing what we have learned reinforces our memory and builds long-term fluency."
+      ]
+    },
+    {
+      "id": "s-1-104",
+      "text": "Every word typed correctly is a milestone on the road to mastery.",
+      "chunks": [
+        "Every word typed correctly is a milestone on the road to mastery."
+      ]
+    },
+    {
+      "id": "s-1-105",
+      "text": "Tomorrow we will explore even more engaging stories and expand our English vocabulary further.",
+      "chunks": [
+        "Tomorrow we will explore even more engaging stories and expand our English vocabulary further."
+      ]
+    },
+    {
+      "id": "s-1-106",
+      "text": "In a friendly conversation, people often ask simple questions to learn more about each other.",
+      "chunks": [
+        "In a friendly conversation, people often ask simple questions to learn more about each other."
+      ]
+    },
+    {
+      "id": "s-1-107",
+      "text": "'How was your day at the library?' asked Sarah with a warm smile.",
+      "chunks": [
+        "'How was your day at the library?' asked Sarah with a warm smile."
+      ]
+    },
+    {
+      "id": "s-1-108",
+      "text": "'It was wonderful because I found three interesting books to read,' replied David.",
+      "chunks": [
+        "'It was wonderful because I found three interesting books to read,' replied David."
+      ]
+    },
+    {
+      "id": "s-1-109",
+      "text": "They sat on the porch together and talked about their favorite subjects.",
+      "chunks": [
+        "They sat on the porch together and talked about their favorite subjects."
+      ]
+    },
+    {
+      "id": "s-1-110",
+      "text": "David explained how much he enjoyed reading about nature and wildlife.",
+      "chunks": [
+        "David explained how much he enjoyed reading about nature and wildlife."
+      ]
+    },
+    {
+      "id": "s-1-111",
+      "text": "Sarah shared her passion for drawing landscapes and painting watercolors.",
+      "chunks": [
+        "Sarah shared her passion for drawing landscapes and painting watercolors."
+      ]
+    },
+    {
+      "id": "s-1-112",
+      "text": "Sharing our interests with good friends makes our relationships stronger.",
+      "chunks": [
+        "Sharing our interests with good friends makes our relationships stronger."
+      ]
+    },
+    {
+      "id": "s-1-113",
+      "text": "Listening attentively shows respect and genuine care for the speaker.",
+      "chunks": [
+        "Listening attentively shows respect and genuine care for the speaker."
+      ]
+    },
+    {
+      "id": "s-1-114",
+      "text": "When someone speaks, we should focus completely on their words and tone of voice.",
+      "chunks": [
+        "When someone speaks, we should focus completely on their words and tone of voice."
+      ]
+    },
+    {
+      "id": "s-1-115",
+      "text": "Effective listening is just as important as speaking clearly.",
+      "chunks": [
+        "Effective listening is just as important as speaking clearly."
+      ]
+    },
+    {
+      "id": "s-1-116",
+      "text": "In our dictation exercises, listening carefully trains the ear to catch every subtle vowel sound.",
+      "chunks": [
+        "In our dictation exercises, listening carefully trains the ear to catch every subtle vowel sound."
+      ]
+    },
+    {
+      "id": "s-1-117",
+      "text": "Consistent daily practice produces steady improvement that lasts a lifetime.",
+      "chunks": [
+        "Consistent daily practice produces steady improvement that lasts a lifetime."
+      ]
+    }
+  ]
+}

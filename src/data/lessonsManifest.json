@@ -1,0 +1,1002 @@
+[
+  {
+    "id": 1,
+    "title": "Sam and His Cat",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "A simple story about Sam, his fat cat, and fun on a mat.",
+    "wordCount": 1030,
+    "sentenceCount": 117,
+    "fileName": "lesson-001.json"
+  },
+  {
+    "id": 2,
+    "title": "The Red Pen and the Big Box",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Bob has a red pen, a big box, and a wet dog.",
+    "wordCount": 1040,
+    "sentenceCount": 86,
+    "fileName": "lesson-002.json"
+  },
+  {
+    "id": 3,
+    "title": "Sun and Fun at the Park",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "The hot sun is up. We run, sit on the rug, and sip from a cup.",
+    "wordCount": 1032,
+    "sentenceCount": 86,
+    "fileName": "lesson-003.json"
+  },
+  {
+    "id": 4,
+    "title": "Bob and His Dog Max",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Max is a big dog. He can run, sit, and beg for a bun.",
+    "wordCount": 1035,
+    "sentenceCount": 87,
+    "fileName": "lesson-004.json"
+  },
+  {
+    "id": 5,
+    "title": "A Cup of Hot Tea on the Bed",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Dad has a cup of hot tea in bed while the cat sits on his lap.",
+    "wordCount": 1030,
+    "sentenceCount": 85,
+    "fileName": "lesson-005.json"
+  },
+  {
+    "id": 6,
+    "title": "The Little Red Hen and the Pig",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "A hen, a pig, and a cow work and play on the farm.",
+    "wordCount": 1038,
+    "sentenceCount": 85,
+    "fileName": "lesson-006.json"
+  },
+  {
+    "id": 7,
+    "title": "My Family and Our Little Home",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Mom, Dad, Ben, and Ann live in a cozy home with a small dog.",
+    "wordCount": 1032,
+    "sentenceCount": 85,
+    "fileName": "lesson-007.json"
+  },
+  {
+    "id": 8,
+    "title": "A Sunny Day on the Green Farm",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "The sheep eat green grass and the ducks swim in the cool pond.",
+    "wordCount": 1038,
+    "sentenceCount": 85,
+    "fileName": "lesson-008.json"
+  },
+  {
+    "id": 9,
+    "title": "We Can Run, We Can Jump",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Children play active games outside on a warm sunny morning.",
+    "wordCount": 1028,
+    "sentenceCount": 85,
+    "fileName": "lesson-009.json"
+  },
+  {
+    "id": 10,
+    "title": "The Cat, the Rat, and the Bat",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "A humorous fable about three little animal friends in a barn.",
+    "wordCount": 1036,
+    "sentenceCount": 85,
+    "fileName": "lesson-010.json"
+  },
+  {
+    "id": 11,
+    "title": "A Trip to the Little Food Shop",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Buying fresh red apples, milk, bread, and sweet fruit at the store.",
+    "wordCount": 1037,
+    "sentenceCount": 85,
+    "fileName": "lesson-011.json"
+  },
+  {
+    "id": 12,
+    "title": "Colors in My Wonderful World",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Looking at the blue sky, yellow sun, green trees, and colorful flowers.",
+    "wordCount": 1038,
+    "sentenceCount": 86,
+    "fileName": "lesson-012.json"
+  },
+  {
+    "id": 13,
+    "title": "Creatures in the Big Blue Sea",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Fish, crabs, and dolphins swimming together under the warm waves.",
+    "wordCount": 1028,
+    "sentenceCount": 85,
+    "fileName": "lesson-013.json"
+  },
+  {
+    "id": 14,
+    "title": "Tim and His Bright Red Bike",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Tim learns how to ride his brand new bicycle safely down the street.",
+    "wordCount": 1031,
+    "sentenceCount": 85,
+    "fileName": "lesson-014.json"
+  },
+  {
+    "id": 15,
+    "title": "Breakfast with Mom and Dad",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Pancakes, warm milk, and toast around the family kitchen table.",
+    "wordCount": 1036,
+    "sentenceCount": 86,
+    "fileName": "lesson-015.json"
+  },
+  {
+    "id": 16,
+    "title": "The Lost Cap in the Garden",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Emma searches for her favorite yellow cap behind bushes and flowers.",
+    "wordCount": 1029,
+    "sentenceCount": 85,
+    "fileName": "lesson-016.json"
+  },
+  {
+    "id": 17,
+    "title": "Little Green Frogs by the Pond",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Frogs jumping on water lily pads on a cool peaceful afternoon.",
+    "wordCount": 1029,
+    "sentenceCount": 85,
+    "fileName": "lesson-017.json"
+  },
+  {
+    "id": 18,
+    "title": "A Rainy Morning at Home",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Watching raindrops on the window while drawing pictures indoors.",
+    "wordCount": 1035,
+    "sentenceCount": 86,
+    "fileName": "lesson-018.json"
+  },
+  {
+    "id": 19,
+    "title": "Sam Goes to School Today",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Pencils, notebooks, friendly teachers, and fun books in the classroom.",
+    "wordCount": 1036,
+    "sentenceCount": 86,
+    "fileName": "lesson-019.json"
+  },
+  {
+    "id": 20,
+    "title": "The Singing Bird in the Tall Tree",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "A cheerful bluebird sings each morning from the oak branch.",
+    "wordCount": 1035,
+    "sentenceCount": 85,
+    "fileName": "lesson-020.json"
+  },
+  {
+    "id": 21,
+    "title": "Building Castles with Sand and Shells",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "A sunny afternoon gathering seashells and digging sand at the beach.",
+    "wordCount": 1029,
+    "sentenceCount": 85,
+    "fileName": "lesson-021.json"
+  },
+  {
+    "id": 22,
+    "title": "Helping Mom Bake Bread in the Kitchen",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Measuring flour, kneading soft dough, and smelling warm fresh bread.",
+    "wordCount": 1035,
+    "sentenceCount": 85,
+    "fileName": "lesson-022.json"
+  },
+  {
+    "id": 23,
+    "title": "The Playful Little Brown Puppy",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "A puppy chases tennis balls across the soft green backyard grass.",
+    "wordCount": 1037,
+    "sentenceCount": 86,
+    "fileName": "lesson-023.json"
+  },
+  {
+    "id": 24,
+    "title": "A Quiet Walk Through the Pine Woods",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Crunching dry leaves, discovering pinecones, and spotting chipmunks.",
+    "wordCount": 1033,
+    "sentenceCount": 85,
+    "fileName": "lesson-024.json"
+  },
+  {
+    "id": 25,
+    "title": "Ben and His Wooden Toy Box",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Sorting wooden blocks, toy cars, and colorful puzzles on the carpet.",
+    "wordCount": 1029,
+    "sentenceCount": 85,
+    "fileName": "lesson-025.json"
+  },
+  {
+    "id": 26,
+    "title": "Visiting the Busy Town Market",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Stalls with fresh vegetables, homemade jams, and fragrant flowers.",
+    "wordCount": 1035,
+    "sentenceCount": 86,
+    "fileName": "lesson-026.json"
+  },
+  {
+    "id": 27,
+    "title": "The Night Sky and the Silver Moon",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Stargazing from the balcony wrapped in a warm wool blanket.",
+    "wordCount": 1035,
+    "sentenceCount": 85,
+    "fileName": "lesson-027.json"
+  },
+  {
+    "id": 28,
+    "title": "A Weekend Visit from Uncle Jack",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Telling stories, playing board games, and drinking hot cocoa.",
+    "wordCount": 1027,
+    "sentenceCount": 85,
+    "fileName": "lesson-028.json"
+  },
+  {
+    "id": 29,
+    "title": "The Friendly White Duck on the Lake",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Feeding breadcrumbs to ducks by the wooden park bridge.",
+    "wordCount": 1034,
+    "sentenceCount": 85,
+    "fileName": "lesson-029.json"
+  },
+  {
+    "id": 30,
+    "title": "A Surprise Birthday Gift for Lily",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Balloons, a chocolate cake, and a wrapped surprise from classmates.",
+    "wordCount": 1028,
+    "sentenceCount": 85,
+    "fileName": "lesson-030.json"
+  },
+  {
+    "id": 31,
+    "title": "The Old Clock on the Living Room Wall",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Learning how to tell time as the grandfather clock ticks steadily.",
+    "wordCount": 1031,
+    "sentenceCount": 84,
+    "fileName": "lesson-031.json"
+  },
+  {
+    "id": 32,
+    "title": "A Crisp Snowy Day in Winter",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Building a smiling snowman with a carrot nose and charcoal eyes.",
+    "wordCount": 1029,
+    "sentenceCount": 85,
+    "fileName": "lesson-032.json"
+  },
+  {
+    "id": 33,
+    "title": "Cleaning and Organizing the Playroom",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Putting books on shelves and toys into baskets together.",
+    "wordCount": 1035,
+    "sentenceCount": 86,
+    "fileName": "lesson-033.json"
+  },
+  {
+    "id": 34,
+    "title": "Planting Vegetable Seeds in the Spring",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Digging rich brown soil, watering tiny sprouts, and watching them grow.",
+    "wordCount": 1029,
+    "sentenceCount": 85,
+    "fileName": "lesson-034.json"
+  },
+  {
+    "id": 35,
+    "title": "Our First Big Summer Picnic in the Park",
+    "level": 1,
+    "levelName": "Beginner",
+    "description": "Sandwiches, chilled lemonade, frisbee games, and laughter under the trees.",
+    "wordCount": 1030,
+    "sentenceCount": 84,
+    "fileName": "lesson-035.json"
+  },
+  {
+    "id": 36,
+    "title": "Moving into the University Dormitory",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Unpacking cardboard boxes, meeting an unfamiliar roommate, and arranging study desks.",
+    "wordCount": 1035,
+    "sentenceCount": 76,
+    "fileName": "lesson-036.json"
+  },
+  {
+    "id": 37,
+    "title": "The First Day of University Lectures",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Finding lecture auditoriums, understanding syllabus requirements, and making course notes.",
+    "wordCount": 1033,
+    "sentenceCount": 75,
+    "fileName": "lesson-037.json"
+  },
+  {
+    "id": 38,
+    "title": "Collaborative Study at the Campus Library",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Reviewing lecture notes with classmates on a quiet Tuesday afternoon.",
+    "wordCount": 1033,
+    "sentenceCount": 75,
+    "fileName": "lesson-038.json"
+  },
+  {
+    "id": 39,
+    "title": "Working a Weekend Shift at the Coffee Shop",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Steaming whole milk, greeting early morning commuters, and handling customer orders.",
+    "wordCount": 1033,
+    "sentenceCount": 73,
+    "fileName": "lesson-039.json"
+  },
+  {
+    "id": 40,
+    "title": "Cooking a Shared Dinner with Roommates",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Negotiating grocery expenses, slicing fresh vegetables, and sharing dinner stories.",
+    "wordCount": 1033,
+    "sentenceCount": 75,
+    "fileName": "lesson-040.json"
+  },
+  {
+    "id": 41,
+    "title": "Preparing Thoroughly for Midterm Examinations",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Creating comprehensive study schedules, using flashcards, and managing academic stress.",
+    "wordCount": 1034,
+    "sentenceCount": 76,
+    "fileName": "lesson-041.json"
+  },
+  {
+    "id": 42,
+    "title": "A Scenic Weekend Train Journey Across the Countryside",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Watching rolling hills through the compartment window while sipping warm tea.",
+    "wordCount": 1033,
+    "sentenceCount": 73,
+    "fileName": "lesson-042.json"
+  },
+  {
+    "id": 43,
+    "title": "Exploring Contemporary Masterpieces at the City Museum",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Walking through quiet gallery rooms admiring oil paintings and bronze sculptures.",
+    "wordCount": 1033,
+    "sentenceCount": 74,
+    "fileName": "lesson-043.json"
+  },
+  {
+    "id": 44,
+    "title": "Handling an Unexpected Bicycle Flat Tire",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Using portable tire levers, locating a puncture, and repairing the inner tube calmly.",
+    "wordCount": 1036,
+    "sentenceCount": 75,
+    "fileName": "lesson-044.json"
+  },
+  {
+    "id": 45,
+    "title": "Saturday Morning at the Bustling Farmers Market",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Selecting ripe organic strawberries, artisan sourdough bread, and local lavender honey.",
+    "wordCount": 1033,
+    "sentenceCount": 74,
+    "fileName": "lesson-045.json"
+  },
+  {
+    "id": 46,
+    "title": "Establishing a Consistent Morning Jogging Routine",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Lacing running shoes at sunrise, maintaining pacing, and tracking cardiovascular progress.",
+    "wordCount": 1034,
+    "sentenceCount": 75,
+    "fileName": "lesson-046.json"
+  },
+  {
+    "id": 47,
+    "title": "Planning a Weekend Camping Expedition with Friends",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Checking waterproof tents, sleeping bags, portable cooking stoves, and trail maps.",
+    "wordCount": 1033,
+    "sentenceCount": 74,
+    "fileName": "lesson-047.json"
+  },
+  {
+    "id": 48,
+    "title": "Adopting an Abandoned Rescue Cat from the Shelter",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Completing adoption paperwork, preparing scratching posts, and earning feline trust.",
+    "wordCount": 1032,
+    "sentenceCount": 73,
+    "fileName": "lesson-048.json"
+  },
+  {
+    "id": 49,
+    "title": "Managing Personal Monthly Living Expenses and Budgets",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Tracking utility bills, grocery receipts, discretionary spending, and emergency savings.",
+    "wordCount": 1032,
+    "sentenceCount": 74,
+    "fileName": "lesson-049.json"
+  },
+  {
+    "id": 50,
+    "title": "Overcoming Stage Fright During Class Presentations",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Practicing vocal projection, breathing exercises, and maintaining confident eye contact.",
+    "wordCount": 1033,
+    "sentenceCount": 75,
+    "fileName": "lesson-050.json"
+  },
+  {
+    "id": 51,
+    "title": "A Peaceful Afternoon in the Local Botanical Conservatory",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Observing tropical orchid species, carnivorous plants, and shaded bamboo walkways.",
+    "wordCount": 1032,
+    "sentenceCount": 73,
+    "fileName": "lesson-051.json"
+  },
+  {
+    "id": 52,
+    "title": "Diagnosing and Repairing an Overheating Laptop",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Backing up essential data, dusting cooling fans, and applying fresh thermal paste.",
+    "wordCount": 1035,
+    "sentenceCount": 75,
+    "fileName": "lesson-052.json"
+  },
+  {
+    "id": 53,
+    "title": "Volunteering on Saturdays at the Regional Animal Sanctuary",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Grooming rescued horses, feeding baby goats, and rebuilding wooden boundary fences.",
+    "wordCount": 1033,
+    "sentenceCount": 73,
+    "fileName": "lesson-053.json"
+  },
+  {
+    "id": 54,
+    "title": "Mastering the Traditional Technique of Homemade Pasta",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Kneading semolina dough, rolling thin sheets, and simmering aromatic tomato sauce.",
+    "wordCount": 1033,
+    "sentenceCount": 74,
+    "fileName": "lesson-054.json"
+  },
+  {
+    "id": 55,
+    "title": "Recovering a Misplaced Backpack at the Central Station",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Filing lost property reports, identifying personal belongings, and expressing relief.",
+    "wordCount": 1032,
+    "sentenceCount": 73,
+    "fileName": "lesson-055.json"
+  },
+  {
+    "id": 56,
+    "title": "Navigating a Competitive Employment Interview",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Answering situational behavioral questions, articulating past experience, and sending thank-you notes.",
+    "wordCount": 1035,
+    "sentenceCount": 76,
+    "fileName": "lesson-056.json"
+  },
+  {
+    "id": 57,
+    "title": "Celebrating a Hard-Earned Workplace Promotion",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Gathering for celebratory dinner, thanking supportive mentors, and setting ambitious goals.",
+    "wordCount": 1035,
+    "sentenceCount": 76,
+    "fileName": "lesson-057.json"
+  },
+  {
+    "id": 58,
+    "title": "Navigating the Underground Subway System in an Unfamiliar Metropolis",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Deciphering colorful transit maps, buying contactless tickets, and changing transfer lines.",
+    "wordCount": 1026,
+    "sentenceCount": 72,
+    "fileName": "lesson-058.json"
+  },
+  {
+    "id": 59,
+    "title": "Assembling a Solid Pine Bookshelf from Raw Timber",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Measuring shelving distances, drilling pilot holes, sanding rough edges, and applying varnish.",
+    "wordCount": 1034,
+    "sentenceCount": 73,
+    "fileName": "lesson-059.json"
+  },
+  {
+    "id": 60,
+    "title": "Strategic Meal Planning and Balanced Nutrition for Busy Weeks",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Batch cooking brown rice, roasting seasonal root vegetables, and storing reusable glass containers.",
+    "wordCount": 1028,
+    "sentenceCount": 72,
+    "fileName": "lesson-060.json"
+  },
+  {
+    "id": 61,
+    "title": "A Fascinating Conversation with an International Exchange Student",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Comparing cultural traditions, linguistic idioms, holiday customs, and mutual perspectives.",
+    "wordCount": 1032,
+    "sentenceCount": 73,
+    "fileName": "lesson-061.json"
+  },
+  {
+    "id": 62,
+    "title": "Reflecting on an Intensive Summer Professional Internship",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Balancing supervisor deadlines, acquiring corporate software skills, and networking with colleagues.",
+    "wordCount": 1033,
+    "sentenceCount": 74,
+    "fileName": "lesson-062.json"
+  },
+  {
+    "id": 63,
+    "title": "Navigating Transportation Delays During Heavy Seasonal Downpours",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Sharing oversized umbrellas, waiting out thunderstorms in dry cafes, and remaining patient.",
+    "wordCount": 1034,
+    "sentenceCount": 74,
+    "fileName": "lesson-063.json"
+  },
+  {
+    "id": 64,
+    "title": "Cultivating Everyday Mindfulness Through Focused Breathing",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Sitting quietly for ten minutes each morning observing internal sensations without judgment.",
+    "wordCount": 1035,
+    "sentenceCount": 75,
+    "fileName": "lesson-064.json"
+  },
+  {
+    "id": 65,
+    "title": "Coordinating a Neighborhood Environmental Cleanup Initiative",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Distributing heavy duty trash bags, separating recyclables, and revitalizing community parklands.",
+    "wordCount": 1034,
+    "sentenceCount": 75,
+    "fileName": "lesson-065.json"
+  },
+  {
+    "id": 66,
+    "title": "Resolving an Online Retail Order Discrepancy Politely",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Contacting customer support, providing tracking invoices, and arranging an exchange courteously.",
+    "wordCount": 1033,
+    "sentenceCount": 74,
+    "fileName": "lesson-066.json"
+  },
+  {
+    "id": 67,
+    "title": "Attending an Intimate Acoustic Performance in an Historic Theater",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Listening to fingerstyle acoustic guitar melodies resonating under wooden acoustic arches.",
+    "wordCount": 1026,
+    "sentenceCount": 72,
+    "fileName": "lesson-067.json"
+  },
+  {
+    "id": 68,
+    "title": "Uncovering Forgotten Local History in the Municipal Archives",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Browsing century-old regional newspapers, sepia photographs, and historical cartography maps.",
+    "wordCount": 1032,
+    "sentenceCount": 73,
+    "fileName": "lesson-068.json"
+  },
+  {
+    "id": 69,
+    "title": "A Spontaneous Scenic Road Trip Along the Rugged Coastline",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Navigating ocean cliff bends, stopping at secluded pebble beaches, and watching sunsets.",
+    "wordCount": 1027,
+    "sentenceCount": 72,
+    "fileName": "lesson-069.json"
+  },
+  {
+    "id": 70,
+    "title": "Formulating Meaningful and Attainable New Year Resolutions",
+    "level": 2,
+    "levelName": "Intermediate",
+    "description": "Replacing vague ambitions with measurable milestones, habit tracking, and personal reflection.",
+    "wordCount": 1033,
+    "sentenceCount": 74,
+    "fileName": "lesson-070.json"
+  },
+  {
+    "id": 71,
+    "title": "The Nuances of High-Stakes Workplace Negotiation",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Principles of interest-based bargaining, active listening, and finding mutually advantageous compromise.",
+    "wordCount": 1027,
+    "sentenceCount": 65,
+    "fileName": "lesson-071.json"
+  },
+  {
+    "id": 72,
+    "title": "The Cognitive Architecture of Habit Formation and Behavioral Change",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Neurobiological habit loops, cue identification, craving modulation, and incremental environmental restructuring.",
+    "wordCount": 1033,
+    "sentenceCount": 63,
+    "fileName": "lesson-072.json"
+  },
+  {
+    "id": 73,
+    "title": "The Transformative Trajectory of Modern Artificial Intelligence",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Exploring neural networks, ethical governance frameworks, interpretability challenges, and technological augmentation.",
+    "wordCount": 1038,
+    "sentenceCount": 65,
+    "fileName": "lesson-073.json"
+  },
+  {
+    "id": 74,
+    "title": "Biophilic Architecture and Sustainable Urban Ecosystems",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Integrating passive ventilation, living vertical gardens, and carbon-sequestering mass timber into urban design.",
+    "wordCount": 1029,
+    "sentenceCount": 65,
+    "fileName": "lesson-074.json"
+  },
+  {
+    "id": 75,
+    "title": "Emotional Intelligence in High-Performance Collaborative Teams",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Psychological safety, empathic attunement, conflict de-escalation, and resonant leadership in complex environments.",
+    "wordCount": 1028,
+    "sentenceCount": 65,
+    "fileName": "lesson-075.json"
+  },
+  {
+    "id": 76,
+    "title": "The Alchemy of Literary Fiction and Compelling Character Arc",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Exploring unreliable narration, dramatic pacing, subtextual thematic resonance, and atmospheric prose.",
+    "wordCount": 1033,
+    "sentenceCount": 63,
+    "fileName": "lesson-076.json"
+  },
+  {
+    "id": 77,
+    "title": "Deconstructing Cognitive Biases in Critical Decision-Making Frameworks",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Analyzing confirmation heuristics, framing effects, sunk-cost fallacies, and Bayesian updating methodologies.",
+    "wordCount": 1038,
+    "sentenceCount": 65,
+    "fileName": "lesson-077.json"
+  },
+  {
+    "id": 78,
+    "title": "The Neurobiology of Deep Sleep and Memory Consolidation",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Slow-wave oscillation patterns, synaptic pruning mechanisms, sleep hygiene, and cognitive rejuvenation.",
+    "wordCount": 1036,
+    "sentenceCount": 64,
+    "fileName": "lesson-078.json"
+  },
+  {
+    "id": 79,
+    "title": "Climate Resilience and Global Energy Transition Paradigms",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Grid-scale battery storage, decentralized microgrids, green hydrogen production, and geopolitical adaptation.",
+    "wordCount": 1038,
+    "sentenceCount": 65,
+    "fileName": "lesson-079.json"
+  },
+  {
+    "id": 80,
+    "title": "The Psychoacoustics of Musical Perception and Emotional Resonance",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Harmonic overtone series, auditory cortex processing, rhythmic synchronization, and emotional catharsis.",
+    "wordCount": 1036,
+    "sentenceCount": 64,
+    "fileName": "lesson-080.json"
+  },
+  {
+    "id": 81,
+    "title": "The Sociological Evolution of Remote Work and Digital Nomadism",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Rethinking asynchronous collaboration, blurred boundaries between domesticity and profession, and cross-border identity.",
+    "wordCount": 1034,
+    "sentenceCount": 63,
+    "fileName": "lesson-081.json"
+  },
+  {
+    "id": 82,
+    "title": "The Philosophy of Chronos and Kairos in Contemporary Society",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Contrasting rigid temporal measurements with qualitative moments of spontaneous presence and deep engagement.",
+    "wordCount": 1035,
+    "sentenceCount": 63,
+    "fileName": "lesson-082.json"
+  },
+  {
+    "id": 83,
+    "title": "Biodiversity Conservation in Fragile Deep-Sea Abyssal Plains",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Hydrothermal vent extremophiles, manganese nodule extraction controversies, and oceanic stewardship protocols.",
+    "wordCount": 1038,
+    "sentenceCount": 65,
+    "fileName": "lesson-083.json"
+  },
+  {
+    "id": 84,
+    "title": "Systemic Dynamics of Interpersonal Conflict Resolution",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Nonviolent communication frameworks, emotional self-regulation, reframing grievances, and restoring fractured trust.",
+    "wordCount": 1027,
+    "sentenceCount": 65,
+    "fileName": "lesson-084.json"
+  },
+  {
+    "id": 85,
+    "title": "Biotechnological Innovations in CRISPR Gene Editing Therapeutics",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Precision genomic medicine, off-target mitigation strategies, bioethical boundaries, and viral delivery vectors.",
+    "wordCount": 1039,
+    "sentenceCount": 65,
+    "fileName": "lesson-085.json"
+  },
+  {
+    "id": 86,
+    "title": "Epistemology, Intellectual Humility, and Rigorous Scientific Skepticism",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Distinguishing empirical falsifiability from ideological dogmatism through systematic inquiry and Bayesian reasoning.",
+    "wordCount": 1039,
+    "sentenceCount": 65,
+    "fileName": "lesson-086.json"
+  },
+  {
+    "id": 87,
+    "title": "Preserving Intangible Cultural Heritage in an Era of Rapid Digitalization",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Archiving oral histories, endangered dialect phonetics, indigenous ecological knowledge, and virtual reality curation.",
+    "wordCount": 1034,
+    "sentenceCount": 62,
+    "fileName": "lesson-087.json"
+  },
+  {
+    "id": 88,
+    "title": "Astrophysical Exploration and the Characterization of Exoplanetary Atmospheres",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Transit spectroscopy, biosignature detection parameters, habitability indices, and stellar nucleosynthesis.",
+    "wordCount": 1035,
+    "sentenceCount": 64,
+    "fileName": "lesson-088.json"
+  },
+  {
+    "id": 89,
+    "title": "Circular Economic Models and Industrial Ecology Closed Loops",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Product life-cycle analysis, biomimetic design principles, post-consumer material reclamation, and extended producer responsibility.",
+    "wordCount": 1038,
+    "sentenceCount": 64,
+    "fileName": "lesson-089.json"
+  },
+  {
+    "id": 90,
+    "title": "Neuroplasticity and the Science of Rapid Adult Skill Acquisition",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Deliberate practice regimes, myelin sheath consolidation, interleaving practice sessions, and cognitive cognitive reframing.",
+    "wordCount": 1035,
+    "sentenceCount": 63,
+    "fileName": "lesson-090.json"
+  },
+  {
+    "id": 91,
+    "title": "Architectural Engineering Feats of Classical Mediterranean Civilizations",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Hydraulic aqueduct gradients, pozzolanic volcanic ash concrete, seismic damping, and monumental civic spaces.",
+    "wordCount": 1040,
+    "sentenceCount": 65,
+    "fileName": "lesson-091.json"
+  },
+  {
+    "id": 92,
+    "title": "Algorithmic Ethics and Alignment Protocols in Autonomous Decision Systems",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Algorithmic bias mitigation, explainable artificial intelligence, trolley problem paradoxes, and value alignment verification.",
+    "wordCount": 1035,
+    "sentenceCount": 63,
+    "fileName": "lesson-092.json"
+  },
+  {
+    "id": 93,
+    "title": "The Sociology of Urban Third Places and Communal Belonging",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Neighborhood cafes, public reading rooms, park pavilions, and informal civil infrastructure fostering social capital.",
+    "wordCount": 1036,
+    "sentenceCount": 63,
+    "fileName": "lesson-093.json"
+  },
+  {
+    "id": 94,
+    "title": "Soil Microbiome Dynamics, Mycorrhizal Networks, and Regenerative Agriculture",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Carbon sequestration in humus layers, fungal hyphae communication channels, and chemical-free soil restoration.",
+    "wordCount": 1038,
+    "sentenceCount": 64,
+    "fileName": "lesson-094.json"
+  },
+  {
+    "id": 95,
+    "title": "The Psychophysiology of Flow State and Sustained Attentional Focus",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Transient hypofrontality, dopamine-norepinephrine balance, deep work immersion, and minimizing distraction friction.",
+    "wordCount": 1033,
+    "sentenceCount": 63,
+    "fileName": "lesson-095.json"
+  },
+  {
+    "id": 96,
+    "title": "The Polymathic Mindset: Interdisciplinary Synthesis in the Modern Era",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Bridging scientific empiricism and artistic intuition to generate paradigm-shifting solutions for wicked problems.",
+    "wordCount": 1035,
+    "sentenceCount": 63,
+    "fileName": "lesson-096.json"
+  },
+  {
+    "id": 97,
+    "title": "Behavioral Economics, Choice Architecture, and Cognitive Nudges",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Default option biases, hyperbolic discounting, asymmetric paternalism, and policy interventions promoting social welfare.",
+    "wordCount": 1040,
+    "sentenceCount": 65,
+    "fileName": "lesson-097.json"
+  },
+  {
+    "id": 98,
+    "title": "The Diachronic Evolution of Human Linguistic Systems and Dialectology",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Grammaticalization pathways, phonetic vowel shifts, proto-language reconstruction, and sociolinguistic marker fluidity.",
+    "wordCount": 1033,
+    "sentenceCount": 63,
+    "fileName": "lesson-098.json"
+  },
+  {
+    "id": 99,
+    "title": "Consciousness, the Hard Problem of Qualia, and Philosophy of Mind",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Investigating phenomenal subjective experience, functionalist theories, panpsychist critiques, and neurological correlates of awareness.",
+    "wordCount": 1034,
+    "sentenceCount": 62,
+    "fileName": "lesson-099.json"
+  },
+  {
+    "id": 100,
+    "title": "Reflections on Lifelong Mastery, Intellectual Humility, and Relentless Curiosity",
+    "level": 3,
+    "levelName": "Advanced",
+    "description": "Cultivating disciplined discernment, savoring the richness of spoken expression, and committing to continuous intellectual growth.",
+    "wordCount": 1037,
+    "sentenceCount": 63,
+    "fileName": "lesson-100.json"
+  }
+]
