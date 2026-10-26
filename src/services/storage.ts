@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 export interface LastActiveState {
   lessonId: number;
   sentenceIndex: number;
+  activeChunkIndex?: number;
   typedText?: string;
 }
 
@@ -60,10 +61,64 @@ export function loadLessonProgress(lessonId: number): LessonProgress | null {
   return all[lessonId] || null;
 }
 
+export function saveLessonTypedStory(lessonId: number, typedText: string, activeChunkIndex: number): void {
+  try {
+    localStorage.setItem(`dictation_story_${lessonId}`, JSON.stringify({ typedText, activeChunkIndex }));
+    const all = loadAllProgress();
+    all[lessonId] = {
+      ...(all[lessonId] || {
+        lessonId,
+        currentSentenceIndex: 0,
+        completed: false,
+        totalAttempts: 1,
+        totalCorrectWords: 0,
+        totalIncorrectWords: 0,
+        timeSpentSeconds: 0,
+        misspelledWordCounts: {}
+      }),
+      typedText,
+      activeChunkIndex
+    };
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
+
+    // Sync to server
+    fetch('/api/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(all[lessonId]),
+      signal: AbortSignal.timeout(800)
+    }).catch(() => {});
+  } catch {}
+}
+
+export function loadLessonTypedStory(lessonId: number): { typedText: string; activeChunkIndex: number } | null {
+  try {
+    const raw = localStorage.getItem(`dictation_story_${lessonId}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed.typedText === 'string') {
+        return parsed;
+      }
+    }
+    const all = loadAllProgress();
+    if (all[lessonId] && typeof all[lessonId].typedText === 'string') {
+      return {
+        typedText: all[lessonId].typedText || '',
+        activeChunkIndex: all[lessonId].activeChunkIndex || 0
+      };
+    }
+  } catch {}
+  return null;
+}
+
 export function resetAllProgress(): void {
   try {
     localStorage.removeItem(PROGRESS_KEY);
     localStorage.removeItem(LAST_STATE_KEY);
+    // Clear lesson stories from localStorage
+    for (let i = 1; i <= 100; i++) {
+      localStorage.removeItem(`dictation_story_${i}`);
+    }
 
     // Sync with backend server
     fetch('/api/reset', { method: 'POST', signal: AbortSignal.timeout(800) }).catch(() => {});

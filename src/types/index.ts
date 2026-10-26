@@ -40,6 +40,8 @@ export interface SentenceEvaluation {
 export interface LessonProgress {
   lessonId: number;
   currentSentenceIndex: number;
+  activeChunkIndex?: number;
+  typedText?: string;
   completed: boolean;
   completedAt?: string;
   bestAccuracy?: number;

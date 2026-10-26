@@ -53,6 +53,16 @@ describe('Backend Server API Endpoints', () => {
       res.json({ success: true });
     });
 
+    app.get('/api/last-active', (req, res) => {
+      const data = fs.existsSync(LAST_ACTIVE_FILE) ? JSON.parse(fs.readFileSync(LAST_ACTIVE_FILE, 'utf-8')) : { lessonId: 1, sentenceIndex: 0, activeChunkIndex: 0, typedText: '' };
+      res.json(data);
+    });
+
+    app.post('/api/last-active', (req, res) => {
+      fs.writeFileSync(LAST_ACTIVE_FILE, JSON.stringify(req.body, null, 2));
+      res.json({ success: true, lastActive: req.body });
+    });
+
     await new Promise<void>((resolve) => {
       server = app.listen(PORT, () => resolve());
     });
@@ -100,5 +110,25 @@ describe('Backend Server API Endpoints', () => {
     const data = await getRes.json();
     expect(data.wordsPerChunk).toBe(3);
     expect(data.repeatCount).toBe(2);
+  });
+
+  it('saves and returns last-active state including typed text on /api/last-active', async () => {
+    const postRes = await fetch(`http://localhost:${PORT}/api/last-active`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        lessonId: 3, 
+        sentenceIndex: 2, 
+        activeChunkIndex: 1, 
+        typedText: 'I see a cat.' 
+      })
+    });
+    expect(postRes.ok).toBe(true);
+
+    const getRes = await fetch(`http://localhost:${PORT}/api/last-active`);
+    const data = await getRes.json();
+    expect(data.lessonId).toBe(3);
+    expect(data.typedText).toBe('I see a cat.');
+    expect(data.activeChunkIndex).toBe(1);
   });
 });

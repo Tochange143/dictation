@@ -11,6 +11,8 @@ import {
   saveSettings, 
   loadLastActive, 
   saveLastActive,
+  saveLessonTypedStory,
+  loadLessonTypedStory,
   resetAllProgress,
   syncFromServer
 } from './services/storage';
@@ -23,9 +25,30 @@ import { LessonSummaryModal } from './components/LessonSummaryModal';
 import { ShortcutsModal } from './components/ShortcutsModal';
 import { SettingsModal } from './components/SettingsModal';
 
+function getLessonIdFromUrl(): number | null {
+  if (typeof window === 'undefined') return null;
+  const match = window.location.pathname.match(/\/lesson\/(\d+)/i);
+  if (match && match[1]) {
+    const id = parseInt(match[1], 10);
+    if (id >= 1 && id <= 100) return id;
+  }
+  return null;
+}
+
 export const App: React.FC = () => {
+  // Read lesson from URL (e.g. http://localhost:5173/lesson/1) or fallback to last active
+  const initialLessonId = useMemo(() => {
+    const urlId = getLessonIdFromUrl();
+    if (urlId) return urlId;
+    const lastActive = loadLastActive();
+    if (lastActive && lastActive.lessonId >= 1 && lastActive.lessonId <= 100) {
+      return lastActive.lessonId;
+    }
+    return 1;
+  }, []);
+
   // Application State
-  const [currentLessonId, setCurrentLessonId] = useState<number>(1);
+  const [currentLessonId, setCurrentLessonId] = useState<number>(initialLessonId);
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [isLoadingLesson, setIsLoadingLesson] = useState<boolean>(true);
 
@@ -73,11 +96,34 @@ export const App: React.FC = () => {
       if (data.progress && Object.keys(data.progress).length > 0) {
         setProgressMap(data.progress);
       }
-      if (data.lastActive && data.lastActive.lessonId >= 1) {
+      const urlId = getLessonIdFromUrl();
+      if (!urlId && data.lastActive && data.lastActive.lessonId >= 1) {
         setCurrentLessonId(data.lastActive.lessonId);
       }
     });
   }, []);
+
+  // Update browser URL (e.g. /lesson/1) without page reload
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const targetPath = `/lesson/${currentLessonId}`;
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState({ lessonId: currentLessonId }, '', targetPath);
+      }
+    }
+  }, [currentLessonId]);
+
+  // Handle browser Back / Forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const id = getLessonIdFromUrl();
+      if (id && id !== currentLessonId) {
+        setCurrentLessonId(id);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [currentLessonId]);
 
   // Initialize Speech Engine settings
   useEffect(() => {
@@ -132,11 +178,17 @@ export const App: React.FC = () => {
           setCurrentEvaluation(null);
           setIsSummaryOpen(false);
 
-          // Restore last active position for this lesson if available
+          // Restore saved typed story for this lesson if available
+          const savedStory = loadLessonTypedStory(currentLessonId);
           const lastActive = loadLastActive();
-          if (lastActive && lastActive.lessonId === currentLessonId && lastActive.typedText) {
-            setTypedInput(lastActive.typedText);
-            const typedTokens = tokenizeSentence(lastActive.typedText);
+          const restoredText = (savedStory && savedStory.typedText)
+            || (lastActive && lastActive.lessonId === currentLessonId && lastActive.typedText)
+            || (progressMap[currentLessonId]?.typedText)
+            || '';
+
+          if (restoredText.trim()) {
+            setTypedInput(restoredText);
+            const typedTokens = tokenizeSentence(restoredText);
             const chunks = getStoryChunks(data.sentences, settings.wordsPerChunk);
             let restoredChunkIdx = 0;
             for (let i = 0; i < chunks.length; i++) {
@@ -150,6 +202,8 @@ export const App: React.FC = () => {
             lastSpokenChunkRef.current = restoredChunkIdx;
           } else {
             // First time loading lesson: teacher starts dictating first 3 words after short breath
+            setTypedInput('');
+            setActiveChunkIndex(0);
             lastSpokenChunkRef.current = 0;
             setTimeout(() => {
               const chunks = getStoryChunks(data.sentences, settings.wordsPerChunk);
@@ -174,36 +228,45 @@ export const App: React.FC = () => {
     };
   }, [currentLessonId, settings.wordsPerChunk]);
 
-  // Save last active state: immediate localStorage, debounced server sync
-  const lastActiveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Save typed text immediately to localStorage and debounced to server
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!currentLesson) return;
 
-    const state = {
-      lessonId: currentLessonId,
-      sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0,
-      typedText: typedInput
-    };
-
-    // Save to localStorage immediately without any network overhead
+    // Instant local save (zero latency, offline resilient)
     try {
-      localStorage.setItem('dictation_last_state_v1', JSON.stringify(state));
+      localStorage.setItem(`dictation_story_${currentLessonId}`, JSON.stringify({
+        typedText: typedInput,
+        activeChunkIndex
+      }));
+      localStorage.setItem('dictation_last_state_v1', JSON.stringify({
+        lessonId: currentLessonId,
+        sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0,
+        activeChunkIndex,
+        typedText: typedInput
+      }));
     } catch {}
 
-    // Debounce server HTTP sync by 2 seconds so keystrokes never flood Vite proxy
-    if (lastActiveTimerRef.current) {
-      clearTimeout(lastActiveTimerRef.current);
+    // Debounced sync to backend server
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
     }
-    lastActiveTimerRef.current = setTimeout(() => {
-      saveLastActive(state);
-    }, 2000);
+    saveTimerRef.current = setTimeout(() => {
+      saveLastActive({
+        lessonId: currentLessonId,
+        sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0,
+        activeChunkIndex,
+        typedText: typedInput
+      });
+      saveLessonTypedStory(currentLessonId, typedInput, activeChunkIndex);
+    }, 1000);
 
     return () => {
-      if (lastActiveTimerRef.current) {
-        clearTimeout(lastActiveTimerRef.current);
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
       }
     };
-  }, [currentLessonId, currentChunk, typedInput, currentLesson]);
+  }, [currentLessonId, currentChunk, activeChunkIndex, typedInput, currentLesson]);
 
   // Compute live word-by-word feedback for the continuous story!
   // All typed words remain in the paragraph in green/red/missing. Trailing untyped words stay invisible.
@@ -326,6 +389,12 @@ export const App: React.FC = () => {
   // Controls Handlers
   const handleSelectLesson = useCallback((lessonId: number) => {
     setCurrentLessonId(lessonId);
+    if (typeof window !== 'undefined') {
+      const targetPath = `/lesson/${lessonId}`;
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState({ lessonId }, '', targetPath);
+      }
+    }
     setIsSidebarOpen(false);
   }, []);
 

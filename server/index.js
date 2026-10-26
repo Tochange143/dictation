@@ -101,25 +101,40 @@ app.post('/api/settings', (req, res) => {
 
 // Last Active State Endpoints
 app.get('/api/last-active', (req, res) => {
-  const lastActive = readJsonFile(LAST_ACTIVE_FILE, { lessonId: 1, sentenceIndex: 0 });
+  const lastActive = readJsonFile(LAST_ACTIVE_FILE, { lessonId: 1, sentenceIndex: 0, activeChunkIndex: 0, typedText: '' });
   res.json(lastActive);
 });
 
 app.post('/api/last-active', (req, res) => {
-  const { lessonId, sentenceIndex } = req.body;
+  const { lessonId, sentenceIndex, activeChunkIndex, typedText } = req.body;
+  const lid = Number(lessonId) || 1;
   const state = {
-    lessonId: Number(lessonId) || 1,
+    lessonId: lid,
     sentenceIndex: Number(sentenceIndex) || 0,
+    activeChunkIndex: Number(activeChunkIndex) || 0,
+    typedText: typeof typedText === 'string' ? typedText : '',
     updatedAt: new Date().toISOString()
   };
   writeJsonFile(LAST_ACTIVE_FILE, state);
+
+  // Synchronously update per-lesson progress so typed text is preserved per lesson!
+  const allProgress = readJsonFile(PROGRESS_FILE, {});
+  allProgress[lid] = {
+    ...(allProgress[lid] || { lessonId: lid }),
+    sentenceIndex: state.sentenceIndex,
+    activeChunkIndex: state.activeChunkIndex,
+    typedText: state.typedText,
+    updatedAt: state.updatedAt
+  };
+  writeJsonFile(PROGRESS_FILE, allProgress);
+
   res.json({ success: true, lastActive: state });
 });
 
 // Reset Progress
 app.post('/api/reset', (req, res) => {
   writeJsonFile(PROGRESS_FILE, {});
-  writeJsonFile(LAST_ACTIVE_FILE, { lessonId: 1, sentenceIndex: 0 });
+  writeJsonFile(LAST_ACTIVE_FILE, { lessonId: 1, sentenceIndex: 0, activeChunkIndex: 0, typedText: '' });
   res.json({ success: true, message: 'All progress has been reset.' });
 });
 

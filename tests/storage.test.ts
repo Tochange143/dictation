@@ -6,6 +6,8 @@ import {
   saveSettings, 
   loadLastActive, 
   saveLastActive, 
+  saveLessonTypedStory,
+  loadLessonTypedStory,
   resetAllProgress,
   DEFAULT_SETTINGS 
 } from '../src/services/storage';
@@ -63,10 +65,28 @@ describe('LocalStorage Persistence Service', () => {
     expect(loaded.autoAdvanceOnCorrect).toBe(true);
   });
 
-  it('saves and loads last active position', () => {
-    saveLastActive({ lessonId: 42, sentenceIndex: 7 });
+  it('saves and loads last active position with typed story text', () => {
+    saveLastActive({ 
+      lessonId: 42, 
+      sentenceIndex: 7, 
+      activeChunkIndex: 3, 
+      typedText: 'I am Sam. I am a boy.' 
+    });
     const loaded = loadLastActive();
-    expect(loaded).toEqual({ lessonId: 42, sentenceIndex: 7 });
+    expect(loaded).toEqual({ 
+      lessonId: 42, 
+      sentenceIndex: 7, 
+      activeChunkIndex: 3, 
+      typedText: 'I am Sam. I am a boy.' 
+    });
+  });
+
+  it('saves and restores per-lesson typed story without blanking on refresh', () => {
+    saveLessonTypedStory(1, 'I am Sam. The cat is fat.', 2);
+    const restored = loadLessonTypedStory(1);
+    expect(restored).not.toBeNull();
+    expect(restored?.typedText).toBe('I am Sam. The cat is fat.');
+    expect(restored?.activeChunkIndex).toBe(2);
   });
 
   it('resets all progress cleanly', () => {
