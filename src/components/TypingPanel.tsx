@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { RotateCcw, Trash2, Volume2 } from 'lucide-react';
+import { RotateCcw, Trash2, Volume2, Eye, EyeOff } from 'lucide-react';
 
 interface TypingPanelProps {
   value: string;
@@ -10,6 +10,9 @@ interface TypingPanelProps {
   wordCount: number;
   accuracy?: number;
   isSpeaking?: boolean;
+  helpText?: string;
+  isHelpVisible?: boolean;
+  onToggleHelp?: () => void;
 }
 
 export const TypingPanel: React.FC<TypingPanelProps> = ({
@@ -20,7 +23,10 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
   disabled = false,
   wordCount,
   accuracy,
-  isSpeaking = false
+  isSpeaking = false,
+  helpText,
+  isHelpVisible = false,
+  onToggleHelp
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -107,6 +113,31 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
         </div>
       </div>
 
+      {/* Help / Peek Banner when Ctrl+S is triggered */}
+      {isHelpVisible && helpText && (
+        <div style={{
+          backgroundColor: '#f0fdf4',
+          border: '1.5px solid #86efac',
+          borderRadius: '8px',
+          padding: '0.65rem 0.9rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: '0.95rem',
+          color: '#166534',
+          flexWrap: 'wrap',
+          gap: '0.5rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <Eye size={16} style={{ color: '#15803d' }} />
+            <span><strong>Help / Current Words:</strong> &ldquo;{helpText}&rdquo;</span>
+          </div>
+          <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: 600 }}>
+            Press Ctrl+S to hide
+          </span>
+        </div>
+      )}
+
       {/* Large Comfortable Notebook Textarea */}
       <textarea
         id="dictation-input"
@@ -114,7 +145,7 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        placeholder="Type what you hear... Write continuously as the teacher reads. Your words check live above. When you type the words, the teacher automatically reads the next part."
+        placeholder="Type what you hear... Write continuously as the teacher reads. Press Ctrl+S if you need help to see the current words."
         rows={6}
         style={{
           width: '100%',
@@ -146,7 +177,7 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
         borderTop: '1px solid var(--border-subtle)'
       }}>
         {/* Left helper tools */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
           <button
             onClick={onReplayCurrent}
             title="Replay Voice (Alt+R)"
@@ -177,6 +208,39 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               Alt+R
             </kbd>
           </button>
+
+          {onToggleHelp && (
+            <button
+              onClick={onToggleHelp}
+              title="Show or hide spoken words hint (Ctrl+S)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.82rem',
+                color: isHelpVisible ? '#166534' : 'var(--text-primary)',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: `1px solid ${isHelpVisible ? '#86efac' : 'var(--border-main)'}`,
+                backgroundColor: isHelpVisible ? '#f0fdf4' : '#f8fafc',
+                cursor: 'pointer',
+                fontWeight: 500
+              }}
+            >
+              {isHelpVisible ? <EyeOff size={14} /> : <Eye size={14} />}
+              <span>{isHelpVisible ? 'Hide Words' : 'Show Words'}</span>
+              <kbd style={{
+                fontSize: '0.68rem',
+                padding: '1px 5px',
+                borderRadius: '3px',
+                backgroundColor: isHelpVisible ? '#dcfce7' : '#e2e8f0',
+                marginLeft: '2px',
+                color: isHelpVisible ? '#15803d' : 'var(--text-muted)'
+              }}>
+                Ctrl+S
+              </kbd>
+            </button>
+          )}
 
           {value.trim() && (
             <button

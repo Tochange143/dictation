@@ -10,15 +10,10 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
   if (!isOpen) return null;
 
   const shortcuts = [
-    { key: 'Ctrl + Enter', desc: 'Start or resume dictation' },
-    { key: 'Escape', desc: 'Pause speech immediately' },
-    { key: 'Alt + R', desc: 'Replay the current sentence' },
-    { key: 'Alt + ←', desc: 'Go to the previous sentence' },
-    { key: 'Alt + →', desc: 'Skip to the next sentence' },
-    { key: 'Enter', desc: 'Submit the current sentence for review' },
-    { key: 'Ctrl + Backspace', desc: 'Clear current typing box' },
-    { key: 'Ctrl + Shift + ↑', desc: 'Increase speech speed (+0.1x)' },
-    { key: 'Ctrl + Shift + ↓', desc: 'Decrease speech speed (-0.1x)' }
+    { key: 'Ctrl + S', desc: 'Show or hide current words / sentence (Help)' },
+    { key: 'Alt + R', desc: 'Replay current words' },
+    { key: 'Alt + P', desc: 'Pause or resume speech' },
+    { key: 'Escape', desc: 'Pause speech or close modal' }
   ];
 
   return (

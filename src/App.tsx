@@ -75,6 +75,7 @@ export const App: React.FC = () => {
   const [isSummaryOpen, setIsSummaryOpen] = useState<boolean>(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isHelpVisible, setIsHelpVisible] = useState<boolean>(false);
 
   // Final evaluation when lesson completes
   const [currentEvaluation, setCurrentEvaluation] = useState<SentenceEvaluation | null>(null);
@@ -158,6 +159,18 @@ export const App: React.FC = () => {
 
   // Active Story Chunk being dictated
   const currentChunk: StoryChunk | undefined = storyChunks[activeChunkIndex];
+
+  // Current Spoken Words / Sentence Help text for Ctrl+S
+  const currentHelpText = useMemo(() => {
+    if (!currentChunk) return '';
+    if (currentLesson && currentLesson.sentences[currentChunk.sentenceIndex]) {
+      const sentenceText = currentLesson.sentences[currentChunk.sentenceIndex].text;
+      if (sentenceText.trim() !== currentChunk.text.trim()) {
+        return `${currentChunk.text}  (Full: "${sentenceText}")`;
+      }
+    }
+    return currentChunk.text;
+  }, [currentChunk, currentLesson]);
 
   // Fetch lesson data when lesson ID changes
   useEffect(() => {
@@ -486,6 +499,13 @@ export const App: React.FC = () => {
   // Global Keyboard Shortcuts
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Show/Hide Words Help: Ctrl+S
+      if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.code === 'KeyS')) {
+        e.preventDefault();
+        setIsHelpVisible(prev => !prev);
+        return;
+      }
+
       // Replay Words: Alt+R
       if (e.altKey && e.code === 'KeyR') {
         e.preventDefault();
@@ -634,6 +654,9 @@ export const App: React.FC = () => {
                 accuracy={liveAccuracy}
                 wordCount={typedInput.trim() ? tokenizeSentence(typedInput).length : 0}
                 isSpeaking={speechState.isPlaying}
+                helpText={currentHelpText}
+                isHelpVisible={isHelpVisible}
+                onToggleHelp={() => setIsHelpVisible(prev => !prev)}
               />
             </div>
           </>
