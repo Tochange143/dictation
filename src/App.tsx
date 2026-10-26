@@ -178,13 +178,11 @@ export const App: React.FC = () => {
           setCurrentEvaluation(null);
           setIsSummaryOpen(false);
 
-          // Restore saved typed story for this lesson if available
-          const savedStory = loadLessonTypedStory(currentLessonId);
-          const lastActive = loadLastActive();
-          const restoredText = (savedStory && savedStory.typedText)
-            || (lastActive && lastActive.lessonId === currentLessonId && lastActive.typedText)
-            || (progressMap[currentLessonId]?.typedText)
-            || '';
+          // Restore saved typed story for this lesson only (each lesson is strictly isolated)
+          const savedStory = loadLessonTypedStory(data.id);
+          const restoredText = (savedStory && typeof savedStory.typedText === 'string')
+            ? savedStory.typedText
+            : '';
 
           if (restoredText.trim()) {
             setTypedInput(restoredText);
@@ -201,7 +199,7 @@ export const App: React.FC = () => {
             setActiveChunkIndex(restoredChunkIdx);
             lastSpokenChunkRef.current = restoredChunkIdx;
           } else {
-            // First time loading lesson: teacher starts dictating first 3 words after short breath
+            // First time loading lesson: start fresh and teacher starts dictating first 3 words
             setTypedInput('');
             setActiveChunkIndex(0);
             lastSpokenChunkRef.current = 0;
@@ -231,7 +229,9 @@ export const App: React.FC = () => {
   // Save typed text immediately to localStorage and debounced to server
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    if (!currentLesson) return;
+    // CRITICAL: Only save when currentLesson is loaded and strictly matches currentLessonId!
+    // This prevents text from a previous lesson bleeding into a newly opened lesson.
+    if (!currentLesson || currentLesson.id !== currentLessonId) return;
 
     // Instant local save (zero latency, offline resilient)
     try {
@@ -252,14 +252,16 @@ export const App: React.FC = () => {
       clearTimeout(saveTimerRef.current);
     }
     saveTimerRef.current = setTimeout(() => {
-      saveLastActive({
-        lessonId: currentLessonId,
-        sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0,
-        activeChunkIndex,
-        typedText: typedInput
-      });
-      saveLessonTypedStory(currentLessonId, typedInput, activeChunkIndex);
-    }, 1000);
+      if (currentLesson && currentLesson.id === currentLessonId) {
+        saveLastActive({
+          lessonId: currentLessonId,
+          sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0,
+          activeChunkIndex,
+          typedText: typedInput
+        });
+        saveLessonTypedStory(currentLessonId, typedInput, activeChunkIndex);
+      }
+    }, 800);
 
     return () => {
       if (saveTimerRef.current) {
@@ -387,16 +389,29 @@ export const App: React.FC = () => {
   }, [liveFeedbacks]);
 
   // Controls Handlers
-  const handleSelectLesson = useCallback((lessonId: number) => {
-    setCurrentLessonId(lessonId);
+  const handleSelectLesson = useCallback((newLessonId: number) => {
+    if (newLessonId === currentLessonId) {
+      setIsSidebarOpen(false);
+      return;
+    }
+    // Flush current lesson progress before switching
+    if (currentLesson && currentLesson.id === currentLessonId) {
+      saveLessonTypedStory(currentLesson.id, typedInput, activeChunkIndex);
+    }
+    // Immediately clear typed input so previous lesson text never bleeds over
+    setTypedInput('');
+    setActiveChunkIndex(0);
+    lastSpokenChunkRef.current = -1;
+    setCurrentLessonId(newLessonId);
+
     if (typeof window !== 'undefined') {
-      const targetPath = `/lesson/${lessonId}`;
+      const targetPath = `/lesson/${newLessonId}`;
       if (window.location.pathname !== targetPath) {
-        window.history.pushState({ lessonId }, '', targetPath);
+        window.history.pushState({ lessonId: newLessonId }, '', targetPath);
       }
     }
     setIsSidebarOpen(false);
-  }, []);
+  }, [currentLesson, currentLessonId, typedInput, activeChunkIndex]);
 
   const handlePreviousChunk = useCallback(() => {
     if (activeChunkIndex > 0) {
@@ -423,12 +438,14 @@ export const App: React.FC = () => {
       setActiveChunkIndex(0);
       setTypedInput('');
       setSessionRetries(prev => prev + 1);
+      // Reset saved text for this lesson on restart
+      saveLessonTypedStory(currentLessonId, '', 0);
       setTimeout(() => {
         lastSpokenChunkRef.current = 0;
         speakActiveChunk(0);
       }, 400);
     }
-  }, [speakActiveChunk]);
+  }, [currentLessonId, speakActiveChunk]);
 
   const handleChangeWordsPerChunk = useCallback((words: number) => {
     const updated = { ...settings, wordsPerChunk: words };
