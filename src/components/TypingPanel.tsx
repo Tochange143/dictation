@@ -53,12 +53,12 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
         backgroundColor: '#ffffff',
         border: '1.5px solid var(--border-main)',
         borderRadius: 'var(--radius-lg)',
-        padding: '1.5rem',
+        padding: '1.1rem 1.25rem',
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.75rem',
+        gap: '0.65rem',
         flex: 1,
-        minHeight: '260px',
+        minHeight: '210px',
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
         position: 'relative',
         transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
@@ -146,19 +146,19 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         placeholder="Type what you hear... Write continuously as the teacher reads. Press Ctrl+S if you need help to see the current words."
-        rows={6}
+        rows={4}
         style={{
           width: '100%',
           flex: 1,
           border: 'none',
           outline: 'none',
           resize: 'none',
-          fontSize: '1.45rem',
-          lineHeight: '2.3rem',
+          fontSize: '1.35rem',
+          lineHeight: '2.2rem',
           fontFamily: 'var(--font-sans)',
           color: 'var(--text-primary)',
           backgroundColor: 'transparent',
-          minHeight: '145px'
+          minHeight: '120px'
         }}
         autoComplete="off"
         autoCorrect="off"

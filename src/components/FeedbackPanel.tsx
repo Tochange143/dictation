@@ -28,10 +28,14 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   const missingCount = feedbacks.filter(f => f.status === 'missing').length;
   const incorrectCount = feedbacks.filter(f => f.status === 'incorrect').length;
 
-  // Auto-scroll as continuous story grows
+  // Auto-scroll as continuous story grows (only if user is already near bottom)
   useEffect(() => {
-    if (contentContainerRef.current) {
-      contentContainerRef.current.scrollTop = contentContainerRef.current.scrollHeight;
+    const el = contentContainerRef.current;
+    if (el) {
+      const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+      if (isNearBottom || feedbacks.length <= 10) {
+        el.scrollTop = el.scrollHeight;
+      }
     }
   }, [feedbacks.length]);
 
@@ -57,9 +61,9 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         backgroundColor: '#ffffff',
         border: '1.5px solid var(--border-main)',
         borderRadius: 'var(--radius-lg)',
-        padding: '1.5rem',
-        minHeight: '200px',
-        maxHeight: '340px',
+        padding: '1.1rem 1.25rem',
+        minHeight: '170px',
+        maxHeight: '280px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',

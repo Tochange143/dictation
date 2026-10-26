@@ -95,12 +95,16 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
 
   return (
     <header style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 30,
       backgroundColor: '#ffffff',
       borderBottom: '1.5px solid var(--border-main)',
-      padding: '0.75rem 1.25rem',
+      padding: '0.65rem 1.25rem',
       display: 'flex',
       flexDirection: 'column',
-      gap: '0.65rem'
+      gap: '0.5rem',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.04)'
     }}>
       {/* Upper line: Title, Progress, and Action triggers */}
       <div style={{

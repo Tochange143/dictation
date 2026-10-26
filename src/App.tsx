@@ -591,13 +591,13 @@ export const DictationPage: React.FC = () => {
             {/* Core Practice Layout: Continuous Story Feedback above, Writing notebook below */}
             <div style={{
               flex: 1,
-              padding: '1.5rem',
-              maxWidth: '960px',
+              padding: '1rem 1.25rem',
+              maxWidth: '1100px',
               width: '100%',
               margin: '0 auto',
               display: 'flex',
               flexDirection: 'column',
-              gap: '1.25rem'
+              gap: '0.85rem'
             }}>
               {/* Top Panel: Live Dictation Continuous Story Feedback */}
               <FeedbackPanel
