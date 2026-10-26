@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { UserSettings } from '../types';
-import { Settings, Volume2, RotateCcw, AlertTriangle, X } from 'lucide-react';
-import { speechEngine } from '../services/speechEngine';
+import { UserSettings, VoiceAccent } from '../types';
+import { Settings, Volume2, RotateCcw, AlertTriangle, X, Play } from 'lucide-react';
+import { speechEngine, isIndianVoice } from '../services/speechEngine';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -21,11 +21,38 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const voices = speechEngine.getVoices();
 
+  const indianVoices = voices.filter(v => isIndianVoice(v));
+  const usVoices = voices.filter(v => {
+    const lang = (v.lang || '').toLowerCase().replace(/_/g, '-');
+    return lang.startsWith('en-us') && !isIndianVoice(v);
+  });
+  const ukVoices = voices.filter(v => {
+    const lang = (v.lang || '').toLowerCase().replace(/_/g, '-');
+    return lang.startsWith('en-gb') && !isIndianVoice(v);
+  });
+  const otherVoices = voices.filter(v => 
+    !isIndianVoice(v) && 
+    !(v.lang || '').toLowerCase().replace(/_/g, '-').startsWith('en-us') && 
+    !(v.lang || '').toLowerCase().replace(/_/g, '-').startsWith('en-gb')
+  );
+
   if (!isOpen) return null;
 
   const handleChange = <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => {
     onUpdateSettings({ ...settings, [key]: value });
   };
+
+  const handleAccentChange = (accent: VoiceAccent) => {
+    speechEngine.setAccent(accent);
+    const bestVoice = speechEngine.getSelectedVoice();
+    onUpdateSettings({
+      ...settings,
+      voiceAccent: accent,
+      selectedVoiceURI: bestVoice ? bestVoice.voiceURI : (accent === 'en-IN' ? 'auto:en-IN' : null)
+    });
+  };
+
+  const currentAccent = settings.voiceAccent || 'en-IN';
 
   return (
     <div
@@ -79,36 +106,168 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </button>
         </div>
 
-        {/* Voice Selection */}
-        <div>
-          <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: '0.35rem' }}>
-            Speech Synthesis Voice
-          </label>
-          <select
-            value={settings.selectedVoiceURI || ''}
-            onChange={(e) => {
-              handleChange('selectedVoiceURI', e.target.value || null);
-              if (e.target.value) {
-                speechEngine.setVoice(e.target.value);
-              }
-            }}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              borderRadius: '8px',
-              border: '1px solid var(--border-main)',
-              fontSize: '0.85rem',
-              color: 'var(--text-primary)',
-              backgroundColor: '#ffffff'
-            }}
-          >
-            <option value="">Default English Voice</option>
-            {voices.map(v => (
-              <option key={v.voiceURI} value={v.voiceURI}>
-                {v.name} ({v.lang})
-              </option>
-            ))}
-          </select>
+        {/* Accent & Voice Selection */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              Teacher Voice Accent
+            </label>
+            <button
+              onClick={() => speechEngine.testVoice('The quick brown fox jumps over the lazy dog.')}
+              title="Click to hear a sample of this voice"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '3px 8px',
+                borderRadius: '6px',
+                border: '1px solid var(--border-main)',
+                backgroundColor: '#f8fafc',
+                fontSize: '0.72rem',
+                fontWeight: 600,
+                color: 'var(--brand-primary)',
+                cursor: 'pointer'
+              }}
+            >
+              <Volume2 size={13} />
+              <span>Test Sound</span>
+            </button>
+          </div>
+
+          {/* Accent preset buttons */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '0.5rem'
+          }}>
+            <button
+              type="button"
+              onClick={() => handleAccentChange('en-IN')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '5px',
+                padding: '7px 8px',
+                borderRadius: '8px',
+                border: currentAccent === 'en-IN' ? '2px solid #d97706' : '1px solid var(--border-main)',
+                backgroundColor: currentAccent === 'en-IN' ? '#fef3c7' : '#ffffff',
+                color: currentAccent === 'en-IN' ? '#92400e' : 'var(--text-primary)',
+                fontSize: '0.82rem',
+                fontWeight: currentAccent === 'en-IN' ? 700 : 500,
+                cursor: 'pointer'
+              }}
+            >
+              <span>🇮🇳 Indian Accent</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleAccentChange('en-US')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '5px',
+                padding: '7px 8px',
+                borderRadius: '8px',
+                border: currentAccent === 'en-US' ? '2px solid var(--brand-primary)' : '1px solid var(--border-main)',
+                backgroundColor: currentAccent === 'en-US' ? '#eff6ff' : '#ffffff',
+                color: currentAccent === 'en-US' ? 'var(--brand-primary)' : 'var(--text-primary)',
+                fontSize: '0.82rem',
+                fontWeight: currentAccent === 'en-US' ? 700 : 500,
+                cursor: 'pointer'
+              }}
+            >
+              <span>🇺🇸 US English</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleAccentChange('en-GB')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '5px',
+                padding: '7px 8px',
+                borderRadius: '8px',
+                border: currentAccent === 'en-GB' ? '2px solid var(--brand-primary)' : '1px solid var(--border-main)',
+                backgroundColor: currentAccent === 'en-GB' ? '#eff6ff' : '#ffffff',
+                color: currentAccent === 'en-GB' ? 'var(--brand-primary)' : 'var(--text-primary)',
+                fontSize: '0.82rem',
+                fontWeight: currentAccent === 'en-GB' ? 700 : 500,
+                cursor: 'pointer'
+              }}
+            >
+              <span>🇬🇧 UK English</span>
+            </button>
+          </div>
+
+          {/* Specific Voice Dropdown */}
+          <div>
+            <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+              Specific Speech Engine Voice
+            </label>
+            <select
+              value={settings.selectedVoiceURI || (currentAccent === 'en-IN' ? 'auto:en-IN' : '')}
+              onChange={(e) => {
+                const val = e.target.value || null;
+                handleChange('selectedVoiceURI', val);
+                speechEngine.setVoice(val);
+              }}
+              style={{
+                width: '100%',
+                padding: '0.55rem',
+                borderRadius: '8px',
+                border: '1px solid var(--border-main)',
+                fontSize: '0.83rem',
+                color: 'var(--text-primary)',
+                backgroundColor: '#ffffff'
+              }}
+            >
+              <optgroup label="🇮🇳 Indian English (en-IN)">
+                <option value="auto:en-IN">🇮🇳 Auto Indian English (en-IN)</option>
+                {indianVoices.map(v => (
+                  <option key={v.voiceURI} value={v.voiceURI}>
+                    🇮🇳 {v.name} ({v.lang})
+                  </option>
+                ))}
+              </optgroup>
+
+              {usVoices.length > 0 && (
+                <optgroup label="🇺🇸 US English (en-US)">
+                  <option value="auto:en-US">🇺🇸 Auto US English</option>
+                  {usVoices.map(v => (
+                    <option key={v.voiceURI} value={v.voiceURI}>
+                      🇺🇸 {v.name} ({v.lang})
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+
+              {ukVoices.length > 0 && (
+                <optgroup label="🇬🇧 UK English (en-GB)">
+                  <option value="auto:en-GB">🇬🇧 Auto UK English</option>
+                  {ukVoices.map(v => (
+                    <option key={v.voiceURI} value={v.voiceURI}>
+                      🇬🇧 {v.name} ({v.lang})
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+
+              {otherVoices.length > 0 && (
+                <optgroup label="🌐 Other English Voices">
+                  {otherVoices.map(v => (
+                    <option key={v.voiceURI} value={v.voiceURI}>
+                      {v.name} ({v.lang})
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+            </select>
+          </div>
         </div>
 
         {/* Speech Speed */}

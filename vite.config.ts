@@ -149,6 +149,7 @@ function serverApiPlugin(): Plugin {
               speechSpeed: 0.8,
               speechPitch: 1.0,
               selectedVoiceURI: null,
+              voiceAccent: 'en-IN',
               repeatCount: 1,
               wordsPerChunk: 3,
               dictationPauseMs: 2500,

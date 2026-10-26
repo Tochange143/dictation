@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   speechSpeed: 0.8,
   speechPitch: 1.0,
   selectedVoiceURI: null,
+  voiceAccent: 'en-IN', // Indian accent by default
   repeatCount: 1,
   wordsPerChunk: 3, // Default 3 words at once!
   chunkThreshold: 15,
@@ -131,7 +132,12 @@ export function loadSettings(): UserSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_SETTINGS,
+      ...parsed,
+      voiceAccent: parsed.voiceAccent || 'en-IN'
+    };
   } catch (err) {
     console.error('Failed to load settings', err);
     return DEFAULT_SETTINGS;

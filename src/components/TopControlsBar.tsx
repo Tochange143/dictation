@@ -12,7 +12,7 @@ import {
   GraduationCap,
   Repeat
 } from 'lucide-react';
-import { Lesson } from '../types';
+import { Lesson, VoiceAccent } from '../types';
 
 interface TopControlsBarProps {
   lesson: Lesson;
@@ -25,6 +25,7 @@ interface TopControlsBarProps {
     totalChunks: number;
   };
   speechSpeed: number;
+  voiceAccent: VoiceAccent;
   repeatCount: 1 | 2 | 3;
   wordsPerChunk: number;
   dictationPauseMs: number;
@@ -36,6 +37,7 @@ interface TopControlsBarProps {
   onSkipSentence: () => void;
   onRestartSentence: () => void;
   onChangeSpeed: (newSpeed: number) => void;
+  onChangeAccent: (accent: VoiceAccent) => void;
   onChangeRepeat: (newRepeat: 1 | 2 | 3) => void;
   onChangeWordsPerChunk: (words: number) => void;
   onPacingPreset: (preset: 'slow' | 'teacher' | 'natural') => void;
@@ -50,6 +52,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
   totalSentences,
   speechState,
   speechSpeed,
+  voiceAccent,
   repeatCount,
   wordsPerChunk,
   onStartOrResume,
@@ -60,6 +63,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
   onSkipSentence,
   onRestartSentence,
   onChangeSpeed,
+  onChangeAccent,
   onChangeRepeat,
   onChangeWordsPerChunk,
   onPacingPreset,
@@ -379,8 +383,73 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
           </button>
         </div>
 
-        {/* Pacing presets, repeat mode, and speed controls */}
+        {/* Voice accent, pacing presets, repeat mode, and speed controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {/* Accent Switcher (Indian / US / UK) */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'var(--bg-muted)',
+            borderRadius: '8px',
+            padding: '2px',
+            border: '1px solid var(--border-subtle)'
+          }}>
+            <button
+              onClick={() => onChangeAccent('en-IN')}
+              title="Indian English Accent (en-IN)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3px',
+                padding: '3px 8px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: voiceAccent === 'en-IN' ? 700 : 500,
+                backgroundColor: voiceAccent === 'en-IN' ? '#fef3c7' : 'transparent',
+                color: voiceAccent === 'en-IN' ? '#b45309' : 'var(--text-secondary)',
+                border: voiceAccent === 'en-IN' ? '1px solid #f59e0b' : '1px solid transparent',
+                boxShadow: voiceAccent === 'en-IN' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
+                cursor: 'pointer'
+              }}
+            >
+              <span>🇮🇳 Indian Accent</span>
+            </button>
+            <button
+              onClick={() => onChangeAccent('en-US')}
+              title="US English Accent (en-US)"
+              style={{
+                padding: '3px 7px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: voiceAccent === 'en-US' ? 700 : 500,
+                backgroundColor: voiceAccent === 'en-US' ? '#ffffff' : 'transparent',
+                color: voiceAccent === 'en-US' ? 'var(--brand-primary)' : 'var(--text-secondary)',
+                border: voiceAccent === 'en-US' ? '1px solid var(--border-main)' : '1px solid transparent',
+                boxShadow: voiceAccent === 'en-US' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
+                cursor: 'pointer'
+              }}
+            >
+              <span>🇺🇸 US</span>
+            </button>
+            <button
+              onClick={() => onChangeAccent('en-GB')}
+              title="UK English Accent (en-GB)"
+              style={{
+                padding: '3px 7px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: voiceAccent === 'en-GB' ? 700 : 500,
+                backgroundColor: voiceAccent === 'en-GB' ? '#ffffff' : 'transparent',
+                color: voiceAccent === 'en-GB' ? 'var(--brand-primary)' : 'var(--text-secondary)',
+                border: voiceAccent === 'en-GB' ? '1px solid var(--border-main)' : '1px solid transparent',
+                boxShadow: voiceAccent === 'en-GB' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
+                cursor: 'pointer'
+              }}
+            >
+              <span>🇬🇧 UK</span>
+            </button>
+          </div>
+
           {/* Teacher Pacing Presets */}
           <div style={{
             display: 'flex',

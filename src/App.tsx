@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
-import { Lesson, LessonProgress, SentenceEvaluation, UserSettings, WordFeedback } from './types';
+import { Lesson, LessonProgress, SentenceEvaluation, UserSettings, WordFeedback, VoiceAccent } from './types';
 import { fetchLessonById } from './data/lessonsIndex';
 import { getLiveFeedback, evaluateSentence, tokenizeSentence } from './utils/evaluator';
 import { getStoryChunks, StoryChunk } from './utils/chunker';
@@ -100,12 +100,15 @@ export const DictationPage: React.FC = () => {
     speechEngine.setSpeed(settings.speechSpeed);
     speechEngine.setRepeatCount(settings.repeatCount);
     speechEngine.setDictationPause(dictationPauseMs);
+    if (settings.voiceAccent) {
+      speechEngine.setAccent(settings.voiceAccent);
+    }
     if (settings.selectedVoiceURI) {
       speechEngine.setVoice(settings.selectedVoiceURI);
     }
     const unsub = speechEngine.subscribe(setSpeechState);
     return unsub;
-  }, [settings.speechSpeed, settings.repeatCount, settings.selectedVoiceURI, dictationPauseMs]);
+  }, [settings.speechSpeed, settings.repeatCount, settings.selectedVoiceURI, settings.voiceAccent, dictationPauseMs]);
 
   // Full continuous text of the current lesson
   const fullLessonStory = useMemo(() => {
@@ -415,6 +418,18 @@ export const DictationPage: React.FC = () => {
     saveSettings(updated);
   }, [settings]);
 
+  const handleAccentChange = useCallback((accent: VoiceAccent) => {
+    speechEngine.setAccent(accent);
+    const bestVoice = speechEngine.getSelectedVoice();
+    const updated: UserSettings = {
+      ...settings,
+      voiceAccent: accent,
+      selectedVoiceURI: bestVoice ? bestVoice.voiceURI : (accent === 'en-IN' ? 'auto:en-IN' : null)
+    };
+    setSettings(updated);
+    saveSettings(updated);
+  }, [settings]);
+
   const handlePacingPreset = useCallback((preset: 'slow' | 'teacher' | 'natural') => {
     let speed = 0.8;
     let words = 3;
@@ -536,6 +551,7 @@ export const DictationPage: React.FC = () => {
               totalSentences={currentLesson.sentences.length}
               speechState={speechState}
               speechSpeed={settings.speechSpeed}
+              voiceAccent={settings.voiceAccent || 'en-IN'}
               repeatCount={settings.repeatCount}
               wordsPerChunk={settings.wordsPerChunk}
               dictationPauseMs={dictationPauseMs}
@@ -558,6 +574,7 @@ export const DictationPage: React.FC = () => {
                 speechEngine.setSpeed(newSpeed);
                 saveSettings(updated);
               }}
+              onChangeAccent={handleAccentChange}
               onChangeRepeat={(newRepeat) => {
                 const updated = { ...settings, repeatCount: newRepeat };
                 setSettings(updated);

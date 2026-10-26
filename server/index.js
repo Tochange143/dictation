@@ -107,6 +107,7 @@ app.get('/api/settings', (req, res) => {
     speechSpeed: 0.8,
     speechPitch: 1.0,
     selectedVoiceURI: null,
+    voiceAccent: 'en-IN',
     repeatCount: 1,
     wordsPerChunk: 3, // Default 3 words at once!
     dictationPauseMs: 2500,

@@ -1,5 +1,7 @@
 export type DifficultyLevel = 1 | 2 | 3;
 
+export type VoiceAccent = 'en-IN' | 'en-US' | 'en-GB' | 'all';
+
 export interface LessonSentence {
   id: string;
   text: string;
@@ -56,6 +58,7 @@ export interface UserSettings {
   speechSpeed: number; // 0.5 to 1.5, default 0.8
   speechPitch: number;
   selectedVoiceURI: string | null;
+  voiceAccent?: VoiceAccent; // 'en-IN' (Indian), 'en-US', 'en-GB', 'all'
   repeatCount: 1 | 2 | 3;
   wordsPerChunk: number; // 0 for full sentence, or 1, 2, 3, 4, 5 (default 3)
   chunkThreshold: number; // default 15 words

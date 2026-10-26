@@ -8,11 +8,54 @@ export interface SpeechState {
 
 export type SpeechCallback = (state: SpeechState) => void;
 
+export function isIndianVoice(voice: { lang?: string; name?: string }): boolean {
+  const lang = (voice.lang || '').toLowerCase().replace(/_/g, '-');
+  const name = (voice.name || '').toLowerCase();
+
+  if (
+    lang.startsWith('en-in') ||
+    lang.startsWith('hi-in') ||
+    lang.startsWith('te-in') ||
+    lang.startsWith('ta-in') ||
+    lang.startsWith('mr-in') ||
+    lang.startsWith('bn-in') ||
+    lang.startsWith('gu-in') ||
+    lang.startsWith('kn-in') ||
+    lang === 'en-in' ||
+    lang === 'hi'
+  ) {
+    return true;
+  }
+
+  const indianKeywords = [
+    'india',
+    'indian',
+    'heera',     // Microsoft Heera (Windows English India)
+    'ravi',      // Microsoft Ravi (Windows English India)
+    'neerja',    // Microsoft Neerja (Edge Natural English India)
+    'prabhat',   // Microsoft Prabhat (Edge Natural English India)
+    'rishi',     // Apple Rishi (macOS/iOS English India)
+    'veena',     // Apple Veena (macOS/iOS English India)
+    'sangeeta',  // Apple Sangeeta (macOS/iOS English India)
+    'swara',     // Edge/Android Swara
+    'madhur',    // Edge/Android Madhur
+    'ananya',    // Android/Cloud TTS Ananya
+    'aarav',     // Android/Cloud TTS Aarav
+    'kavya',     // Android/Cloud TTS Kavya
+    'हिन्दी',
+    'hindi'
+  ];
+
+  return indianKeywords.some(keyword => name.includes(keyword));
+}
+
 class SpeechEngine {
   private synth: SpeechSynthesis | null = null;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
   private voices: SpeechSynthesisVoice[] = [];
   private selectedVoice: SpeechSynthesisVoice | null = null;
+  private selectedVoiceURI: string | null = null;
+  private preferredAccent: 'en-IN' | 'en-US' | 'en-GB' | 'all' = 'en-IN';
 
   private isPlaying = false;
   private isPaused = false;
@@ -42,17 +85,16 @@ class SpeechEngine {
 
     const loadVoices = () => {
       this.voices = this.synth?.getVoices() || [];
-      if (this.voices.length > 0 && !this.selectedVoice) {
-        // Prefer natural English voices (Google US/UK, Samantha, Daniel, etc.)
-        const enVoices = this.voices.filter(v => v.lang.startsWith('en'));
-        const preferred = enVoices.find(v => 
-          v.name.includes('Natural') || 
-          v.name.includes('Google') || 
-          v.name.includes('Samantha') || 
-          v.name.includes('Daniel')
-        ) || enVoices[0] || this.voices[0];
-        
-        this.selectedVoice = preferred || null;
+      if (this.voices.length > 0) {
+        if (this.selectedVoiceURI) {
+          const match = this.voices.find(v => v.voiceURI === this.selectedVoiceURI);
+          if (match) {
+            this.selectedVoice = match;
+            return;
+          }
+        }
+        // Auto-select best voice matching preferred accent (defaults to Indian accent)
+        this.pickBestVoiceForAccent(this.preferredAccent);
       }
     };
 
@@ -66,18 +108,122 @@ class SpeechEngine {
     if (this.voices.length === 0 && this.synth) {
       this.voices = this.synth.getVoices();
     }
-    return this.voices.filter(v => v.lang.startsWith('en'));
+    return this.voices.filter(v => (v.lang && v.lang.startsWith('en')) || isIndianVoice(v));
   }
 
-  public setVoice(voiceURI: string) {
+  public getIndianVoices(): SpeechSynthesisVoice[] {
+    return this.getVoices().filter(v => isIndianVoice(v));
+  }
+
+  public pickBestVoiceForAccent(accent: 'en-IN' | 'en-US' | 'en-GB' | 'all'): SpeechSynthesisVoice | null {
+    if (this.voices.length === 0 && this.synth) {
+      this.voices = this.synth.getVoices();
+    }
+
+    if (accent === 'en-IN') {
+      const indianVoices = this.voices.filter(v => isIndianVoice(v));
+      if (indianVoices.length > 0) {
+        const preferred = indianVoices.find(v => 
+          v.name.includes('Natural') || 
+          v.name.includes('Online') || 
+          v.name.includes('Heera') || 
+          v.name.includes('Neerja') || 
+          v.name.includes('Ravi') || 
+          v.name.includes('Google') ||
+          v.name.includes('Rishi')
+        ) || indianVoices[0];
+        this.selectedVoice = preferred;
+        return preferred;
+      }
+      this.selectedVoice = null;
+      return null;
+    }
+
+    if (accent === 'en-US') {
+      const usVoices = this.voices.filter(v => {
+        const lang = (v.lang || '').toLowerCase().replace(/_/g, '-');
+        return lang.startsWith('en-us') && !isIndianVoice(v);
+      });
+      if (usVoices.length > 0) {
+        const preferred = usVoices.find(v => 
+          v.name.includes('Natural') || 
+          v.name.includes('Google') || 
+          v.name.includes('Samantha') || 
+          v.name.includes('Guy') || 
+          v.name.includes('Jenny')
+        ) || usVoices[0];
+        this.selectedVoice = preferred;
+        return preferred;
+      }
+    }
+
+    if (accent === 'en-GB') {
+      const ukVoices = this.voices.filter(v => {
+        const lang = (v.lang || '').toLowerCase().replace(/_/g, '-');
+        return lang.startsWith('en-gb') && !isIndianVoice(v);
+      });
+      if (ukVoices.length > 0) {
+        const preferred = ukVoices.find(v => 
+          v.name.includes('Natural') || 
+          v.name.includes('Google') || 
+          v.name.includes('Daniel') || 
+          v.name.includes('Sonia')
+        ) || ukVoices[0];
+        this.selectedVoice = preferred;
+        return preferred;
+      }
+    }
+
+    const enVoices = this.voices.filter(v => (v.lang || '').startsWith('en'));
+    if (enVoices.length > 0) {
+      this.selectedVoice = enVoices[0];
+      return enVoices[0];
+    }
+    return null;
+  }
+
+  public setAccent(accent: 'en-IN' | 'en-US' | 'en-GB' | 'all') {
+    this.preferredAccent = accent;
+    this.pickBestVoiceForAccent(accent);
+  }
+
+  public getAccent(): 'en-IN' | 'en-US' | 'en-GB' | 'all' {
+    return this.preferredAccent;
+  }
+
+  public setVoice(voiceURI: string | null) {
+    this.selectedVoiceURI = voiceURI;
+    if (!voiceURI || voiceURI === 'auto:en-IN') {
+      this.preferredAccent = 'en-IN';
+      this.pickBestVoiceForAccent('en-IN');
+      return;
+    }
+    if (voiceURI === 'auto:en-US') {
+      this.preferredAccent = 'en-US';
+      this.pickBestVoiceForAccent('en-US');
+      return;
+    }
+    if (voiceURI === 'auto:en-GB') {
+      this.preferredAccent = 'en-GB';
+      this.pickBestVoiceForAccent('en-GB');
+      return;
+    }
+
     const voice = this.voices.find(v => v.voiceURI === voiceURI);
     if (voice) {
       this.selectedVoice = voice;
+      if (isIndianVoice(voice)) {
+        this.preferredAccent = 'en-IN';
+      }
     }
   }
 
   public getSelectedVoice(): SpeechSynthesisVoice | null {
     return this.selectedVoice;
+  }
+
+  public testVoice(sampleText = 'Hello! This is your English dictation teacher.') {
+    this.speakDiscreteChunk(sampleText, 0, 1);
   }
 
   public setSpeed(newSpeed: number) {
@@ -159,6 +305,9 @@ class SpeechEngine {
     utterance.pitch = this.pitch;
     if (this.selectedVoice) {
       utterance.voice = this.selectedVoice;
+      utterance.lang = this.selectedVoice.lang || (this.preferredAccent === 'en-IN' ? 'en-IN' : 'en-US');
+    } else {
+      utterance.lang = this.preferredAccent === 'en-IN' ? 'en-IN' : 'en-US';
     }
 
     utterance.onstart = () => {
@@ -317,6 +466,9 @@ class SpeechEngine {
     utterance.pitch = this.pitch;
     if (this.selectedVoice) {
       utterance.voice = this.selectedVoice;
+      utterance.lang = this.selectedVoice.lang || (this.preferredAccent === 'en-IN' ? 'en-IN' : 'en-US');
+    } else {
+      utterance.lang = this.preferredAccent === 'en-IN' ? 'en-IN' : 'en-US';
     }
 
     utterance.onstart = () => {
