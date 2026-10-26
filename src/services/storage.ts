@@ -41,12 +41,13 @@ export function saveLessonProgress(progress: LessonProgress): void {
     all[progress.lessonId] = progress;
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
 
-    // Asynchronously sync with backend server
+    // Asynchronously sync with backend server with fast timeout
     fetch('/api/progress', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(progress)
-    }).catch(err => {
+      body: JSON.stringify(progress),
+      signal: AbortSignal.timeout(800)
+    }).catch(() => {
       // Offline fallback: already saved in localStorage
     });
   } catch (err) {
@@ -65,7 +66,7 @@ export function resetAllProgress(): void {
     localStorage.removeItem(LAST_STATE_KEY);
 
     // Sync with backend server
-    fetch('/api/reset', { method: 'POST' }).catch(() => {});
+    fetch('/api/reset', { method: 'POST', signal: AbortSignal.timeout(800) }).catch(() => {});
   } catch (err) {
     console.error('Failed to reset progress', err);
   }
@@ -90,7 +91,8 @@ export function saveSettings(settings: UserSettings): void {
     fetch('/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(settings)
+      body: JSON.stringify(settings),
+      signal: AbortSignal.timeout(800)
     }).catch(() => {});
   } catch (err) {
     console.error('Failed to save settings', err);
@@ -115,7 +117,8 @@ export function saveLastActive(state: LastActiveState): void {
     fetch('/api/last-active', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(state)
+      body: JSON.stringify(state),
+      signal: AbortSignal.timeout(800)
     }).catch(() => {});
   } catch (err) {
     console.error('Failed to save last active state', err);
@@ -130,9 +133,9 @@ export async function syncFromServer(): Promise<{
 }> {
   try {
     const [progRes, setRes, actRes] = await Promise.all([
-      fetch('/api/progress').then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch('/api/settings').then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch('/api/last-active').then(r => r.ok ? r.json() : null).catch(() => null)
+      fetch('/api/progress', { signal: AbortSignal.timeout(800) }).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('/api/settings', { signal: AbortSignal.timeout(800) }).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('/api/last-active', { signal: AbortSignal.timeout(800) }).then(r => r.ok ? r.json() : null).catch(() => null)
     ]);
 
     if (progRes && Object.keys(progRes).length > 0) {

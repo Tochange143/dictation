@@ -56,6 +56,9 @@ export const App: React.FC = () => {
   // Final evaluation when lesson completes
   const [currentEvaluation, setCurrentEvaluation] = useState<SentenceEvaluation | null>(null);
 
+  // Track the highest chunk index that has been spoken by the teacher
+  const lastSpokenChunkRef = useRef<number>(-1);
+
   // Lesson runtime statistics
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now());
   const [sessionRetries, setSessionRetries] = useState<number>(0);
@@ -134,7 +137,6 @@ export const App: React.FC = () => {
           if (lastActive && lastActive.lessonId === currentLessonId && lastActive.typedText) {
             setTypedInput(lastActive.typedText);
             const typedTokens = tokenizeSentence(lastActive.typedText);
-            // Calculate starting chunk based on restored typed words
             const chunks = getStoryChunks(data.sentences, settings.wordsPerChunk);
             let restoredChunkIdx = 0;
             for (let i = 0; i < chunks.length; i++) {
@@ -145,14 +147,17 @@ export const App: React.FC = () => {
               }
             }
             setActiveChunkIndex(restoredChunkIdx);
+            lastSpokenChunkRef.current = restoredChunkIdx;
           } else {
             // First time loading lesson: teacher starts dictating first 3 words after short breath
+            lastSpokenChunkRef.current = 0;
             setTimeout(() => {
               const chunks = getStoryChunks(data.sentences, settings.wordsPerChunk);
               if (chunks.length > 0) {
+                lastSpokenChunkRef.current = 0;
                 speechEngine.speakDiscreteChunk(chunks[0].text, 0, chunks.length);
               }
-            }, 600);
+            }, 500);
           }
         }
       })
@@ -169,15 +174,35 @@ export const App: React.FC = () => {
     };
   }, [currentLessonId, settings.wordsPerChunk]);
 
-  // Save last active state to server & localStorage
+  // Save last active state: immediate localStorage, debounced server sync
+  const lastActiveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    if (currentLesson) {
-      saveLastActive({
-        lessonId: currentLessonId,
-        sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0,
-        typedText: typedInput
-      });
+    if (!currentLesson) return;
+
+    const state = {
+      lessonId: currentLessonId,
+      sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0,
+      typedText: typedInput
+    };
+
+    // Save to localStorage immediately without any network overhead
+    try {
+      localStorage.setItem('dictation_last_state_v1', JSON.stringify(state));
+    } catch {}
+
+    // Debounce server HTTP sync by 2 seconds so keystrokes never flood Vite proxy
+    if (lastActiveTimerRef.current) {
+      clearTimeout(lastActiveTimerRef.current);
     }
+    lastActiveTimerRef.current = setTimeout(() => {
+      saveLastActive(state);
+    }, 2000);
+
+    return () => {
+      if (lastActiveTimerRef.current) {
+        clearTimeout(lastActiveTimerRef.current);
+      }
+    };
   }, [currentLessonId, currentChunk, typedInput, currentLesson]);
 
   // Compute live word-by-word feedback for the continuous story!
@@ -243,32 +268,45 @@ export const App: React.FC = () => {
   // "it will dictate the three words at once, after user write them after that only next three word will sound"
   // When user writes the words of the current chunk, teacher reads the NEXT chunk automatically!
   useEffect(() => {
-    if (!currentLesson || storyChunks.length === 0 || !currentChunk) return;
+    if (!currentLesson || storyChunks.length === 0) return;
 
     const typedTokens = tokenizeSentence(typedInput);
     const typedWordsCount = typedTokens.length;
 
-    // Check if user has written up to the end of the current chunk
-    if (typedWordsCount >= currentChunk.cumulativeWordsEnd) {
-      if (activeChunkIndex + 1 < storyChunks.length) {
-        const nextIdx = activeChunkIndex + 1;
-        setActiveChunkIndex(nextIdx);
-
-        // Teacher dictates the next 3 words!
-        const timer = setTimeout(() => {
-          speakActiveChunk(nextIdx);
-        }, 350);
-
-        return () => clearTimeout(timer);
-      } else if (activeChunkIndex === storyChunks.length - 1 && !isSummaryOpen) {
-        // All words of the entire lesson finished!
-        const timer = setTimeout(() => {
-          finishLesson();
-        }, 600);
-        return () => clearTimeout(timer);
+    // Determine target chunk based on cumulative word count typed
+    let targetChunkIdx = 0;
+    for (let i = 0; i < storyChunks.length; i++) {
+      if (typedWordsCount >= storyChunks[i].cumulativeWordsEnd) {
+        targetChunkIdx = Math.min(i + 1, storyChunks.length - 1);
+      } else {
+        break;
       }
     }
-  }, [typedInput, storyChunks, activeChunkIndex, currentChunk, currentLesson, isSummaryOpen, speakActiveChunk, finishLesson]);
+
+    // Keep activeChunkIndex in sync
+    if (targetChunkIdx !== activeChunkIndex) {
+      setActiveChunkIndex(targetChunkIdx);
+    }
+
+    // If targetChunkIdx has not been spoken yet, trigger teacher speech immediately!
+    if (targetChunkIdx > lastSpokenChunkRef.current && targetChunkIdx < storyChunks.length) {
+      lastSpokenChunkRef.current = targetChunkIdx;
+      speechEngine.speakDiscreteChunk(
+        storyChunks[targetChunkIdx].text,
+        targetChunkIdx,
+        storyChunks.length
+      );
+    } else if (
+      targetChunkIdx === storyChunks.length - 1 &&
+      typedWordsCount >= storyChunks[storyChunks.length - 1].cumulativeWordsEnd &&
+      !isSummaryOpen
+    ) {
+      finishLesson();
+    } else if (targetChunkIdx < lastSpokenChunkRef.current) {
+      // User deleted/backspaced text: rewind spoken pointer so typing forward speaks again
+      lastSpokenChunkRef.current = targetChunkIdx;
+    }
+  }, [typedInput, storyChunks, activeChunkIndex, currentLesson, isSummaryOpen, finishLesson]);
 
   // Track misspelled words for vocabulary improvement review
   useEffect(() => {
@@ -294,6 +332,7 @@ export const App: React.FC = () => {
   const handlePreviousChunk = useCallback(() => {
     if (activeChunkIndex > 0) {
       const prevIdx = activeChunkIndex - 1;
+      lastSpokenChunkRef.current = prevIdx;
       setActiveChunkIndex(prevIdx);
       speakActiveChunk(prevIdx);
     }
@@ -302,6 +341,7 @@ export const App: React.FC = () => {
   const handleSkipChunk = useCallback(() => {
     if (activeChunkIndex + 1 < storyChunks.length) {
       const nextIdx = activeChunkIndex + 1;
+      lastSpokenChunkRef.current = nextIdx;
       setActiveChunkIndex(nextIdx);
       speakActiveChunk(nextIdx);
     }
@@ -310,10 +350,12 @@ export const App: React.FC = () => {
   const handleRestartStory = useCallback(() => {
     if (window.confirm('Do you want to restart this story from the beginning?')) {
       speechEngine.cancel();
+      lastSpokenChunkRef.current = 0;
       setActiveChunkIndex(0);
       setTypedInput('');
       setSessionRetries(prev => prev + 1);
       setTimeout(() => {
+        lastSpokenChunkRef.current = 0;
         speakActiveChunk(0);
       }, 400);
     }

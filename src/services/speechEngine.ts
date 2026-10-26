@@ -194,7 +194,17 @@ class SpeechEngine {
     };
 
     this.currentUtterance = utterance;
-    this.synth.speak(utterance);
+    if (this.synth.paused) {
+      this.synth.resume();
+    }
+    setTimeout(() => {
+      if (this.synth && this.currentUtterance === utterance) {
+        if (this.synth.paused) {
+          this.synth.resume();
+        }
+        this.synth.speak(utterance);
+      }
+    }, 25);
   }
 
   /**
@@ -359,7 +369,17 @@ class SpeechEngine {
     };
 
     this.currentUtterance = utterance;
-    this.synth.speak(utterance);
+    if (this.synth.paused) {
+      this.synth.resume();
+    }
+    setTimeout(() => {
+      if (this.synth && this.currentUtterance === utterance) {
+        if (this.synth.paused) {
+          this.synth.resume();
+        }
+        this.synth.speak(utterance);
+      }
+    }, 25);
   }
 }
 
