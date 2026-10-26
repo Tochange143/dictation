@@ -176,34 +176,46 @@ export function alignTokens(typed: TokenInfo[], expected: TokenInfo[]): Alignmen
 
 /**
  * Prefix sequence alignment for live typing feedback.
- * Semi-global alignment: free trailing gaps on the expected sentence.
+ * Semi-global banded alignment: free trailing gaps on the expected sentence/story.
+ * Evaluates in < 2ms even for 1,000-word stories.
  */
-export function alignPrefixTokens(typed: TokenInfo[], expected: TokenInfo[]): AlignmentStep[] {
+export function alignPrefixTokens(
+  typed: TokenInfo[],
+  expected: TokenInfo[],
+  band = 35
+): AlignmentStep[] {
   const n = typed.length;
   const m = expected.length;
   if (n === 0 || m === 0) return [];
 
-  const dp: number[][] = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
-  const traceback: ('diag' | 'up' | 'left')[][] = Array.from({ length: n + 1 }, () => Array(m + 1).fill('diag'));
+  // Limit expected search to the typed prefix range + band
+  const maxExpected = Math.min(m, n + band);
+
+  const dp: number[][] = Array.from({ length: n + 1 }, () => Array(maxExpected + 1).fill(-Infinity));
+  const traceback: ('diag' | 'up' | 'left')[][] = Array.from({ length: n + 1 }, () => Array(maxExpected + 1).fill('diag'));
 
   const MATCH_SCORE = 5;
   const CLOSE_SCORE = 1;
   const MISMATCH_SCORE = -2;
-  const GAP_EXPECTED_PENALTY = -2; // skipped an expected word
-  const GAP_TYPED_PENALTY = -2.5;  // inserted an extra typed word
+  const GAP_EXPECTED_PENALTY = -2;  // skipped an expected word
+  const GAP_TYPED_PENALTY = -2.5;   // inserted an extra typed word
 
+  dp[0][0] = 0;
   for (let i = 1; i <= n; i++) {
     dp[i][0] = i * GAP_TYPED_PENALTY;
     traceback[i][0] = 'up';
   }
-  for (let j = 1; j <= m; j++) {
+  for (let j = 1; j <= maxExpected; j++) {
     dp[0][j] = j * GAP_EXPECTED_PENALTY;
     traceback[0][j] = 'left';
   }
 
   for (let i = 1; i <= n; i++) {
     const t = typed[i - 1];
-    for (let j = 1; j <= m; j++) {
+    const minJ = Math.max(1, i - band);
+    const maxJ = Math.min(maxExpected, i + band);
+
+    for (let j = minJ; j <= maxJ; j++) {
       const e = expected[j - 1];
 
       let scoreChange = MISMATCH_SCORE;
@@ -237,13 +249,26 @@ export function alignPrefixTokens(typed: TokenInfo[], expected: TokenInfo[]): Al
     }
   }
 
-  // Find best ending column in the last row for semi-global prefix alignment
+  // Find best ending column for prefix alignment around the typed length
   let bestJ = 1;
   let maxScore = -Infinity;
-  for (let j = 1; j <= m; j++) {
+  const minSearchJ = Math.max(1, n - 15);
+  const maxSearchJ = Math.min(maxExpected, n + 20);
+
+  for (let j = minSearchJ; j <= maxSearchJ; j++) {
     if (dp[n][j] > maxScore) {
       maxScore = dp[n][j];
       bestJ = j;
+    }
+  }
+
+  // If no peak in search band, fallback to best score across entire row
+  if (maxScore === -Infinity) {
+    for (let j = 1; j <= maxExpected; j++) {
+      if (dp[n][j] > maxScore) {
+        maxScore = dp[n][j];
+        bestJ = j;
+      }
     }
   }
 

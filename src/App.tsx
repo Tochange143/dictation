@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { Lesson, LessonProgress, SentenceEvaluation, UserSettings, WordFeedback } from './types';
 import { fetchLessonById } from './data/lessonsIndex';
 import { getLiveFeedback, evaluateSentence, tokenizeSentence } from './utils/evaluator';
-import { getWordChunks } from './utils/chunker';
+import { getStoryChunks, StoryChunk } from './utils/chunker';
 import { speechEngine, SpeechState } from './services/speechEngine';
 import { 
   loadAllProgress, 
@@ -27,15 +27,11 @@ export const App: React.FC = () => {
   // Application State
   const [currentLessonId, setCurrentLessonId] = useState<number>(1);
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
-  const [sentenceIndex, setSentenceIndex] = useState<number>(0);
-  const [typedInput, setTypedInput] = useState<string>('');
   const [isLoadingLesson, setIsLoadingLesson] = useState<boolean>(true);
 
-  // Active Word Chunk Index within current sentence (e.g. chunk 0 = first 3 words, chunk 1 = next 3 words)
+  // Continuous Story Dictation State
+  const [typedInput, setTypedInput] = useState<string>('');
   const [activeChunkIndex, setActiveChunkIndex] = useState<number>(0);
-
-  // Continuous Story History
-  const [completedSentences, setCompletedSentences] = useState<string[]>([]);
 
   // Settings & Progress
   const [settings, setSettings] = useState<UserSettings>(loadSettings);
@@ -57,16 +53,13 @@ export const App: React.FC = () => {
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
-  // Current Sentence Evaluation
+  // Final evaluation when lesson completes
   const [currentEvaluation, setCurrentEvaluation] = useState<SentenceEvaluation | null>(null);
 
   // Lesson runtime statistics
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now());
   const [sessionRetries, setSessionRetries] = useState<number>(0);
   const [misspelledTracker, setMisspelledTracker] = useState<Record<string, number>>({});
-
-  // Auto-advance timer ref
-  const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync with backend server on startup
   useEffect(() => {
@@ -79,7 +72,6 @@ export const App: React.FC = () => {
       }
       if (data.lastActive && data.lastActive.lessonId >= 1) {
         setCurrentLessonId(data.lastActive.lessonId);
-        setSentenceIndex(data.lastActive.sentenceIndex || 0);
       }
     });
   }, []);
@@ -95,6 +87,28 @@ export const App: React.FC = () => {
     const unsub = speechEngine.subscribe(setSpeechState);
     return unsub;
   }, [settings.speechSpeed, settings.repeatCount, settings.selectedVoiceURI, dictationPauseMs]);
+
+  // Full continuous text of the current lesson
+  const fullLessonStory = useMemo(() => {
+    if (!currentLesson) return '';
+    return currentLesson.sentences.map(s => s.text).join(' ');
+  }, [currentLesson]);
+
+  // Total words in the full lesson
+  const totalLessonWords = useMemo(() => {
+    if (!fullLessonStory) return 0;
+    return tokenizeSentence(fullLessonStory).length;
+  }, [fullLessonStory]);
+
+  // Story chunks across the entire lesson
+  // Splits each sentence into exact N words (default 3 words at once)
+  const storyChunks: StoryChunk[] = useMemo(() => {
+    if (!currentLesson) return [];
+    return getStoryChunks(currentLesson.sentences, settings.wordsPerChunk);
+  }, [currentLesson, settings.wordsPerChunk]);
+
+  // Active Story Chunk being dictated
+  const currentChunk: StoryChunk | undefined = storyChunks[activeChunkIndex];
 
   // Fetch lesson data when lesson ID changes
   useEffect(() => {
@@ -115,12 +129,31 @@ export const App: React.FC = () => {
           setCurrentEvaluation(null);
           setIsSummaryOpen(false);
 
-          // Populate completed sentences up to current sentenceIndex
-          const completed: string[] = [];
-          for (let i = 0; i < sentenceIndex && i < data.sentences.length; i++) {
-            completed.push(data.sentences[i].text);
+          // Restore last active position for this lesson if available
+          const lastActive = loadLastActive();
+          if (lastActive && lastActive.lessonId === currentLessonId && lastActive.typedText) {
+            setTypedInput(lastActive.typedText);
+            const typedTokens = tokenizeSentence(lastActive.typedText);
+            // Calculate starting chunk based on restored typed words
+            const chunks = getStoryChunks(data.sentences, settings.wordsPerChunk);
+            let restoredChunkIdx = 0;
+            for (let i = 0; i < chunks.length; i++) {
+              if (typedTokens.length >= chunks[i].cumulativeWordsEnd) {
+                restoredChunkIdx = Math.min(i + 1, chunks.length - 1);
+              } else {
+                break;
+              }
+            }
+            setActiveChunkIndex(restoredChunkIdx);
+          } else {
+            // First time loading lesson: teacher starts dictating first 3 words after short breath
+            setTimeout(() => {
+              const chunks = getStoryChunks(data.sentences, settings.wordsPerChunk);
+              if (chunks.length > 0) {
+                speechEngine.speakDiscreteChunk(chunks[0].text, 0, chunks.length);
+              }
+            }, 600);
           }
-          setCompletedSentences(completed);
         }
       })
       .catch((err) => {
@@ -134,87 +167,65 @@ export const App: React.FC = () => {
       isCancelled = true;
       speechEngine.cancel();
     };
-  }, [currentLessonId]);
+  }, [currentLessonId, settings.wordsPerChunk]);
 
-  // Current active sentence
-  const currentSentence = useMemo(() => {
-    if (!currentLesson || !currentLesson.sentences[sentenceIndex]) return null;
-    return currentLesson.sentences[sentenceIndex];
-  }, [currentLesson, sentenceIndex]);
-
-  // Word chunks for current sentence based on wordsPerChunk setting (e.g. 3 words at once)
-  const currentWordChunks = useMemo(() => {
-    if (!currentSentence) return [];
-    return getWordChunks(currentSentence.text, settings.wordsPerChunk);
-  }, [currentSentence, settings.wordsPerChunk]);
-
-  // Save last active position whenever lesson or sentence changes
+  // Save last active state to server & localStorage
   useEffect(() => {
     if (currentLesson) {
-      saveLastActive({ lessonId: currentLessonId, sentenceIndex });
-    }
-  }, [currentLessonId, sentenceIndex, currentLesson]);
-
-  // Compute live word-by-word feedback
-  const liveFeedbacks: WordFeedback[] = useMemo(() => {
-    if (!currentSentence || !typedInput.trim()) return [];
-    return getLiveFeedback(currentSentence.text, typedInput);
-  }, [currentSentence, typedInput]);
-
-  // Check if current sentence is completely correct in real-time
-  const isSentenceFullyCorrect = useMemo(() => {
-    if (!currentSentence || !typedInput.trim()) return false;
-    const evalResult = evaluateSentence(currentSentence.text, typedInput);
-    return evalResult.isFullyCorrect;
-  }, [currentSentence, typedInput]);
-
-  // Compute live accuracy percentage
-  const liveAccuracy = useMemo(() => {
-    if (!currentSentence || !typedInput.trim()) return undefined;
-    return evaluateSentence(currentSentence.text, typedInput).accuracy;
-  }, [currentSentence, typedInput]);
-
-  // Speak discrete active chunk (e.g. 3 words at a time)
-  const speakActiveChunk = useCallback((chunkIdx?: number) => {
-    if (!currentWordChunks || currentWordChunks.length === 0) return;
-    const idx = chunkIdx !== undefined ? chunkIdx : activeChunkIndex;
-    if (idx >= 0 && idx < currentWordChunks.length) {
-      const textToSpeak = currentWordChunks[idx];
-      speechEngine.speakDiscreteChunk(textToSpeak, idx, currentWordChunks.length);
-    }
-  }, [currentWordChunks, activeChunkIndex]);
-
-  // Speak full sentence
-  const speakFullSentence = useCallback(() => {
-    if (!currentSentence) return;
-    speechEngine.speakSentence(currentSentence.chunks, currentSentence.text, true);
-  }, [currentSentence]);
-
-  // Move smoothly to next sentence in the continuous story
-  const advanceToNextSentence = useCallback(() => {
-    if (!currentLesson || !currentSentence) return;
-    speechEngine.cancel();
-
-    // Evaluate current sentence and track any mistakes
-    const evaluation = evaluateSentence(currentSentence.text, typedInput);
-    setCurrentEvaluation(evaluation);
-
-    if (evaluation.misspelledWords.length > 0) {
-      setMisspelledTracker(prev => {
-        const next = { ...prev };
-        for (const item of evaluation.misspelledWords) {
-          const w = item.expected.toLowerCase().replace(/[^a-z]/g, '');
-          if (w) next[w] = (next[w] || 0) + 1;
-        }
-        return next;
+      saveLastActive({
+        lessonId: currentLessonId,
+        sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0,
+        typedText: typedInput
       });
     }
+  }, [currentLessonId, currentChunk, typedInput, currentLesson]);
 
-    // Save lesson progress
+  // Compute live word-by-word feedback for the continuous story!
+  // All typed words remain in the paragraph in green/red/missing. Trailing untyped words stay invisible.
+  const liveFeedbacks: WordFeedback[] = useMemo(() => {
+    if (!fullLessonStory || !typedInput.trim()) return [];
+    return getLiveFeedback(fullLessonStory, typedInput);
+  }, [fullLessonStory, typedInput]);
+
+  // Live match accuracy
+  const liveAccuracy = useMemo(() => {
+    if (liveFeedbacks.length === 0) return undefined;
+    const correctCount = liveFeedbacks.filter(f => f.status === 'correct').length;
+    return Math.max(0, Math.round((correctCount / liveFeedbacks.length) * 100));
+  }, [liveFeedbacks]);
+
+  // Speak discrete active chunk (e.g. 3 words at once)
+  const speakActiveChunk = useCallback((chunkIdx?: number) => {
+    if (!storyChunks || storyChunks.length === 0) return;
+    const idx = chunkIdx !== undefined ? chunkIdx : activeChunkIndex;
+    if (idx >= 0 && idx < storyChunks.length) {
+      const chunk = storyChunks[idx];
+      speechEngine.speakDiscreteChunk(chunk.text, idx, storyChunks.length);
+    }
+  }, [storyChunks, activeChunkIndex]);
+
+  // Speak full current sentence
+  const speakCurrentSentence = useCallback(() => {
+    if (!currentLesson || !currentChunk) return;
+    const s = currentLesson.sentences[currentChunk.sentenceIndex];
+    if (s) {
+      speechEngine.speakDiscreteChunk(s.text, activeChunkIndex, storyChunks.length);
+    }
+  }, [currentLesson, currentChunk, activeChunkIndex, storyChunks.length]);
+
+  // Complete lesson when all chunks are written
+  const finishLesson = useCallback(() => {
+    if (!currentLesson) return;
+    speechEngine.cancel();
+
+    const evaluation = evaluateSentence(fullLessonStory, typedInput);
+    setCurrentEvaluation(evaluation);
+
     const updatedProgress: LessonProgress = {
       lessonId: currentLesson.id,
-      currentSentenceIndex: sentenceIndex + 1,
-      completed: sentenceIndex + 1 >= currentLesson.sentences.length,
+      currentSentenceIndex: currentLesson.sentences.length,
+      completed: true,
+      completedAt: new Date().toISOString(),
       bestAccuracy: Math.max(progressMap[currentLesson.id]?.bestAccuracy || 0, evaluation.accuracy),
       totalAttempts: (progressMap[currentLesson.id]?.totalAttempts || 0) + 1,
       totalCorrectWords: (progressMap[currentLesson.id]?.totalCorrectWords || 0) + evaluation.correctWordsCount,
@@ -222,212 +233,144 @@ export const App: React.FC = () => {
       timeSpentSeconds: Math.max(1, Math.round((Date.now() - sessionStartTime) / 1000)),
       misspelledWordCounts: { ...(progressMap[currentLesson.id]?.misspelledWordCounts || {}), ...misspelledTracker }
     };
+
     saveLessonProgress(updatedProgress);
     setProgressMap(prev => ({ ...prev, [currentLesson.id]: updatedProgress }));
+    setIsSummaryOpen(true);
+  }, [currentLesson, fullLessonStory, typedInput, progressMap, sessionStartTime, misspelledTracker]);
 
-    // Append to continuous story transcript
-    setCompletedSentences(prev => [...prev, currentSentence.text]);
-
-    if (sentenceIndex + 1 < currentLesson.sentences.length) {
-      setSentenceIndex(prev => prev + 1);
-      setTypedInput('');
-      setActiveChunkIndex(0);
-      setCurrentEvaluation(null);
-
-      // Teacher dictates first words of next sentence after brief breath
-      setTimeout(() => {
-        if (currentLesson.sentences[sentenceIndex + 1]) {
-          const nextChunks = getWordChunks(currentLesson.sentences[sentenceIndex + 1].text, settings.wordsPerChunk);
-          if (nextChunks.length > 0) {
-            speechEngine.speakDiscreteChunk(nextChunks[0], 0, nextChunks.length);
-          }
-        }
-      }, 750);
-    } else {
-      finishCurrentLesson(evaluation);
-    }
-  }, [currentLesson, currentSentence, sentenceIndex, typedInput, settings.wordsPerChunk, progressMap, sessionStartTime, misspelledTracker]);
-
-  // Detect when user finishes writing the current 3 words to dictate the NEXT 3 words!
-  // "it will dictate the three words at once , after user write them after that only next three word will sound"
+  // REAL-TIME AUDIO TRIGGER:
+  // "it will dictate the three words at once, after user write them after that only next three word will sound"
+  // When user writes the words of the current chunk, teacher reads the NEXT chunk automatically!
   useEffect(() => {
-    if (!currentSentence || settings.wordsPerChunk <= 0 || currentWordChunks.length <= 1) {
-      return;
+    if (!currentLesson || storyChunks.length === 0 || !currentChunk) return;
+
+    const typedTokens = tokenizeSentence(typedInput);
+    const typedWordsCount = typedTokens.length;
+
+    // Check if user has written up to the end of the current chunk
+    if (typedWordsCount >= currentChunk.cumulativeWordsEnd) {
+      if (activeChunkIndex + 1 < storyChunks.length) {
+        const nextIdx = activeChunkIndex + 1;
+        setActiveChunkIndex(nextIdx);
+
+        // Teacher dictates the next 3 words!
+        const timer = setTimeout(() => {
+          speakActiveChunk(nextIdx);
+        }, 350);
+
+        return () => clearTimeout(timer);
+      } else if (activeChunkIndex === storyChunks.length - 1 && !isSummaryOpen) {
+        // All words of the entire lesson finished!
+        const timer = setTimeout(() => {
+          finishLesson();
+        }, 600);
+        return () => clearTimeout(timer);
+      }
     }
+  }, [typedInput, storyChunks, activeChunkIndex, currentChunk, currentLesson, isSummaryOpen, speakActiveChunk, finishLesson]);
 
-    const typedWords = tokenizeSentence(typedInput);
-    const typedWordsCount = typedWords.length;
-    
-    // Words required to finish the current chunk
-    const targetWordsForNextChunk = (activeChunkIndex + 1) * settings.wordsPerChunk;
+  // Track misspelled words for vocabulary improvement review
+  useEffect(() => {
+    if (liveFeedbacks.length === 0) return;
+    const latestFeedback = liveFeedbacks[liveFeedbacks.length - 1];
+    if (latestFeedback && latestFeedback.status === 'incorrect' && latestFeedback.expectedWord) {
+      const cleanExpected = latestFeedback.expectedWord.toLowerCase().replace(/[^a-z]/g, '');
+      if (cleanExpected) {
+        setMisspelledTracker(prev => ({
+          ...prev,
+          [cleanExpected]: (prev[cleanExpected] || 0) + 1
+        }));
+      }
+    }
+  }, [liveFeedbacks]);
 
-    // If user has written the required words for current chunk and there are more chunks
-    if (typedWordsCount >= targetWordsForNextChunk && activeChunkIndex + 1 < currentWordChunks.length) {
+  // Controls Handlers
+  const handleSelectLesson = useCallback((lessonId: number) => {
+    setCurrentLessonId(lessonId);
+    setIsSidebarOpen(false);
+  }, []);
+
+  const handlePreviousChunk = useCallback(() => {
+    if (activeChunkIndex > 0) {
+      const prevIdx = activeChunkIndex - 1;
+      setActiveChunkIndex(prevIdx);
+      speakActiveChunk(prevIdx);
+    }
+  }, [activeChunkIndex, speakActiveChunk]);
+
+  const handleSkipChunk = useCallback(() => {
+    if (activeChunkIndex + 1 < storyChunks.length) {
       const nextIdx = activeChunkIndex + 1;
       setActiveChunkIndex(nextIdx);
+      speakActiveChunk(nextIdx);
+    }
+  }, [activeChunkIndex, storyChunks.length, speakActiveChunk]);
 
-      // Teacher sounds the next 3 words!
+  const handleRestartStory = useCallback(() => {
+    if (window.confirm('Do you want to restart this story from the beginning?')) {
+      speechEngine.cancel();
+      setActiveChunkIndex(0);
+      setTypedInput('');
+      setSessionRetries(prev => prev + 1);
       setTimeout(() => {
-        speakActiveChunk(nextIdx);
+        speakActiveChunk(0);
       }, 400);
     }
-  }, [typedInput, currentSentence, settings.wordsPerChunk, currentWordChunks, activeChunkIndex, speakActiveChunk]);
+  }, [speakActiveChunk]);
 
-  // Live Auto-Advance: when user writes entire sentence 100% correctly, seamlessly continue!
-  useEffect(() => {
-    if (!currentSentence || isSummaryOpen) return;
-
-    if (autoAdvanceTimerRef.current) {
-      clearTimeout(autoAdvanceTimerRef.current);
-      autoAdvanceTimerRef.current = null;
-    }
-
-    if (typedInput.trim()) {
-      const evalResult = evaluateSentence(currentSentence.text, typedInput);
-      if (evalResult.isFullyCorrect) {
-        autoAdvanceTimerRef.current = setTimeout(() => {
-          advanceToNextSentence();
-        }, 1000);
-      }
-    }
-
-    return () => {
-      if (autoAdvanceTimerRef.current) {
-        clearTimeout(autoAdvanceTimerRef.current);
-      }
-    };
-  }, [typedInput, currentSentence, isSummaryOpen, advanceToNextSentence]);
-
-  // Complete lesson and compute final progress
-  const finishCurrentLesson = (finalEval?: SentenceEvaluation) => {
-    if (!currentLesson) return;
-
-    const timeSpent = Math.max(1, Math.round((Date.now() - sessionStartTime) / 1000));
-    const overallAccuracy = finalEval ? finalEval.accuracy : 98;
-
-    const existingProgress = progressMap[currentLesson.id];
-    const newProgress: LessonProgress = {
-      lessonId: currentLesson.id,
-      currentSentenceIndex: sentenceIndex,
-      completed: true,
-      completedAt: new Date().toISOString(),
-      bestAccuracy: Math.max(existingProgress?.bestAccuracy || 0, overallAccuracy),
-      totalAttempts: (existingProgress?.totalAttempts || 0) + 1,
-      totalCorrectWords: (existingProgress?.totalCorrectWords || 0) + currentLesson.wordCount,
-      totalIncorrectWords: (existingProgress?.totalIncorrectWords || 0) + Object.keys(misspelledTracker).length,
-      timeSpentSeconds: (existingProgress?.timeSpentSeconds || 0) + timeSpent,
-      misspelledWordCounts: { ...(existingProgress?.misspelledWordCounts || {}), ...misspelledTracker }
-    };
-
-    saveLessonProgress(newProgress);
-    setProgressMap(loadAllProgress());
-    setIsSummaryOpen(true);
-  };
-
-  // Skip sentence directly without interruption
-  const handleSkipSentence = () => {
-    if (!currentLesson || !currentSentence) return;
-    speechEngine.cancel();
-    setCompletedSentences(prev => [...prev, currentSentence.text]);
-
-    if (sentenceIndex + 1 < currentLesson.sentences.length) {
-      setSentenceIndex(prev => prev + 1);
-      setTypedInput('');
-      setActiveChunkIndex(0);
-      setCurrentEvaluation(null);
-      setTimeout(() => {
-        if (currentLesson.sentences[sentenceIndex + 1]) {
-          const nextChunks = getWordChunks(currentLesson.sentences[sentenceIndex + 1].text, settings.wordsPerChunk);
-          if (nextChunks.length > 0) {
-            speechEngine.speakDiscreteChunk(nextChunks[0], 0, nextChunks.length);
-          }
-        }
-      }, 500);
-    }
-  };
-
-  // Previous sentence
-  const handlePreviousSentence = () => {
-    if (sentenceIndex > 0) {
-      speechEngine.cancel();
-      setSentenceIndex(prev => prev - 1);
-      setCompletedSentences(prev => prev.slice(0, -1));
-      setTypedInput('');
-      setActiveChunkIndex(0);
-      setCurrentEvaluation(null);
-    }
-  };
-
-  // Restart current sentence
-  const handleRestartSentence = () => {
-    setTypedInput('');
-    setActiveChunkIndex(0);
-    setCurrentEvaluation(null);
-    speakActiveChunk(0);
-  };
-
-  // Change words per chunk setting (1, 2, 3, 4, or 0 for full sentence)
-  const handleChangeWordsPerChunk = (numWords: number) => {
-    const updated = { ...settings, wordsPerChunk: numWords };
+  const handleChangeWordsPerChunk = useCallback((words: number) => {
+    const updated = { ...settings, wordsPerChunk: words };
     setSettings(updated);
     saveSettings(updated);
-    setActiveChunkIndex(0);
-  };
+  }, [settings]);
 
-  // Pacing preset selection
-  const handlePacingPreset = (preset: 'slow' | 'teacher' | 'natural') => {
-    speechEngine.setPacingPreset(preset);
+  const handlePacingPreset = useCallback((preset: 'slow' | 'teacher' | 'natural') => {
+    let speed = 0.8;
+    let words = 3;
+
     if (preset === 'slow') {
-      const updated = { ...settings, speechSpeed: 0.7 };
-      setSettings(updated);
-      setDictationPauseMs(4000);
-      saveSettings(updated);
+      speed = 0.6;
+      words = 2;
     } else if (preset === 'teacher') {
-      const updated = { ...settings, speechSpeed: 0.8 };
-      setSettings(updated);
-      setDictationPauseMs(2500);
-      saveSettings(updated);
+      speed = 0.8;
+      words = 3;
     } else if (preset === 'natural') {
-      const updated = { ...settings, speechSpeed: 1.0 };
-      setSettings(updated);
-      setDictationPauseMs(1500);
-      saveSettings(updated);
+      speed = 1.0;
+      words = 4;
     }
-  };
 
-  // Select new lesson from sidebar
-  const handleSelectLesson = (id: number) => {
-    if (id === currentLessonId) return;
-    setCurrentLessonId(id);
-    setSentenceIndex(0);
-    setActiveChunkIndex(0);
-    setCompletedSentences([]);
-    setTypedInput('');
-  };
+    const updated = { ...settings, speechSpeed: speed, wordsPerChunk: words };
+    setSettings(updated);
+    speechEngine.setSpeed(speed);
+    saveSettings(updated);
+  }, [settings]);
 
-  // Reset all progress
-  const handleResetAllProgress = () => {
+  const handleResetAllProgress = useCallback(() => {
     resetAllProgress();
     setProgressMap({});
-    setSentenceIndex(0);
-    setActiveChunkIndex(0);
-    setCompletedSentences([]);
+    setCurrentLessonId(1);
     setTypedInput('');
-  };
+    setActiveChunkIndex(0);
+    setIsSettingsOpen(false);
+  }, []);
 
-  // Keyboard Shortcuts Listener
+  // Global Keyboard Shortcuts
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Escape: Pause immediately
-      if (e.key === 'Escape') {
-        speechEngine.pause();
+      // Replay Words: Alt+R
+      if (e.altKey && e.code === 'KeyR') {
+        e.preventDefault();
+        speakActiveChunk();
         return;
       }
 
-      // Ctrl + Enter: Read current words
-      if (e.ctrlKey && e.key === 'Enter') {
+      // Pause/Resume Speech: Alt+P
+      if (e.altKey && e.code === 'KeyP') {
         e.preventDefault();
-        if (speechState.isPaused) {
+        if (speechState.isPlaying) {
+          speechEngine.pause();
+        } else if (speechState.isPaused) {
           speechEngine.resume();
         } else {
           speakActiveChunk();
@@ -435,66 +378,35 @@ export const App: React.FC = () => {
         return;
       }
 
-      // Alt + R: Replay current words
-      if (e.altKey && (e.key === 'r' || e.key === 'R')) {
-        e.preventDefault();
-        speakActiveChunk();
-        return;
-      }
-
-      // Alt + Left Arrow: Previous sentence
-      if (e.altKey && e.key === 'ArrowLeft') {
-        e.preventDefault();
-        handlePreviousSentence();
-        return;
-      }
-
-      // Alt + Right Arrow: Next sentence
-      if (e.altKey && e.key === 'ArrowRight') {
-        e.preventDefault();
-        handleSkipSentence();
-        return;
-      }
-
-      // Ctrl + Backspace: Clear typed text
-      if (e.ctrlKey && e.key === 'Backspace' && typedInput.trim().length > 0) {
-        setTypedInput('');
-        return;
-      }
-
-      // Ctrl + Shift + Arrow Up: Increase speech speed
-      if (e.ctrlKey && e.shiftKey && e.key === 'ArrowUp') {
-        e.preventDefault();
-        const nextSpeed = Math.min(1.5, Math.round((settings.speechSpeed + 0.1) * 10) / 10);
-        setSettings(prev => ({ ...prev, speechSpeed: nextSpeed }));
-        speechEngine.setSpeed(nextSpeed);
-        saveSettings({ ...settings, speechSpeed: nextSpeed });
-        return;
-      }
-
-      // Ctrl + Shift + Arrow Down: Decrease speech speed
-      if (e.ctrlKey && e.shiftKey && e.key === 'ArrowDown') {
-        e.preventDefault();
-        const nextSpeed = Math.max(0.5, Math.round((settings.speechSpeed - 0.1) * 10) / 10);
-        setSettings(prev => ({ ...prev, speechSpeed: nextSpeed }));
-        speechEngine.setSpeed(nextSpeed);
-        saveSettings({ ...settings, speechSpeed: nextSpeed });
-        return;
+      // Close modal on Escape
+      if (e.key === 'Escape') {
+        if (isShortcutsOpen) setIsShortcutsOpen(false);
+        if (isSettingsOpen) setIsSettingsOpen(false);
+        if (isSidebarOpen) setIsSidebarOpen(false);
+        if (isSummaryOpen) setIsSummaryOpen(false);
       }
     };
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [speechState.isPaused, speakActiveChunk, settings, typedInput, handlePreviousSentence, handleSkipSentence]);
+  }, [speakActiveChunk, speechState, isShortcutsOpen, isSettingsOpen, isSidebarOpen, isSummaryOpen]);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
-      {/* Left Sidebar: Lessons */}
+    <div style={{
+      display: 'flex',
+      height: '100vh',
+      width: '100vw',
+      overflow: 'hidden',
+      backgroundColor: 'var(--bg-main)',
+      fontFamily: 'var(--font-sans)',
+      color: 'var(--text-primary)'
+    }}>
+      {/* Left Sidebar: 100 Lessons Curriculum */}
       <Sidebar
         currentLessonId={currentLessonId}
-        progressMap={progressMap}
-        lastActive={loadLastActive()}
         onSelectLesson={handleSelectLesson}
+        progressMap={progressMap}
+        lastActive={{ lessonId: currentLessonId, sentenceIndex: currentChunk ? currentChunk.sentenceIndex : 0 }}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
@@ -524,7 +436,7 @@ export const App: React.FC = () => {
             {/* Top Controls Bar with Words-at-once selector */}
             <TopControlsBar
               lesson={currentLesson}
-              sentenceIndex={sentenceIndex}
+              sentenceIndex={currentChunk ? currentChunk.sentenceIndex : 0}
               totalSentences={currentLesson.sentences.length}
               speechState={speechState}
               speechSpeed={settings.speechSpeed}
@@ -540,10 +452,10 @@ export const App: React.FC = () => {
               }}
               onPause={() => speechEngine.pause()}
               onReplayActiveChunk={() => speakActiveChunk()}
-              onReplaySentence={speakFullSentence}
-              onPreviousSentence={handlePreviousSentence}
-              onSkipSentence={handleSkipSentence}
-              onRestartSentence={handleRestartSentence}
+              onReplaySentence={speakCurrentSentence}
+              onPreviousSentence={handlePreviousChunk}
+              onSkipSentence={handleSkipChunk}
+              onRestartSentence={handleRestartStory}
               onChangeSpeed={(newSpeed) => {
                 const updated = { ...settings, speechSpeed: newSpeed };
                 setSettings(updated);
@@ -563,7 +475,7 @@ export const App: React.FC = () => {
               onOpenSidebar={() => setIsSidebarOpen(true)}
             />
 
-            {/* Core Practice Layout matching sketch: Live feedback above, Writing area below */}
+            {/* Core Practice Layout: Continuous Story Feedback above, Writing notebook below */}
             <div style={{
               flex: 1,
               padding: '1.5rem',
@@ -574,51 +486,50 @@ export const App: React.FC = () => {
               flexDirection: 'column',
               gap: '1.25rem'
             }}>
-              {/* Top Panel: Live Dictation Feedback */}
+              {/* Top Panel: Live Dictation Continuous Story Feedback */}
               <FeedbackPanel
                 feedbacks={liveFeedbacks}
                 isSpeaking={speechState.isPlaying}
-                speechChunkIndex={activeChunkIndex}
-                totalSpeechChunks={currentWordChunks.length}
-                completedSentences={completedSentences}
-                currentSentenceNumber={sentenceIndex + 1}
-                totalSentences={currentLesson.sentences.length}
+                activeChunkIndex={activeChunkIndex}
+                totalChunks={storyChunks.length}
+                currentWordsSpokenText={currentChunk ? currentChunk.text : ''}
+                totalWordsInLesson={totalLessonWords}
+                lessonTitle={currentLesson.title}
               />
 
-              {/* Bottom Panel: Live Continuous Writing Area */}
+              {/* Bottom Panel: Live Continuous Notebook Writing Area */}
               <TypingPanel
                 value={typedInput}
                 onChange={setTypedInput}
-                onEnterNext={advanceToNextSentence}
                 onClear={() => setTypedInput('')}
                 onReplayCurrent={() => speakActiveChunk()}
-                isFullyCorrect={isSentenceFullyCorrect}
                 accuracy={liveAccuracy}
-                wordCount={typedInput.trim() ? typedInput.trim().split(/\s+/).length : 0}
+                wordCount={typedInput.trim() ? tokenizeSentence(typedInput).length : 0}
+                isSpeaking={speechState.isPlaying}
               />
             </div>
           </>
         )}
       </main>
 
-      {/* Lesson Complete Summary Modal (shown only upon completing the entire lesson) */}
+      {/* Lesson Complete Summary Modal */}
       {currentLesson && (
         <LessonSummaryModal
           isOpen={isSummaryOpen}
           lesson={currentLesson}
-          accuracy={currentEvaluation ? currentEvaluation.accuracy : 100}
-          totalCorrectWords={currentLesson.wordCount}
+          accuracy={currentEvaluation ? currentEvaluation.accuracy : (liveAccuracy || 100)}
+          totalCorrectWords={currentEvaluation ? currentEvaluation.correctWordsCount : totalLessonWords}
           totalIncorrectWords={Object.keys(misspelledTracker).length}
           timeSpentSeconds={Math.max(1, Math.round((Date.now() - sessionStartTime) / 1000))}
           retriesCount={sessionRetries}
           misspelledWordCounts={misspelledTracker}
           onRetryLesson={() => {
             setIsSummaryOpen(false);
-            setSentenceIndex(0);
             setActiveChunkIndex(0);
-            setCompletedSentences([]);
             setTypedInput('');
-            speakActiveChunk(0);
+            setTimeout(() => {
+              speakActiveChunk(0);
+            }, 400);
           }}
           onNextLesson={() => {
             setIsSummaryOpen(false);

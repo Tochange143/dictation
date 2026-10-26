@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 export interface LastActiveState {
   lessonId: number;
   sentenceIndex: number;
+  typedText?: string;
 }
 
 // Local Storage Handlers

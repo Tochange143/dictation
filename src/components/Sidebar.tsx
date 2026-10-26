@@ -14,7 +14,7 @@ import {
 interface SidebarProps {
   currentLessonId: number;
   progressMap: Record<number, LessonProgress>;
-  lastActive: { lessonId: number; sentenceIndex: number } | null;
+  lastActive?: { lessonId: number; sentenceIndex: number } | null;
   onSelectLesson: (id: number) => void;
   isOpen: boolean;
   onClose: () => void;

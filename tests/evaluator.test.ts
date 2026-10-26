@@ -107,4 +107,29 @@ describe('Word-by-word Evaluator', () => {
     expect(evaluation.missedWords.length).toBe(0);
     expect(evaluation.misspelledWords.length).toBe(0);
   });
+
+  it('evaluates continuous paragraph story without clearing', () => {
+    const story = 'I am Sam. I am a boy. I see a cat. The cat is fat.';
+    // User types across first 3 sentences continuously
+    const typedStory = 'I am Sam. I am a boy. I see a cat.';
+    const feedbacks = getLiveFeedback(story, typedStory);
+
+    expect(feedbacks.length).toBe(11);
+    expect(feedbacks.every(f => f.status === 'correct')).toBe(true);
+    // Trailing sentence "The cat is fat." remains invisible!
+  });
+
+  it('detects typos and missing words in continuous story flow', () => {
+    const story = 'I am Sam. I am a boy. I see a cat. The cat is fat.';
+    // User types "Sam" -> "Sem" (typo) and forgets "a" in "a cat"
+    const typedStory = 'I am Sem. I am a boy. I see cat.';
+    const feedbacks = getLiveFeedback(story, typedStory);
+
+    // Feedbacks should mark "Sem" as incorrect, and indicate missing word for "a"
+    const semFeedback = feedbacks.find(f => f.word.toLowerCase() === 'sem');
+    expect(semFeedback?.status).toBe('incorrect');
+
+    const missingFeedback = feedbacks.find(f => f.status === 'missing');
+    expect(missingFeedback).toBeDefined();
+  });
 });

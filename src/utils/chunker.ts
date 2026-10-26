@@ -1,9 +1,19 @@
 /**
- * Sentence chunker for text-to-speech.
+ * Sentence and Story chunker for text-to-speech.
  * Supports:
  * 1. Fixed word-count chunking (e.g. 3 words at once, 2 words at once, etc.)
  * 2. Natural clause-based chunking for long sentences
+ * 3. Continuous story chunking across entire lessons
  */
+
+export interface StoryChunk {
+  chunkIndex: number;
+  sentenceIndex: number;
+  text: string;
+  chunkWords: string[];
+  cumulativeWordsBefore: number; // total expected words before this chunk in the whole lesson
+  cumulativeWordsEnd: number;    // total expected words after this chunk
+}
 
 /**
  * Split sentence into exact chunks of N words (e.g. 3 words at a time).
@@ -26,6 +36,46 @@ export function getWordChunks(sentence: string, wordsPerChunk = 3): string[] {
   for (let i = 0; i < rawWords.length; i += wordsPerChunk) {
     const chunkWords = rawWords.slice(i, i + wordsPerChunk);
     chunks.push(chunkWords.join(' '));
+  }
+
+  return chunks;
+}
+
+/**
+ * Build story chunks for continuous dictation across an entire lesson.
+ * Words are chunked within sentence boundaries so sentences sound grammatically coherent.
+ */
+export function getStoryChunks(
+  sentences: { text: string }[],
+  wordsPerChunk = 3
+): StoryChunk[] {
+  const chunks: StoryChunk[] = [];
+  let chunkCounter = 0;
+  let runningWordCount = 0;
+
+  for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
+    const sText = sentences[sIdx].text.trim();
+    if (!sText) continue;
+
+    const sentenceChunkTexts = getWordChunks(sText, wordsPerChunk);
+
+    for (const chunkText of sentenceChunkTexts) {
+      const words = chunkText.split(/\s+/).filter(w => w.length > 0);
+      const wordCount = words.length;
+      const cumulativeWordsBefore = runningWordCount;
+      const cumulativeWordsEnd = runningWordCount + wordCount;
+
+      chunks.push({
+        chunkIndex: chunkCounter++,
+        sentenceIndex: sIdx,
+        text: chunkText,
+        chunkWords: words,
+        cumulativeWordsBefore,
+        cumulativeWordsEnd
+      });
+
+      runningWordCount = cumulativeWordsEnd;
+    }
   }
 
   return chunks;
@@ -98,11 +148,9 @@ function breakLongClause(clause: string, maxWords: number): string[] {
   const chunks: string[] = [];
   let current: string[] = [];
 
-  for (let i = 0; i < words.length; i++) {
-    const word = words[i];
+  for (const word of words) {
     const clean = word.toLowerCase().replace(/[^a-z]/g, '');
-
-    if (current.length >= Math.floor(maxWords * 0.6) && conjunctions.has(clean)) {
+    if (current.length >= Math.floor(maxWords / 2) && conjunctions.has(clean)) {
       chunks.push(current.join(' '));
       current = [word];
     } else if (current.length >= maxWords) {

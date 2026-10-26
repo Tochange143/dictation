@@ -1,32 +1,43 @@
-import React, { useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { WordFeedback } from '../types';
-import { Volume2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Volume2 } from 'lucide-react';
 
 interface FeedbackPanelProps {
   feedbacks: WordFeedback[];
   isSpeaking: boolean;
-  speechChunkIndex: number;
-  totalSpeechChunks: number;
-  completedSentences?: string[];
-  currentSentenceNumber: number;
-  totalSentences: number;
+  activeChunkIndex: number;
+  totalChunks: number;
+  currentWordsSpokenText?: string;
+  totalWordsInLesson: number;
+  lessonTitle: string;
 }
 
 export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   feedbacks,
   isSpeaking,
-  speechChunkIndex,
-  totalSpeechChunks,
-  completedSentences = [],
-  currentSentenceNumber,
-  totalSentences
+  activeChunkIndex,
+  totalChunks,
+  currentWordsSpokenText = '',
+  totalWordsInLesson,
+  lessonTitle
 }) => {
-  const [showStoryHistory, setShowStoryHistory] = useState<boolean>(false);
+  const contentContainerRef = useRef<HTMLDivElement>(null);
 
   const hasAttemptedWords = feedbacks.length > 0;
   const correctCount = feedbacks.filter(f => f.status === 'correct').length;
   const missingCount = feedbacks.filter(f => f.status === 'missing').length;
   const incorrectCount = feedbacks.filter(f => f.status === 'incorrect').length;
+
+  // Auto-scroll as continuous story grows
+  useEffect(() => {
+    if (contentContainerRef.current) {
+      contentContainerRef.current.scrollTop = contentContainerRef.current.scrollHeight;
+    }
+  }, [feedbacks.length]);
+
+  const progressPercent = totalWordsInLesson > 0 
+    ? Math.min(100, Math.round((correctCount / totalWordsInLesson) * 100))
+    : 0;
 
   return (
     <div
@@ -35,7 +46,8 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         border: '1.5px solid var(--border-main)',
         borderRadius: 'var(--radius-lg)',
         padding: '1.5rem',
-        minHeight: '170px',
+        minHeight: '200px',
+        maxHeight: '340px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -44,16 +56,18 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         transition: 'border-color 0.2s ease'
       }}
     >
-      {/* Top Status Line */}
+      {/* Top Status Header */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: '0.75rem',
-        paddingBottom: '0.5rem',
-        borderBottom: '1px solid var(--border-subtle)'
+        paddingBottom: '0.6rem',
+        borderBottom: '1px solid var(--border-subtle)',
+        flexWrap: 'wrap',
+        gap: '0.5rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
           <span style={{
             fontSize: '0.75rem',
             fontWeight: 700,
@@ -61,60 +75,43 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
             letterSpacing: '0.05em',
             color: 'var(--text-muted)'
           }}>
-            Live Dictation Feedback
+            Live Dictation Story
           </span>
 
           <span style={{
             fontSize: '0.72rem',
-            padding: '2px 7px',
+            padding: '2px 8px',
             borderRadius: '4px',
             backgroundColor: 'var(--bg-muted)',
             fontWeight: 600,
             color: 'var(--text-secondary)'
           }}>
-            Sentence {currentSentenceNumber} of {totalSentences}
+            {lessonTitle} • {correctCount} / {totalWordsInLesson} words ({progressPercent}%)
           </span>
 
           {isSpeaking && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '4px',
-              padding: '2px 8px',
+              gap: '5px',
+              padding: '2px 9px',
               borderRadius: '999px',
               backgroundColor: '#eff6ff',
               color: 'var(--accent)',
               fontSize: '0.72rem',
               fontWeight: 600
             }}>
-              <Volume2 size={12} className="animate-pulse" />
-              <span>Teacher reading{totalSpeechChunks > 1 ? ` (part ${speechChunkIndex + 1}/${totalSpeechChunks})` : ''}...</span>
+              <Volume2 size={13} className="animate-pulse" />
+              <span>
+                Teacher reading{currentWordsSpokenText ? `: "${currentWordsSpokenText}"` : ''} 
+                {totalChunks > 0 ? ` (part ${activeChunkIndex + 1}/${totalChunks})` : ''}
+              </span>
             </div>
           )}
         </div>
 
-        {/* Right side: Word breakdown counters or Story toggle */}
+        {/* Word breakdown badges */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {completedSentences.length > 0 && (
-            <button
-              onClick={() => setShowStoryHistory(prev => !prev)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                fontSize: '0.72rem',
-                color: 'var(--text-secondary)',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                border: '1px solid var(--border-subtle)',
-                backgroundColor: showStoryHistory ? 'var(--bg-muted)' : 'transparent'
-              }}
-            >
-              <span>Story History ({completedSentences.length})</span>
-              {showStoryHistory ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-            </button>
-          )}
-
           {hasAttemptedWords && (
             <div style={{
               display: 'flex',
@@ -141,38 +138,23 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         </div>
       </div>
 
-      {/* Story History Dropdown if expanded */}
-      {showStoryHistory && completedSentences.length > 0 && (
-        <div style={{
-          backgroundColor: 'var(--bg-muted)',
-          borderRadius: '8px',
-          padding: '0.75rem 1rem',
-          marginBottom: '0.75rem',
-          fontSize: '0.95rem',
-          lineHeight: '1.6rem',
-          color: 'var(--color-green)',
-          maxHeight: '120px',
-          overflowY: 'auto',
-          border: '1px solid var(--border-subtle)'
-        }}>
-          {completedSentences.join(' ')}
-        </div>
-      )}
-
-      {/* Main Feedback Content Area for the Current Sentence */}
+      {/* Main Continuous Story Feedback Container */}
       <div
+        ref={contentContainerRef}
         style={{
-          fontSize: '1.5rem',
-          lineHeight: '2.3rem',
+          fontSize: '1.45rem',
+          lineHeight: '2.4rem',
           fontWeight: 500,
           color: 'var(--text-primary)',
           wordBreak: 'break-word',
-          minHeight: '75px',
+          flex: 1,
+          overflowY: 'auto',
+          paddingRight: '0.5rem',
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'baseline',
-          columnGap: '0.5rem',
-          rowGap: '0.45rem'
+          columnGap: '0.45rem',
+          rowGap: '0.4rem'
         }}
       >
         {!hasAttemptedWords ? (
@@ -181,9 +163,10 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
             fontSize: '1.25rem',
             fontWeight: 400,
             userSelect: 'none',
-            fontStyle: 'italic'
+            fontStyle: 'italic',
+            lineHeight: '2rem'
           }}>
-            Listen to the sentence and write below... (Words will appear here as you type)
+            Listen to the spoken words and write in the notebook below... Your words will appear continuously in this story. Untyped words stay invisible.
           </span>
         ) : (
           feedbacks.map((item, idx) => {
@@ -192,7 +175,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 <span
                   key={idx}
                   className="word-missing"
-                  title="Missing word here! You forgot a word in this position."
+                  title="Missing word here! You forgot or skipped a word in this position."
                 >
                   [ ___ ]
                 </span>
@@ -250,7 +233,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
           <span><strong style={{ color: 'var(--color-red)' }}>Red</strong> = incorrect</span>
           <span><strong style={{ color: '#d97706' }}>[ ___ ]</strong> = missing word space</span>
         </div>
-        <span>Untyped words stay invisible • Real-time live dictation</span>
+        <span>Continuous story dictation • Screen never clears or blanks</span>
       </div>
     </div>
   );
