@@ -58,6 +58,7 @@ describe('Word-by-word Evaluator', () => {
     // Missing space slot for skipped "big"
     expect(feedbacks[1].status).toBe('missing');
     expect(feedbacks[1].word).toBe('___');
+    expect(feedbacks[1].expectedWord).toBe('big');
     // Remaining typed words continue matching correctly in green!
     expect(feedbacks[2].status).toBe('correct');
     expect(feedbacks[2].word).toBe('brown');

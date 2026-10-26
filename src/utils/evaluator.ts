@@ -351,9 +351,12 @@ export function getLiveFeedback(expectedSentence: string, userTypedInput: string
       });
     } else if (step.type === 'deletion' && step.expectedIdx !== undefined) {
       // Missing word slot!
+      const e = expectedTokens[step.expectedIdx];
       feedbacks.push({
         word: '___',
-        status: 'missing'
+        expectedWord: e.raw,
+        status: 'missing',
+        expectedPunctuation: e.trailingPunct
       });
     }
   }

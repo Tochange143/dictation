@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { WordFeedback } from '../types';
-import { Volume2 } from 'lucide-react';
+import { Volume2, Eye, EyeOff } from 'lucide-react';
 
 interface FeedbackPanelProps {
   feedbacks: WordFeedback[];
@@ -22,6 +22,8 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   lessonTitle
 }) => {
   const contentContainerRef = useRef<HTMLDivElement>(null);
+  const [showMissingWords, setShowMissingWords] = useState<boolean>(false);
+  const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set());
 
   const hasAttemptedWords = feedbacks.length > 0;
   const correctCount = feedbacks.filter(f => f.status === 'correct').length;
@@ -34,6 +36,18 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
       contentContainerRef.current.scrollTop = contentContainerRef.current.scrollHeight;
     }
   }, [feedbacks.length]);
+
+  const toggleRevealIndex = (idx: number) => {
+    setRevealedIndices(prev => {
+      const next = new Set(prev);
+      if (next.has(idx)) {
+        next.delete(idx);
+      } else {
+        next.add(idx);
+      }
+      return next;
+    });
+  };
 
   const progressPercent = totalWordsInLesson > 0 
     ? Math.min(100, Math.round((correctCount / totalWordsInLesson) * 100))
@@ -110,8 +124,8 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
           )}
         </div>
 
-        {/* Word breakdown badges */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* Word breakdown badges and Show Missing Words toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           {hasAttemptedWords && (
             <div style={{
               display: 'flex',
@@ -123,11 +137,36 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
               <span style={{ color: 'var(--color-green)', fontWeight: 600 }}>
                 {correctCount} correct
               </span>
+
               {missingCount > 0 && (
-                <span style={{ color: '#d97706', fontWeight: 600 }}>
-                  {missingCount} missing
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ color: '#d97706', fontWeight: 600 }}>
+                    {missingCount} missing
+                  </span>
+                  <button
+                    onClick={() => setShowMissingWords(prev => !prev)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      border: '1.5px solid #d97706',
+                      backgroundColor: showMissingWords ? '#fef3c7' : '#ffffff',
+                      color: '#b45309',
+                      fontSize: '0.72rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    title={showMissingWords ? "Hide missing words and show [ ___ ]" : "Show and replace [ ___ ] with the actual missing words"}
+                  >
+                    {showMissingWords ? <EyeOff size={12} /> : <Eye size={12} />}
+                    <span>{showMissingWords ? 'Hide Missing' : 'Show Missing Words'}</span>
+                  </button>
+                </div>
               )}
+
               {incorrectCount > 0 && (
                 <span style={{ color: 'var(--color-red)', fontWeight: 600 }}>
                   {incorrectCount} wrong
@@ -171,13 +210,29 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         ) : (
           feedbacks.map((item, idx) => {
             if (item.status === 'missing') {
+              const isRevealed = showMissingWords || revealedIndices.has(idx);
+              const missingWordText = item.expectedWord || '___';
               return (
                 <span
                   key={idx}
                   className="word-missing"
-                  title="Missing word here! You forgot or skipped a word in this position."
+                  onClick={() => toggleRevealIndex(idx)}
+                  style={{
+                    cursor: 'pointer',
+                    backgroundColor: isRevealed ? '#fef3c7' : 'transparent',
+                    color: isRevealed ? '#b45309' : '#d97706',
+                    padding: isRevealed ? '0 6px' : '0',
+                    borderRadius: '4px',
+                    border: isRevealed ? '1.5px dashed #d97706' : 'none',
+                    fontWeight: isRevealed ? 700 : 600,
+                    transition: 'all 0.15s ease'
+                  }}
+                  title={isRevealed ? `Missing word: "${missingWordText}". Click to hide.` : `Missing word! Click to reveal what word was skipped.`}
                 >
-                  [ ___ ]
+                  {isRevealed ? `[ ${missingWordText} ]` : '[ ___ ]'}
+                  {isRevealed && item.expectedPunctuation && (
+                    <span className="word-punct" style={{ color: '#b45309' }}>{item.expectedPunctuation}</span>
+                  )}
                 </span>
               );
             }
@@ -228,10 +283,10 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         flexWrap: 'wrap',
         gap: '0.5rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span><strong style={{ color: 'var(--color-green)' }}>Green</strong> = correct</span>
           <span><strong style={{ color: 'var(--color-red)' }}>Red</strong> = incorrect</span>
-          <span><strong style={{ color: '#d97706' }}>[ ___ ]</strong> = missing word space</span>
+          <span><strong style={{ color: '#d97706' }}>[ ___ ]</strong> = missing word space (click &ldquo;Show Missing Words&rdquo; to reveal)</span>
         </div>
         <span>Continuous story dictation • Screen never clears or blanks</span>
       </div>
