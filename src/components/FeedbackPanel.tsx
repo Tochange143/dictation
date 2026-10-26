@@ -7,7 +7,6 @@ interface FeedbackPanelProps {
   isSpeaking: boolean;
   activeChunkIndex: number;
   totalChunks: number;
-  currentWordsSpokenText?: string;
   totalWordsInLesson: number;
   lessonTitle: string;
 }
@@ -17,7 +16,6 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   isSpeaking,
   activeChunkIndex,
   totalChunks,
-  currentWordsSpokenText = '',
   totalWordsInLesson,
   lessonTitle
 }) => {
@@ -117,7 +115,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
             }}>
               <Volume2 size={13} className="animate-pulse" />
               <span>
-                Teacher reading{currentWordsSpokenText ? `: "${currentWordsSpokenText}"` : ''} 
+                Teacher speaking...
                 {totalChunks > 0 ? ` (part ${activeChunkIndex + 1}/${totalChunks})` : ''}
               </span>
             </div>

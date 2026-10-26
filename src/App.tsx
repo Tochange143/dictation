@@ -605,7 +605,6 @@ export const DictationPage: React.FC = () => {
                 isSpeaking={speechState.isPlaying}
                 activeChunkIndex={activeChunkIndex}
                 totalChunks={storyChunks.length}
-                currentWordsSpokenText={currentChunk ? currentChunk.text : ''}
                 totalWordsInLesson={totalLessonWords}
                 lessonTitle={currentLesson.title}
               />
