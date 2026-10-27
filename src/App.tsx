@@ -13,6 +13,7 @@ import {
   saveLastActive,
   saveLessonTypedStory,
   loadLessonTypedStory,
+  fetchLessonStory,
   resetAllProgress,
   syncFromServer
 } from './services/storage';
@@ -24,7 +25,6 @@ import { TypingPanel } from './components/TypingPanel';
 import { LessonSummaryModal } from './components/LessonSummaryModal';
 import { ShortcutsModal } from './components/ShortcutsModal';
 import { SettingsModal } from './components/SettingsModal';
-import { MistakesModal } from './components/MistakesModal';
 
 const RootRedirect: React.FC = () => {
   const lastActive = loadLastActive();
@@ -83,7 +83,6 @@ export const DictationPage: React.FC = () => {
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now());
   const [sessionRetries, setSessionRetries] = useState<number>(0);
   const [misspelledTracker, setMisspelledTracker] = useState<Record<string, number>>({});
-  const [isMistakesOpen, setIsMistakesOpen] = useState<boolean>(false);
 
   // Sync with backend server on startup
   useEffect(() => {
@@ -151,9 +150,13 @@ export const DictationPage: React.FC = () => {
     setIsLoadingLesson(true);
     speechEngine.cancel();
 
-    fetchLessonById(currentLessonId)
-      .then((data) => {
-        if (!isCancelled) {
+    // Fetch lesson structure and persistent typed story from SQLite backend concurrently
+    Promise.all([
+      fetchLessonById(currentLessonId),
+      fetchLessonStory(currentLessonId)
+    ])
+      .then(([data, savedStory]) => {
+        if (!isCancelled && data) {
           setCurrentLesson(data);
           setIsLoadingLesson(false);
           setSessionStartTime(Date.now());
@@ -162,8 +165,7 @@ export const DictationPage: React.FC = () => {
           setCurrentEvaluation(null);
           setIsSummaryOpen(false);
 
-          // Restore saved typed story strictly for this lesson ID
-          const savedStory = loadLessonTypedStory(data.id);
+          // Restore saved typed story from SQLite backend
           const restoredText = (savedStory && typeof savedStory.typedText === 'string')
             ? savedStory.typedText
             : '';
@@ -631,8 +633,6 @@ export const DictationPage: React.FC = () => {
                 helpText={currentHelpText}
                 isHelpVisible={isHelpVisible}
                 onToggleHelp={() => setIsHelpVisible(prev => !prev)}
-                mistakesCount={Object.keys(misspelledTracker).length}
-                onOpenMistakes={() => setIsMistakesOpen(true)}
               />
             </div>
           </>
@@ -685,14 +685,6 @@ export const DictationPage: React.FC = () => {
         }}
         onResetProgress={handleResetAllProgress}
         onClose={() => setIsSettingsOpen(false)}
-      />
-
-      {/* Misspelled Words Practice Drill Modal */}
-      <MistakesModal
-        isOpen={isMistakesOpen}
-        misspelledCounts={misspelledTracker}
-        onClose={() => setIsMistakesOpen(false)}
-        onClearMistakes={() => setMisspelledTracker({})}
       />
     </div>
   );

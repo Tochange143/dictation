@@ -13,8 +13,6 @@ interface TypingPanelProps {
   helpText?: string;
   isHelpVisible?: boolean;
   onToggleHelp?: () => void;
-  mistakesCount?: number;
-  onOpenMistakes?: () => void;
 }
 
 export const TypingPanel: React.FC<TypingPanelProps> = ({
@@ -28,9 +26,7 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
   isSpeaking = false,
   helpText,
   isHelpVisible = false,
-  onToggleHelp,
-  mistakesCount = 0,
-  onOpenMistakes
+  onToggleHelp
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const startTimeRef = useRef<number | null>(null);
@@ -261,29 +257,6 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               }}>
                 Ctrl+S
               </kbd>
-            </button>
-          )}
-
-          {onOpenMistakes && (
-            <button
-              type="button"
-              onClick={onOpenMistakes}
-              title="Practice spelling your missed words"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                fontSize: '0.82rem',
-                color: mistakesCount > 0 ? '#b91c1c' : 'var(--text-secondary)',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                border: `1px solid ${mistakesCount > 0 ? '#fca5a5' : 'var(--border-main)'}`,
-                backgroundColor: mistakesCount > 0 ? '#fef2f2' : '#f8fafc',
-                cursor: 'pointer',
-                fontWeight: 600
-              }}
-            >
-              <span>🎯 Practice Mistakes {mistakesCount > 0 ? `(${mistakesCount})` : ''}</span>
             </button>
           )}
 

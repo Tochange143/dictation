@@ -83,15 +83,37 @@ export function saveLessonTypedStory(lessonId: number, typedText: string, active
       activeChunkIndex
     };
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
-
-    // Sync to server
-    fetch('/api/progress', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(all[lessonId]),
-      signal: AbortSignal.timeout(800)
-    }).catch(() => {});
   } catch {}
+
+  // Sync to SQLite backend server
+  fetch(`/api/story/${lessonId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ typedText, activeChunkIndex }),
+    signal: AbortSignal.timeout(1200)
+  }).catch(() => {});
+}
+
+export async function fetchLessonStory(lessonId: number): Promise<{ typedText: string; activeChunkIndex: number }> {
+  try {
+    const res = await fetch(`/api/story/${lessonId}`, { signal: AbortSignal.timeout(1200) });
+    if (res.ok) {
+      const data = await res.json();
+      if (typeof data.typedText === 'string') {
+        localStorage.setItem(`dictation_story_${lessonId}`, JSON.stringify({
+          typedText: data.typedText,
+          activeChunkIndex: data.activeChunkIndex || 0
+        }));
+        return {
+          typedText: data.typedText,
+          activeChunkIndex: Number(data.activeChunkIndex) || 0
+        };
+      }
+    }
+  } catch {}
+
+  const local = loadLessonTypedStory(lessonId);
+  return local || { typedText: '', activeChunkIndex: 0 };
 }
 
 export function loadLessonTypedStory(lessonId: number): { typedText: string; activeChunkIndex: number } | null {

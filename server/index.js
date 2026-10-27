@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { 
+  lessonsDao, 
+  progressDao, 
+  lastActiveDao, 
+  settingsDao 
+} from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,52 +13,20 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Persistent Data Storage Directory
-const DATA_DIR = path.join(__dirname, 'data');
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
-const PROGRESS_FILE = path.join(DATA_DIR, 'progress.json');
-const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
-const LAST_ACTIVE_FILE = path.join(DATA_DIR, 'lastActive.json');
-
-function readJsonFile(filePath, defaultValue) {
-  try {
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, JSON.stringify(defaultValue, null, 2), 'utf-8');
-      return defaultValue;
-    }
-    const data = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(data);
-  } catch (err) {
-    console.error(`Error reading ${filePath}:`, err);
-    return defaultValue;
-  }
-}
-
-function writeJsonFile(filePath, data) {
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-    return true;
-  } catch (err) {
-    console.error(`Error writing ${filePath}:`, err);
-    return false;
-  }
-}
-
 // Health Check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', serverTime: new Date().toISOString() });
+  res.json({ status: 'ok', database: 'sqlite', serverTime: new Date().toISOString() });
 });
 
-// Lessons Endpoints (Served directly from backend data)
-const LESSONS_DIR = path.join(DATA_DIR, 'lessons');
-const MANIFEST_FILE = path.join(DATA_DIR, 'lessonsManifest.json');
-
+// Lessons Endpoints (Served directly from SQLite)
 app.get('/api/lessons', (req, res) => {
-  const manifest = readJsonFile(MANIFEST_FILE, []);
-  res.json(manifest);
+  try {
+    const list = lessonsDao.getAll();
+    res.json(list);
+  } catch (err) {
+    console.error('Error fetching lessons:', err);
+    res.status(500).json({ error: 'Failed to retrieve lessons' });
+  }
 });
 
 app.get('/api/lessons/:id', (req, res) => {
@@ -66,117 +34,141 @@ app.get('/api/lessons/:id', (req, res) => {
   if (isNaN(id) || id < 1 || id > 100) {
     return res.status(404).json({ error: 'Lesson not found' });
   }
-  const padded = String(id).padStart(3, '0');
-  const lessonFile = path.join(LESSONS_DIR, `lesson-${padded}.json`);
-  if (!fs.existsSync(lessonFile)) {
-    return res.status(404).json({ error: `Lesson ${id} file not found` });
+  try {
+    const lesson = lessonsDao.getById(id);
+    if (!lesson) {
+      return res.status(404).json({ error: `Lesson ${id} not found in database` });
+    }
+    res.json(lesson);
+  } catch (err) {
+    console.error(`Error fetching lesson ${id}:`, err);
+    res.status(500).json({ error: `Failed to retrieve lesson ${id}` });
   }
-  const lessonData = readJsonFile(lessonFile, null);
-  if (!lessonData) {
-    return res.status(500).json({ error: `Error reading lesson ${id}` });
-  }
-  res.json(lessonData);
 });
 
-// Progress Endpoints
+// Progress Endpoints (SQLite single source of truth)
 app.get('/api/progress', (req, res) => {
-  const progress = readJsonFile(PROGRESS_FILE, {});
-  res.json(progress);
+  try {
+    const all = progressDao.getAll();
+    res.json(all);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch progress' });
+  }
+});
+
+app.get('/api/progress/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ error: 'Invalid lesson ID' });
+  try {
+    const p = progressDao.getById(id);
+    res.json(p || { lessonId: id, currentSentenceIndex: 0, activeChunkIndex: 0, typedText: '', completed: false });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch lesson progress' });
+  }
 });
 
 app.post('/api/progress', (req, res) => {
-  const newProgress = req.body;
-  if (!newProgress || typeof newProgress.lessonId !== 'number') {
+  const p = req.body;
+  if (!p || typeof p.lessonId !== 'number') {
     return res.status(400).json({ error: 'Invalid progress data: lessonId is required' });
   }
+  try {
+    progressDao.save(p);
+    const updated = progressDao.getById(p.lessonId);
+    res.json({ success: true, progress: updated });
+  } catch (err) {
+    console.error('Error saving progress:', err);
+    res.status(500).json({ error: 'Failed to save progress' });
+  }
+});
 
-  const all = readJsonFile(PROGRESS_FILE, {});
-  all[newProgress.lessonId] = {
-    ...(all[newProgress.lessonId] || {}),
-    ...newProgress,
-    updatedAt: new Date().toISOString()
-  };
+// Typed Story Endpoints (per-lesson server synchronization)
+app.get('/api/story/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ error: 'Invalid lesson ID' });
+  try {
+    const p = progressDao.getById(id);
+    res.json({
+      lessonId: id,
+      typedText: p ? p.typedText : '',
+      activeChunkIndex: p ? p.activeChunkIndex : 0
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch story' });
+  }
+});
 
-  writeJsonFile(PROGRESS_FILE, all);
-  res.json({ success: true, progress: all[newProgress.lessonId] });
+app.post('/api/story/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ error: 'Invalid lesson ID' });
+  const { typedText, activeChunkIndex } = req.body;
+  try {
+    progressDao.saveStory(id, typedText || '', activeChunkIndex || 0);
+    // Also update last_active position
+    lastActiveDao.save({
+      lessonId: id,
+      sentenceIndex: 0,
+      activeChunkIndex: activeChunkIndex || 0,
+      typedText: typedText || ''
+    });
+    res.json({ success: true, lessonId: id });
+  } catch (err) {
+    console.error('Error saving story:', err);
+    res.status(500).json({ error: 'Failed to save story' });
+  }
 });
 
 // Settings Endpoints
 app.get('/api/settings', (req, res) => {
-  const defaultSettings = {
-    speechSpeed: 0.8,
-    speechPitch: 1.0,
-    selectedVoiceURI: null,
-    voiceAccent: 'en-IN',
-    repeatCount: 1,
-    wordsPerChunk: 3, // Default 3 words at once!
-    dictationPauseMs: 2500,
-    autoAdvanceOnCorrect: true,
-    autoAdvanceDelayMs: 1000,
-    soundEffects: true
-  };
-  const settings = readJsonFile(SETTINGS_FILE, defaultSettings);
-  res.json({ ...defaultSettings, ...settings });
+  try {
+    const settings = settingsDao.get();
+    res.json(settings);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch settings' });
+  }
 });
 
 app.post('/api/settings', (req, res) => {
-  const currentSettings = readJsonFile(SETTINGS_FILE, {});
-  const updated = { ...currentSettings, ...req.body, updatedAt: new Date().toISOString() };
-  writeJsonFile(SETTINGS_FILE, updated);
-  res.json({ success: true, settings: updated });
+  try {
+    const updated = settingsDao.save(req.body);
+    res.json({ success: true, settings: updated });
+  } catch (err) {
+    console.error('Error saving settings:', err);
+    res.status(500).json({ error: 'Failed to save settings' });
+  }
 });
 
 // Last Active State Endpoints
 app.get('/api/last-active', (req, res) => {
-  const lastActive = readJsonFile(LAST_ACTIVE_FILE, { lessonId: 1, sentenceIndex: 0, activeChunkIndex: 0, typedText: '' });
-  res.json(lastActive);
+  try {
+    const lastActive = lastActiveDao.get();
+    res.json(lastActive);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch last active state' });
+  }
 });
 
 app.post('/api/last-active', (req, res) => {
-  const { lessonId, sentenceIndex, activeChunkIndex, typedText } = req.body;
-  const lid = Number(lessonId) || 1;
-  const state = {
-    lessonId: lid,
-    sentenceIndex: Number(sentenceIndex) || 0,
-    activeChunkIndex: Number(activeChunkIndex) || 0,
-    typedText: typeof typedText === 'string' ? typedText : '',
-    updatedAt: new Date().toISOString()
-  };
-  writeJsonFile(LAST_ACTIVE_FILE, state);
-
-  // Synchronously update per-lesson progress so typed text is preserved per lesson!
-  const allProgress = readJsonFile(PROGRESS_FILE, {});
-  allProgress[lid] = {
-    ...(allProgress[lid] || { lessonId: lid }),
-    sentenceIndex: state.sentenceIndex,
-    activeChunkIndex: state.activeChunkIndex,
-    typedText: state.typedText,
-    updatedAt: state.updatedAt
-  };
-  writeJsonFile(PROGRESS_FILE, allProgress);
-
-  res.json({ success: true, lastActive: state });
+  try {
+    lastActiveDao.save(req.body);
+    const updated = lastActiveDao.get();
+    res.json({ success: true, lastActive: updated });
+  } catch (err) {
+    console.error('Error saving last active state:', err);
+    res.status(500).json({ error: 'Failed to save last active state' });
+  }
 });
 
-// Reset Progress
+// Reset All Progress Endpoint
 app.post('/api/reset', (req, res) => {
-  writeJsonFile(PROGRESS_FILE, {});
-  writeJsonFile(LAST_ACTIVE_FILE, { lessonId: 1, sentenceIndex: 0, activeChunkIndex: 0, typedText: '' });
-  res.json({ success: true, message: 'All progress has been reset.' });
+  try {
+    progressDao.resetAll();
+    res.json({ success: true, message: 'All progress reset successfully in SQLite' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to reset progress' });
+  }
 });
-
-// Serve frontend build if dist exists
-const DIST_DIR = path.join(__dirname, '..', 'dist');
-if (fs.existsSync(DIST_DIR)) {
-  app.use(express.static(DIST_DIR));
-  app.use((req, res, next) => {
-    if (req.method === 'GET' && !req.path.startsWith('/api')) {
-      return res.sendFile(path.join(DIST_DIR, 'index.html'));
-    }
-    next();
-  });
-}
 
 app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
+  console.log(`English Dictation Server running on http://localhost:${PORT} with SQLite backend`);
 });
