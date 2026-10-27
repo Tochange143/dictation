@@ -1,11 +1,12 @@
 import React, { useRef, useEffect } from 'react';
-import { RotateCcw, Trash2, Volume2, Eye, EyeOff } from 'lucide-react';
+import { RotateCcw, Trash2, Volume2, Volume1, Eye, EyeOff } from 'lucide-react';
 
 interface TypingPanelProps {
   value: string;
   onChange: (newValue: string) => void;
   onClear: () => void;
   onReplayCurrent: () => void;
+  onPronounceSlow?: () => void;
   disabled?: boolean;
   wordCount: number;
   accuracy?: number;
@@ -20,6 +21,7 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
   onChange,
   onClear,
   onReplayCurrent,
+  onPronounceSlow,
   disabled = false,
   wordCount,
   accuracy,
@@ -62,7 +64,7 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
   return (
     <div
       style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--bg-surface)',
         border: '1.5px solid var(--border-main)',
         borderRadius: 'var(--radius-lg)',
         padding: '1.1rem 1.25rem',
@@ -71,7 +73,7 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
         gap: '0.65rem',
         flex: 1,
         minHeight: '210px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
         position: 'relative',
         transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
       }}
@@ -134,23 +136,23 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
       {/* Help / Peek Banner when Ctrl+S is triggered */}
       {isHelpVisible && helpText && (
         <div style={{
-          backgroundColor: '#f0fdf4',
-          border: '1.5px solid #86efac',
+          backgroundColor: 'rgba(34, 197, 94, 0.15)',
+          border: '1.5px solid rgba(34, 197, 94, 0.4)',
           borderRadius: '8px',
           padding: '0.65rem 0.9rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           fontSize: '0.95rem',
-          color: '#166534',
+          color: '#4ade80',
           flexWrap: 'wrap',
           gap: '0.5rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <Eye size={16} style={{ color: '#15803d' }} />
-            <span><strong>Help / Current Words:</strong> &ldquo;{helpText}&rdquo;</span>
+            <Eye size={16} style={{ color: '#4ade80' }} />
+            <span><strong>Help / Spoken Words:</strong> &ldquo;{helpText}&rdquo;</span>
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: 600 }}>
+          <span style={{ fontSize: '0.72rem', color: '#86efac', fontWeight: 600 }}>
             Press Ctrl+S to hide
           </span>
         </div>
@@ -208,7 +210,7 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               padding: '6px 12px',
               borderRadius: '6px',
               border: '1px solid var(--border-main)',
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--bg-muted)',
               cursor: 'pointer',
               fontWeight: 500
             }}
@@ -219,13 +221,37 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               fontSize: '0.68rem',
               padding: '1px 5px',
               borderRadius: '3px',
-              backgroundColor: '#e2e8f0',
+              backgroundColor: 'var(--bg-surface)',
               marginLeft: '2px',
-              color: 'var(--text-muted)'
+              color: 'var(--text-muted)',
+              border: '1px solid var(--border-subtle)'
             }}>
               Alt+R
             </kbd>
           </button>
+
+          {onPronounceSlow && (
+            <button
+              onClick={onPronounceSlow}
+              title="Pronounce current words slowly and clearly"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '0.82rem',
+                color: '#38bdf8',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
+                backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                cursor: 'pointer',
+                fontWeight: 600
+              }}
+            >
+              <Volume1 size={14} />
+              <span>Slow Pronounce</span>
+            </button>
+          )}
 
           {onToggleHelp && (
             <button
@@ -236,11 +262,11 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
                 alignItems: 'center',
                 gap: '6px',
                 fontSize: '0.82rem',
-                color: isHelpVisible ? '#166534' : 'var(--text-primary)',
+                color: isHelpVisible ? '#4ade80' : 'var(--text-primary)',
                 padding: '6px 12px',
                 borderRadius: '6px',
-                border: `1px solid ${isHelpVisible ? '#86efac' : 'var(--border-main)'}`,
-                backgroundColor: isHelpVisible ? '#f0fdf4' : '#f8fafc',
+                border: `1px solid ${isHelpVisible ? 'rgba(34, 197, 94, 0.5)' : 'var(--border-main)'}`,
+                backgroundColor: isHelpVisible ? 'rgba(34, 197, 94, 0.15)' : 'var(--bg-muted)',
                 cursor: 'pointer',
                 fontWeight: 500
               }}
@@ -251,9 +277,10 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
                 fontSize: '0.68rem',
                 padding: '1px 5px',
                 borderRadius: '3px',
-                backgroundColor: isHelpVisible ? '#dcfce7' : '#e2e8f0',
+                backgroundColor: isHelpVisible ? 'rgba(34, 197, 94, 0.25)' : 'var(--bg-surface)',
                 marginLeft: '2px',
-                color: isHelpVisible ? '#15803d' : 'var(--text-muted)'
+                color: isHelpVisible ? '#4ade80' : 'var(--text-muted)',
+                border: '1px solid var(--border-subtle)'
               }}>
                 Ctrl+S
               </kbd>

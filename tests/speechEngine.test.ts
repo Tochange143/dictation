@@ -1,7 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { speechEngine, isIndianVoice } from '../src/services/speechEngine';
+import { speechEngine, isIndianVoice, sanitizeSpeechText } from '../src/services/speechEngine';
 
 describe('Speech Engine Service', () => {
+  it('cleans and normalizes text for speech articulation without TTS glitches', () => {
+    expect(sanitizeSpeechText('"Hello," she said.')).toBe('Hello, she said.');
+    expect(sanitizeSpeechText('Word—another word')).toBe('Word , another word');
+    expect(sanitizeSpeechText('[Missing word]')).toBe('Missing word');
+  });
+
   it('manages speech speed with boundary clamps (0.5x to 1.5x)', () => {
     speechEngine.setSpeed(0.8);
     expect(speechEngine.getSpeed()).toBe(0.8);

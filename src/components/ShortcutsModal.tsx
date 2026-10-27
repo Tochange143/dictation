@@ -10,9 +10,12 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
   if (!isOpen) return null;
 
   const shortcuts = [
+    { key: 'Ctrl + \\', desc: 'Toggle / Hide Lessons Sidebar' },
     { key: 'Ctrl + S', desc: 'Show or hide current words / sentence (Help)' },
     { key: 'Alt + R', desc: 'Replay current words' },
     { key: 'Alt + P', desc: 'Pause or resume speech' },
+    { key: 'Alt + Right', desc: 'Skip to next chunk' },
+    { key: 'Alt + Left', desc: 'Go back to previous chunk' },
     { key: 'Escape', desc: 'Pause speech or close modal' }
   ];
 
@@ -21,8 +24,8 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.4)',
-        backdropFilter: 'blur(3px)',
+        backgroundColor: 'rgba(9, 13, 22, 0.75)',
+        backdropFilter: 'blur(4px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -32,13 +35,13 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
     >
       <div
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-surface)',
           borderRadius: 'var(--radius-lg)',
           border: '1.5px solid var(--border-main)',
           maxWidth: '480px',
           width: '100%',
           padding: '1.5rem',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 20px 35px rgba(0, 0, 0, 0.45)',
           display: 'flex',
           flexDirection: 'column',
           gap: '1rem'
@@ -86,10 +89,10 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
                 fontWeight: 600,
                 padding: '2px 8px',
                 borderRadius: '4px',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-surface)',
                 border: '1px solid var(--border-main)',
-                color: 'var(--text-primary)',
-                boxShadow: '0 1px 1px rgba(0,0,0,0.05)'
+                color: 'var(--accent)',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
               }}>
                 {sc.key}
               </kbd>

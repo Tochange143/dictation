@@ -59,8 +59,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.45)',
-        backdropFilter: 'blur(3px)',
+        backgroundColor: 'rgba(9, 13, 22, 0.75)',
+        backdropFilter: 'blur(4px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -70,13 +70,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     >
       <div
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-surface)',
           borderRadius: 'var(--radius-lg)',
           border: '1.5px solid var(--border-main)',
           maxWidth: '520px',
           width: '100%',
           padding: '1.75rem',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 20px 35px rgba(0, 0, 0, 0.45)',
           display: 'flex',
           flexDirection: 'column',
           gap: '1.25rem',
@@ -122,10 +122,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 padding: '3px 8px',
                 borderRadius: '6px',
                 border: '1px solid var(--border-main)',
-                backgroundColor: '#f8fafc',
+                backgroundColor: 'var(--bg-muted)',
                 fontSize: '0.72rem',
                 fontWeight: 600,
-                color: 'var(--brand-primary)',
+                color: 'var(--accent)',
                 cursor: 'pointer'
               }}
             >
@@ -150,9 +150,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 gap: '5px',
                 padding: '7px 8px',
                 borderRadius: '8px',
-                border: currentAccent === 'en-IN' ? '2px solid #d97706' : '1px solid var(--border-main)',
-                backgroundColor: currentAccent === 'en-IN' ? '#fef3c7' : '#ffffff',
-                color: currentAccent === 'en-IN' ? '#92400e' : 'var(--text-primary)',
+                border: currentAccent === 'en-IN' ? '2px solid #f59e0b' : '1px solid var(--border-main)',
+                backgroundColor: currentAccent === 'en-IN' ? 'rgba(245, 158, 11, 0.2)' : 'var(--bg-muted)',
+                color: currentAccent === 'en-IN' ? '#fbbf24' : 'var(--text-primary)',
                 fontSize: '0.82rem',
                 fontWeight: currentAccent === 'en-IN' ? 700 : 500,
                 cursor: 'pointer'
@@ -172,8 +172,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 padding: '7px 8px',
                 borderRadius: '8px',
                 border: currentAccent === 'en-US' ? '2px solid var(--brand-primary)' : '1px solid var(--border-main)',
-                backgroundColor: currentAccent === 'en-US' ? '#eff6ff' : '#ffffff',
-                color: currentAccent === 'en-US' ? 'var(--brand-primary)' : 'var(--text-primary)',
+                backgroundColor: currentAccent === 'en-US' ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-muted)',
+                color: currentAccent === 'en-US' ? 'var(--accent)' : 'var(--text-primary)',
                 fontSize: '0.82rem',
                 fontWeight: currentAccent === 'en-US' ? 700 : 500,
                 cursor: 'pointer'
@@ -193,8 +193,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 padding: '7px 8px',
                 borderRadius: '8px',
                 border: currentAccent === 'en-GB' ? '2px solid var(--brand-primary)' : '1px solid var(--border-main)',
-                backgroundColor: currentAccent === 'en-GB' ? '#eff6ff' : '#ffffff',
-                color: currentAccent === 'en-GB' ? 'var(--brand-primary)' : 'var(--text-primary)',
+                backgroundColor: currentAccent === 'en-GB' ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-muted)',
+                color: currentAccent === 'en-GB' ? 'var(--accent)' : 'var(--text-primary)',
                 fontSize: '0.82rem',
                 fontWeight: currentAccent === 'en-GB' ? 700 : 500,
                 cursor: 'pointer'
@@ -223,7 +223,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 border: '1px solid var(--border-main)',
                 fontSize: '0.83rem',
                 color: 'var(--text-primary)',
-                backgroundColor: '#ffffff'
+                backgroundColor: 'var(--bg-muted)',
+                outline: 'none'
               }}
             >
               <optgroup label="🇮🇳 Indian English (en-IN)">
@@ -258,7 +259,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               )}
 
               {otherVoices.length > 0 && (
-                <optgroup label="🌐 Other English Voices">
+                <optgroup label="🌍 Other English Voices">
                   {otherVoices.map(v => (
                     <option key={v.voiceURI} value={v.voiceURI}>
                       {v.name} ({v.lang})
@@ -267,36 +268,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </optgroup>
               )}
             </select>
-          </div>
-        </div>
-
-        {/* Speech Speed */}
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
-            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              Speech Speed
-            </label>
-            <span style={{ fontSize: '0.82rem', fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--accent)' }}>
-              {settings.speechSpeed.toFixed(1)}x
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0.5"
-            max="1.5"
-            step="0.1"
-            value={settings.speechSpeed}
-            onChange={(e) => {
-              const val = parseFloat(e.target.value);
-              handleChange('speechSpeed', val);
-              speechEngine.setSpeed(val);
-            }}
-            style={{ width: '100%', cursor: 'pointer' }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-            <span>0.5x (Slow)</span>
-            <span>0.8x (Default)</span>
-            <span>1.5x (Fast)</span>
           </div>
         </div>
 
@@ -321,7 +292,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   padding: '6px 12px',
                   borderRadius: '8px',
                   border: settings.wordsPerChunk === opt.val ? '1.5px solid var(--accent)' : '1px solid var(--border-main)',
-                  backgroundColor: settings.wordsPerChunk === opt.val ? 'var(--bg-muted)' : '#ffffff',
+                  backgroundColor: settings.wordsPerChunk === opt.val ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-muted)',
                   fontWeight: 600,
                   fontSize: '0.82rem',
                   color: settings.wordsPerChunk === opt.val ? 'var(--accent)' : 'var(--text-secondary)'
@@ -348,15 +319,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               style={{
                 padding: '8px 10px',
                 borderRadius: '8px',
-                border: (settings.evaluationMode || 'relaxed') === 'relaxed' ? '2px solid #16a34a' : '1px solid var(--border-main)',
-                backgroundColor: (settings.evaluationMode || 'relaxed') === 'relaxed' ? '#f0fdf4' : '#ffffff',
+                border: (settings.evaluationMode || 'relaxed') === 'relaxed' ? '2px solid #22c55e' : '1px solid var(--border-main)',
+                backgroundColor: (settings.evaluationMode || 'relaxed') === 'relaxed' ? 'rgba(34, 197, 94, 0.15)' : 'var(--bg-muted)',
                 textAlign: 'left',
                 cursor: 'pointer'
               }}
             >
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#15803d', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>🟢 Relaxed Mode</span>
-                <span style={{ fontSize: '0.65rem', backgroundColor: '#dcfce7', padding: '1px 5px', borderRadius: '3px' }}>Recommended</span>
+                <span style={{ fontSize: '0.65rem', backgroundColor: 'rgba(34, 197, 94, 0.25)', padding: '1px 5px', borderRadius: '3px' }}>Recommended</span>
               </div>
               <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
                 Focuses on spelling & listening. Ignores capitalization & punctuation errors.
@@ -370,12 +341,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 padding: '8px 10px',
                 borderRadius: '8px',
                 border: settings.evaluationMode === 'strict' ? '2px solid var(--brand-primary)' : '1px solid var(--border-main)',
-                backgroundColor: settings.evaluationMode === 'strict' ? '#eff6ff' : '#ffffff',
+                backgroundColor: settings.evaluationMode === 'strict' ? 'rgba(59, 130, 246, 0.18)' : 'var(--bg-muted)',
                 textAlign: 'left',
                 cursor: 'pointer'
               }}
             >
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--brand-primary)' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent)' }}>
                 🎯 Strict Mode
               </div>
               <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
@@ -404,7 +375,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   padding: '0.5rem',
                   borderRadius: '8px',
                   border: settings.repeatCount === num ? '1.5px solid var(--accent)' : '1px solid var(--border-main)',
-                  backgroundColor: settings.repeatCount === num ? 'var(--bg-muted)' : '#ffffff',
+                  backgroundColor: settings.repeatCount === num ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-muted)',
                   fontWeight: 600,
                   fontSize: '0.85rem',
                   color: settings.repeatCount === num ? 'var(--accent)' : 'var(--text-secondary)'
@@ -429,7 +400,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
               Auto-Advance on 100% Correct
             </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
               Smoothly transition to the next sentence when completely accurate
             </div>
           </div>
@@ -482,7 +453,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     borderRadius: '6px',
                     fontSize: '0.78rem',
                     border: '1px solid var(--border-main)',
-                    backgroundColor: '#ffffff'
+                    backgroundColor: 'var(--bg-surface)',
+                    color: 'var(--text-primary)'
                   }}
                 >
                   Cancel

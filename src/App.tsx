@@ -67,7 +67,12 @@ export const DictationPage: React.FC = () => {
   });
 
   // Modals & UI Controls
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return false;
+    }
+    return true;
+  });
   const [isSummaryOpen, setIsSummaryOpen] = useState<boolean>(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -275,12 +280,12 @@ export const DictationPage: React.FC = () => {
   }, [liveFeedbacks]);
 
   // Speak discrete active chunk (e.g. 3 words at once)
-  const speakActiveChunk = useCallback((chunkIdx?: number) => {
+  const speakActiveChunk = useCallback((chunkIdx?: number, slowClarity = false) => {
     if (!storyChunks || storyChunks.length === 0) return;
     const idx = chunkIdx !== undefined ? chunkIdx : activeChunkIndex;
     if (idx >= 0 && idx < storyChunks.length) {
       const chunk = storyChunks[idx];
-      speechEngine.speakDiscreteChunk(chunk.text, idx, storyChunks.length);
+      speechEngine.speakDiscreteChunk(chunk.text, idx, storyChunks.length, slowClarity);
     }
   }, [storyChunks, activeChunkIndex]);
 
@@ -474,6 +479,13 @@ export const DictationPage: React.FC = () => {
   // Global Keyboard Shortcuts
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Toggle / Hide Sidebar: Ctrl+\
+      if ((e.ctrlKey || e.metaKey) && (e.key === '\\' || e.code === 'Backslash')) {
+        e.preventDefault();
+        setIsSidebarOpen(prev => !prev);
+        return;
+      }
+
       // Show/Hide Words Help: Ctrl+S
       if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.code === 'KeyS')) {
         e.preventDefault();
@@ -520,7 +532,7 @@ export const DictationPage: React.FC = () => {
       height: '100vh',
       width: '100vw',
       overflow: 'hidden',
-      backgroundColor: 'var(--bg-main)',
+      backgroundColor: 'var(--bg-primary)',
       fontFamily: 'var(--font-sans)',
       color: 'var(--text-primary)'
     }}>
@@ -540,7 +552,8 @@ export const DictationPage: React.FC = () => {
         flexDirection: 'column',
         minWidth: 0,
         height: '100vh',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        backgroundColor: 'var(--bg-primary)'
       }}>
         {isLoadingLesson || !currentLesson ? (
           <div style={{
@@ -566,6 +579,8 @@ export const DictationPage: React.FC = () => {
               repeatCount={settings.repeatCount}
               wordsPerChunk={settings.wordsPerChunk}
               dictationPauseMs={dictationPauseMs}
+              isSidebarOpen={isSidebarOpen}
+              onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
               onStartOrResume={() => {
                 if (speechState.isPaused) {
                   speechEngine.resume();
@@ -575,6 +590,7 @@ export const DictationPage: React.FC = () => {
               }}
               onPause={() => speechEngine.pause()}
               onReplayActiveChunk={() => speakActiveChunk()}
+              onPronounceSlow={() => speakActiveChunk(undefined, true)}
               onReplaySentence={speakCurrentSentence}
               onPreviousSentence={handlePreviousChunk}
               onSkipSentence={handleSkipChunk}
@@ -596,16 +612,13 @@ export const DictationPage: React.FC = () => {
               onPacingPreset={handlePacingPreset}
               onOpenShortcuts={() => setIsShortcutsOpen(true)}
               onOpenSettings={() => setIsSettingsOpen(true)}
-              onOpenSidebar={() => setIsSidebarOpen(true)}
             />
 
-            {/* Core Practice Layout: Continuous Story Feedback above, Writing notebook below */}
+            {/* Core Practice Layout: Full Width without empty side gaps */}
             <div style={{
               flex: 1,
-              padding: '1rem 1.25rem',
-              maxWidth: '1100px',
+              padding: '1rem 1.5rem',
               width: '100%',
-              margin: '0 auto',
               display: 'flex',
               flexDirection: 'column',
               gap: '0.85rem'
@@ -627,6 +640,7 @@ export const DictationPage: React.FC = () => {
                 onChange={setTypedInput}
                 onClear={() => setTypedInput('')}
                 onReplayCurrent={() => speakActiveChunk()}
+                onPronounceSlow={() => speakActiveChunk(undefined, true)}
                 accuracy={liveAccuracy}
                 wordCount={typedInput.trim() ? tokenizeSentence(typedInput).length : 0}
                 isSpeaking={speechState.isPlaying}

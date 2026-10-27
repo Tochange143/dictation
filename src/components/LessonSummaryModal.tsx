@@ -1,16 +1,15 @@
-import React, { useEffect } from 'react';
-import confetti from 'canvas-confetti';
+import React from 'react';
+import { Lesson } from '../types';
 import { 
   Trophy, 
-  CheckCircle2, 
   RotateCcw, 
   ArrowRight, 
+  X, 
   Clock, 
-  Award,
-  ListFilter,
-  X
+  Target, 
+  CheckCircle2, 
+  ListFilter 
 } from 'lucide-react';
-import { Lesson } from '../types';
 
 interface LessonSummaryModalProps {
   isOpen: boolean;
@@ -41,27 +40,12 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
   onClose,
   hasNextLesson
 }) => {
-  useEffect(() => {
-    if (isOpen) {
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      } catch (err) {
-        // Safe fallback
-      }
-    }
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
   const minutes = Math.floor(timeSpentSeconds / 60);
   const seconds = timeSpentSeconds % 60;
-  const timeFormatted = `${minutes}m ${seconds}s`;
+  const timeFormatted = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 
-  // Sort misspelled words by frequency
   const trickyWords = Object.entries(misspelledWordCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
@@ -71,7 +55,7 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.5)',
+        backgroundColor: 'rgba(9, 13, 22, 0.75)',
         backdropFilter: 'blur(4px)',
         display: 'flex',
         alignItems: 'center',
@@ -82,13 +66,13 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
     >
       <div
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-surface)',
           borderRadius: 'var(--radius-lg)',
           border: '1.5px solid var(--border-main)',
           maxWidth: '580px',
           width: '100%',
           padding: '2rem',
-          boxShadow: '0 25px 30px -5px rgba(0, 0, 0, 0.15)',
+          boxShadow: '0 25px 35px rgba(0, 0, 0, 0.45)',
           display: 'flex',
           flexDirection: 'column',
           gap: '1.5rem',
@@ -107,11 +91,12 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
               width: '44px',
               height: '44px',
               borderRadius: '12px',
-              backgroundColor: '#fef3c7',
-              color: '#d97706',
+              backgroundColor: 'rgba(245, 158, 11, 0.2)',
+              color: '#fbbf24',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              border: '1px solid rgba(245, 158, 11, 0.4)'
             }}>
               <Trophy size={24} />
             </div>
@@ -143,7 +128,8 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
             backgroundColor: 'var(--bg-muted)',
             padding: '0.85rem',
             borderRadius: 'var(--radius-md)',
-            textAlign: 'center'
+            textAlign: 'center',
+            border: '1px solid var(--border-subtle)'
           }}>
             <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-green)' }}>
               {accuracy}%
@@ -157,7 +143,8 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
             backgroundColor: 'var(--bg-muted)',
             padding: '0.85rem',
             borderRadius: 'var(--radius-md)',
-            textAlign: 'center'
+            textAlign: 'center',
+            border: '1px solid var(--border-subtle)'
           }}>
             <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {lesson.sentences.length}
@@ -171,7 +158,8 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
             backgroundColor: 'var(--bg-muted)',
             padding: '0.85rem',
             borderRadius: 'var(--radius-md)',
-            textAlign: 'center'
+            textAlign: 'center',
+            border: '1px solid var(--border-subtle)'
           }}>
             <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {totalCorrectWords}
@@ -185,7 +173,8 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
             backgroundColor: 'var(--bg-muted)',
             padding: '0.85rem',
             borderRadius: 'var(--radius-md)',
-            textAlign: 'center'
+            textAlign: 'center',
+            border: '1px solid var(--border-subtle)'
           }}>
             <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {timeFormatted}
@@ -202,7 +191,7 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
             border: '1px solid var(--border-subtle)',
             borderRadius: 'var(--radius-md)',
             padding: '1rem',
-            backgroundColor: '#ffffff'
+            backgroundColor: 'var(--bg-muted)'
           }}>
             <div style={{
               display: 'flex',
@@ -261,7 +250,8 @@ export const LessonSummaryModal: React.FC<LessonSummaryModalProps> = ({
               border: '1px solid var(--border-main)',
               fontSize: '0.88rem',
               fontWeight: 600,
-              color: 'var(--text-primary)'
+              color: 'var(--text-primary)',
+              backgroundColor: 'var(--bg-muted)'
             }}
           >
             <RotateCcw size={15} />

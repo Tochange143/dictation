@@ -6,9 +6,11 @@ import {
   SkipBack, 
   SkipForward, 
   Volume2, 
+  Volume1,
   HelpCircle, 
   Settings as SettingsIcon,
-  Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
   GraduationCap,
   Repeat
 } from 'lucide-react';
@@ -29,9 +31,12 @@ interface TopControlsBarProps {
   repeatCount: 1 | 2 | 3;
   wordsPerChunk: number;
   dictationPauseMs: number;
+  isSidebarOpen: boolean;
+  onToggleSidebar: () => void;
   onStartOrResume: () => void;
   onPause: () => void;
   onReplayActiveChunk: () => void;
+  onPronounceSlow: () => void;
   onReplaySentence: () => void;
   onPreviousSentence: () => void;
   onSkipSentence: () => void;
@@ -43,7 +48,6 @@ interface TopControlsBarProps {
   onPacingPreset: (preset: 'slow' | 'teacher' | 'natural') => void;
   onOpenShortcuts: () => void;
   onOpenSettings: () => void;
-  onOpenSidebar: () => void;
 }
 
 export const TopControlsBar: React.FC<TopControlsBarProps> = ({
@@ -55,9 +59,12 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
   voiceAccent,
   repeatCount,
   wordsPerChunk,
+  isSidebarOpen,
+  onToggleSidebar,
   onStartOrResume,
   onPause,
   onReplayActiveChunk,
+  onPronounceSlow,
   onReplaySentence,
   onPreviousSentence,
   onSkipSentence,
@@ -68,8 +75,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
   onChangeWordsPerChunk,
   onPacingPreset,
   onOpenShortcuts,
-  onOpenSettings,
-  onOpenSidebar
+  onOpenSettings
 }) => {
   const progressPct = Math.round(((sentenceIndex + 1) / totalSentences) * 100);
 
@@ -98,15 +104,15 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
       position: 'sticky',
       top: 0,
       zIndex: 30,
-      backgroundColor: '#ffffff',
+      backgroundColor: 'var(--bg-surface)',
       borderBottom: '1.5px solid var(--border-main)',
       padding: '0.65rem 1.25rem',
       display: 'flex',
       flexDirection: 'column',
       gap: '0.5rem',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.04)'
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.25)'
     }}>
-      {/* Upper line: Title, Progress, and Action triggers */}
+      {/* Upper line: Sidebar Toggle, Title, Progress, and Action triggers */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -115,18 +121,28 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
         gap: '0.5rem'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Permanent Desktop & Mobile Sidebar Toggle Button */}
           <button 
-            onClick={onOpenSidebar}
-            className="mobile-only"
+            onClick={onToggleSidebar}
             style={{
-              padding: '6px',
-              borderRadius: '6px',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-secondary)'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 11px',
+              borderRadius: '8px',
+              border: '1.5px solid var(--border-main)',
+              backgroundColor: isSidebarOpen ? 'var(--bg-muted)' : 'var(--brand-primary)',
+              color: isSidebarOpen ? 'var(--text-secondary)' : '#ffffff',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
             }}
-            aria-label="Open lessons menu"
+            title={isSidebarOpen ? "Hide Lessons Sidebar (Ctrl+\\)" : "Show Lessons Sidebar (Ctrl+\\)"}
+            aria-label="Toggle Lessons Sidebar"
           >
-            <Menu size={18} />
+            {isSidebarOpen ? <PanelLeftClose size={16} /> : <PanelLeftOpen size={16} />}
+            <span>{isSidebarOpen ? 'Hide' : 'Lessons'}</span>
           </button>
 
           <div>
@@ -134,10 +150,10 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               <span style={{
                 fontSize: '0.72rem',
                 fontWeight: 700,
-                padding: '2px 6px',
+                padding: '2px 7px',
                 borderRadius: '4px',
-                backgroundColor: lesson.level === 1 ? '#dcfce7' : lesson.level === 2 ? '#e0f2fe' : '#f3e8ff',
-                color: lesson.level === 1 ? '#15803d' : lesson.level === 2 ? '#0369a1' : '#7e22ce'
+                backgroundColor: lesson.level === 1 ? 'rgba(34, 197, 94, 0.2)' : lesson.level === 2 ? 'rgba(56, 189, 248, 0.2)' : 'rgba(192, 132, 252, 0.2)',
+                color: lesson.level === 1 ? '#4ade80' : lesson.level === 2 ? '#38bdf8' : '#c084fc'
               }}>
                 {lesson.levelName}
               </span>
@@ -145,7 +161,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 #{lesson.id} {lesson.title}
               </h2>
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               Sentence {sentenceIndex + 1} of {totalSentences} ({progressPct}% completed)
             </div>
           </div>
@@ -163,6 +179,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               padding: '6px 10px',
               borderRadius: '8px',
               border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-muted)',
               fontSize: '0.8rem',
               color: 'var(--text-secondary)'
             }}
@@ -178,6 +195,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               padding: '6px 8px',
               borderRadius: '8px',
               border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-muted)',
               color: 'var(--text-secondary)'
             }}
           >
@@ -209,7 +227,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '0.6rem',
-        padding: '0.4rem 0.6rem',
+        padding: '0.4rem 0.65rem',
         backgroundColor: 'var(--bg-muted)',
         borderRadius: '8px',
         border: '1px solid var(--border-subtle)'
@@ -228,10 +246,10 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                   borderRadius: '6px',
                   fontSize: '0.75rem',
                   fontWeight: wordsPerChunk === opt.val ? 700 : 500,
-                  backgroundColor: wordsPerChunk === opt.val ? 'var(--brand-primary)' : '#ffffff',
+                  backgroundColor: wordsPerChunk === opt.val ? 'var(--brand-primary)' : 'var(--bg-surface)',
                   color: wordsPerChunk === opt.val ? '#ffffff' : 'var(--text-secondary)',
-                  border: '1px solid var(--border-subtle)',
-                  boxShadow: wordsPerChunk === opt.val ? '0 1px 2px rgba(0,0,0,0.1)' : 'none'
+                  border: '1px solid var(--border-main)',
+                  boxShadow: wordsPerChunk === opt.val ? '0 1px 3px rgba(59, 130, 246, 0.3)' : 'none'
                 }}
               >
                 {opt.label}
@@ -240,7 +258,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
           </div>
         </div>
 
-        <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
           {wordsPerChunk > 0 ? (
             <span>Sounds {wordsPerChunk} words → you write → next {wordsPerChunk} words sound</span>
           ) : (
@@ -273,7 +291,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 backgroundColor: 'var(--brand-primary)',
                 color: '#ffffff',
                 fontWeight: 600,
-                fontSize: '0.85rem'
+                fontSize: '0.85rem',
+                boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
               }}
             >
               <Pause size={15} />
@@ -292,7 +311,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 backgroundColor: 'var(--brand-primary)',
                 color: '#ffffff',
                 fontWeight: 600,
-                fontSize: '0.85rem'
+                fontSize: '0.85rem',
+                boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
               }}
             >
               <Play size={15} />
@@ -313,11 +333,33 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               fontSize: '0.82rem',
               color: 'var(--text-primary)',
               fontWeight: 600,
-              backgroundColor: '#ffffff'
+              backgroundColor: 'var(--bg-surface)'
             }}
           >
             <RotateCcw size={14} />
             <span>Replay {wordsPerChunk > 0 ? `${wordsPerChunk} Words` : 'Phrase'}</span>
+          </button>
+
+          {/* Slow & Clear Pronunciation Button */}
+          <button
+            onClick={onPronounceSlow}
+            title="Listen with slow, crystal-clear word pronunciation"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '6px 10px',
+              borderRadius: '8px',
+              border: '1.5px solid rgba(56, 189, 248, 0.4)',
+              fontSize: '0.82rem',
+              color: '#38bdf8',
+              fontWeight: 600,
+              backgroundColor: 'rgba(56, 189, 248, 0.1)',
+              cursor: 'pointer'
+            }}
+          >
+            <Volume1 size={14} />
+            <span>Slow & Clear</span>
           </button>
 
           {wordsPerChunk > 0 && (
@@ -332,7 +374,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '8px',
                 border: '1px solid var(--border-subtle)',
                 fontSize: '0.8rem',
-                color: 'var(--text-secondary)'
+                color: 'var(--text-secondary)',
+                backgroundColor: 'var(--bg-surface)'
               }}
             >
               <Volume2 size={13} />
@@ -348,8 +391,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               padding: '6px 8px',
               borderRadius: '8px',
               border: '1px solid var(--border-main)',
+              backgroundColor: 'var(--bg-surface)',
               color: sentenceIndex === 0 ? 'var(--text-muted)' : 'var(--text-primary)',
-              opacity: sentenceIndex === 0 ? 0.5 : 1
+              opacity: sentenceIndex === 0 ? 0.4 : 1
             }}
           >
             <SkipBack size={15} />
@@ -366,6 +410,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               borderRadius: '8px',
               border: '1px solid var(--border-main)',
               fontSize: '0.82rem',
+              backgroundColor: 'var(--bg-surface)',
               color: 'var(--text-primary)'
             }}
           >
@@ -380,7 +425,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               fontSize: '0.78rem',
               padding: '6px 8px',
               borderRadius: '8px',
-              color: 'var(--text-secondary)'
+              color: 'var(--text-muted)'
             }}
           >
             Restart
@@ -409,10 +454,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: voiceAccent === 'en-IN' ? 700 : 500,
-                backgroundColor: voiceAccent === 'en-IN' ? '#fef3c7' : 'transparent',
-                color: voiceAccent === 'en-IN' ? '#b45309' : 'var(--text-secondary)',
-                border: voiceAccent === 'en-IN' ? '1px solid #f59e0b' : '1px solid transparent',
-                boxShadow: voiceAccent === 'en-IN' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
+                backgroundColor: voiceAccent === 'en-IN' ? 'rgba(245, 158, 11, 0.2)' : 'transparent',
+                color: voiceAccent === 'en-IN' ? '#fbbf24' : 'var(--text-secondary)',
+                border: voiceAccent === 'en-IN' ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid transparent',
                 cursor: 'pointer'
               }}
             >
@@ -426,10 +470,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: voiceAccent === 'en-US' ? 700 : 500,
-                backgroundColor: voiceAccent === 'en-US' ? '#ffffff' : 'transparent',
-                color: voiceAccent === 'en-US' ? 'var(--brand-primary)' : 'var(--text-secondary)',
+                backgroundColor: voiceAccent === 'en-US' ? 'var(--bg-surface)' : 'transparent',
+                color: voiceAccent === 'en-US' ? 'var(--accent)' : 'var(--text-secondary)',
                 border: voiceAccent === 'en-US' ? '1px solid var(--border-main)' : '1px solid transparent',
-                boxShadow: voiceAccent === 'en-US' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
                 cursor: 'pointer'
               }}
             >
@@ -443,10 +486,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: voiceAccent === 'en-GB' ? 700 : 500,
-                backgroundColor: voiceAccent === 'en-GB' ? '#ffffff' : 'transparent',
-                color: voiceAccent === 'en-GB' ? 'var(--brand-primary)' : 'var(--text-secondary)',
+                backgroundColor: voiceAccent === 'en-GB' ? 'var(--bg-surface)' : 'transparent',
+                color: voiceAccent === 'en-GB' ? 'var(--accent)' : 'var(--text-secondary)',
                 border: voiceAccent === 'en-GB' ? '1px solid var(--border-main)' : '1px solid transparent',
-                boxShadow: voiceAccent === 'en-GB' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
                 cursor: 'pointer'
               }}
             >
@@ -471,9 +513,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: speechSpeed === 0.7 ? 700 : 500,
-                backgroundColor: speechSpeed === 0.7 ? '#ffffff' : 'transparent',
-                color: speechSpeed === 0.7 ? 'var(--brand-primary)' : 'var(--text-secondary)',
-                boxShadow: speechSpeed === 0.7 ? '0 1px 2px rgba(0,0,0,0.06)' : 'none'
+                backgroundColor: speechSpeed === 0.7 ? 'var(--bg-surface)' : 'transparent',
+                color: speechSpeed === 0.7 ? 'var(--accent)' : 'var(--text-secondary)'
               }}
             >
               Slow
@@ -489,9 +530,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: speechSpeed === 0.8 ? 700 : 500,
-                backgroundColor: speechSpeed === 0.8 ? '#ffffff' : 'transparent',
-                color: speechSpeed === 0.8 ? 'var(--brand-primary)' : 'var(--text-secondary)',
-                boxShadow: speechSpeed === 0.8 ? '0 1px 2px rgba(0,0,0,0.06)' : 'none'
+                backgroundColor: speechSpeed === 0.8 ? 'var(--bg-surface)' : 'transparent',
+                color: speechSpeed === 0.8 ? 'var(--accent)' : 'var(--text-secondary)'
               }}
             >
               <GraduationCap size={13} />
@@ -505,9 +545,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: speechSpeed === 1.0 ? 700 : 500,
-                backgroundColor: speechSpeed === 1.0 ? '#ffffff' : 'transparent',
-                color: speechSpeed === 1.0 ? 'var(--brand-primary)' : 'var(--text-secondary)',
-                boxShadow: speechSpeed === 1.0 ? '0 1px 2px rgba(0,0,0,0.06)' : 'none'
+                backgroundColor: speechSpeed === 1.0 ? 'var(--bg-surface)' : 'transparent',
+                color: speechSpeed === 1.0 ? 'var(--accent)' : 'var(--text-secondary)'
               }}
             >
               Normal

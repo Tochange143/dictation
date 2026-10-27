@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { WordFeedback } from '../types';
-import { Volume2, Eye, EyeOff, BookOpen, Plus, X } from 'lucide-react';
+import { Volume2, Volume1, Eye, EyeOff, BookOpen, Plus, X } from 'lucide-react';
 import { lookupWord, WordDefinition } from '../services/dictionary';
 import { speechEngine } from '../services/speechEngine';
 
@@ -63,7 +63,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   return (
     <div
       style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--bg-surface)',
         border: '1.5px solid var(--border-main)',
         borderRadius: 'var(--radius-lg)',
         padding: '1.1rem 1.25rem',
@@ -73,7 +73,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         flexDirection: 'column',
         justifyContent: 'space-between',
         position: 'relative',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
         transition: 'border-color 0.2s ease'
       }}
     >
@@ -117,10 +117,11 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
               gap: '6px',
               padding: '2px 10px',
               borderRadius: '999px',
-              backgroundColor: '#eff6ff',
+              backgroundColor: 'rgba(59, 130, 246, 0.18)',
               color: 'var(--accent)',
               fontSize: '0.72rem',
-              fontWeight: 600
+              fontWeight: 600,
+              border: '1px solid rgba(59, 130, 246, 0.3)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '2px', height: '12px' }}>
                 <span className="wave-bar wave-bar-1" />
@@ -152,7 +153,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 
               {missingCount > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <span style={{ color: '#d97706', fontWeight: 600 }}>
+                  <span style={{ color: '#fbbf24', fontWeight: 600 }}>
                     {missingCount} missing
                   </span>
                   <button
@@ -163,9 +164,9 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                       gap: '4px',
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      border: '1.5px solid #d97706',
-                      backgroundColor: showMissingWords ? '#fef3c7' : '#ffffff',
-                      color: '#b45309',
+                      border: '1.5px solid #f59e0b',
+                      backgroundColor: showMissingWords ? 'rgba(245, 158, 11, 0.25)' : 'var(--bg-muted)',
+                      color: '#fbbf24',
                       fontSize: '0.72rem',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -231,11 +232,11 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                   onClick={() => toggleRevealIndex(idx)}
                   style={{
                     cursor: 'pointer',
-                    backgroundColor: isRevealed ? '#fef3c7' : 'transparent',
-                    color: isRevealed ? '#b45309' : '#d97706',
+                    backgroundColor: isRevealed ? 'rgba(245, 158, 11, 0.25)' : 'transparent',
+                    color: '#fbbf24',
                     padding: isRevealed ? '0 6px' : '0',
                     borderRadius: '4px',
-                    border: isRevealed ? '1.5px dashed #d97706' : 'none',
+                    border: isRevealed ? '1.5px dashed #f59e0b' : 'none',
                     fontWeight: isRevealed ? 700 : 600,
                     transition: 'all 0.15s ease',
                     display: 'inline-flex',
@@ -246,7 +247,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 >
                   <span>{isRevealed ? `[ ${missingWordText} ]` : '[ ___ ]'}</span>
                   {isRevealed && item.expectedPunctuation && (
-                    <span className="word-punct" style={{ color: '#b45309' }}>{item.expectedPunctuation}</span>
+                    <span className="word-punct" style={{ color: '#fbbf24' }}>{item.expectedPunctuation}</span>
                   )}
                   {isRevealed && onInsertWord && item.expectedWord && (
                     <button
@@ -260,8 +261,8 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                         fontSize: '0.65rem',
                         fontWeight: 700,
                         borderRadius: '3px',
-                        backgroundColor: '#d97706',
-                        color: '#ffffff',
+                        backgroundColor: '#f59e0b',
+                        color: '#090d16',
                         border: 'none',
                         cursor: 'pointer',
                         lineHeight: '1.2'
@@ -328,8 +329,8 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span><strong style={{ color: 'var(--color-green)' }}>Green</strong> = correct</span>
           <span><strong style={{ color: 'var(--color-red)' }}>Red</strong> = incorrect</span>
-          <span><strong style={{ color: '#d97706' }}>[ ___ ]</strong> = missing (click &ldquo;Show Missing Words&rdquo;)</span>
-          <span style={{ color: 'var(--brand-primary)', fontWeight: 600 }}>💡 Click any word to define</span>
+          <span><strong style={{ color: '#fbbf24' }}>[ ___ ]</strong> = missing (click &ldquo;Show Missing Words&rdquo;)</span>
+          <span style={{ color: 'var(--accent)', fontWeight: 600 }}>💡 Click any word to define & hear</span>
         </div>
         <span>Continuous story dictation • Screen never clears</span>
       </div>
@@ -340,12 +341,12 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
           position: 'absolute',
           bottom: '2.5rem',
           right: '1.25rem',
-          maxWidth: '340px',
-          backgroundColor: '#ffffff',
-          borderRadius: '10px',
+          maxWidth: '360px',
+          backgroundColor: 'var(--bg-surface)',
+          borderRadius: '12px',
           border: '1.5px solid var(--border-main)',
-          padding: '0.85rem 1rem',
-          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.16)',
+          padding: '0.9rem 1.1rem',
+          boxShadow: '0 12px 30px rgba(0, 0, 0, 0.45)',
           zIndex: 40,
           display: 'flex',
           flexDirection: 'column',
@@ -353,18 +354,18 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {selectedDictWord.word}
               </span>
               {selectedDictWord.phonetic && (
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                <span style={{ fontSize: '0.75rem', color: '#38bdf8', fontFamily: 'var(--font-mono)' }}>
                   {selectedDictWord.phonetic}
                 </span>
               )}
               <span style={{
                 fontSize: '0.65rem',
                 fontWeight: 600,
-                padding: '1px 5px',
+                padding: '1px 6px',
                 borderRadius: '4px',
                 backgroundColor: 'var(--bg-muted)',
                 color: 'var(--text-secondary)'
@@ -373,26 +374,49 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {/* Normal Pronunciation */}
               <button
                 type="button"
                 onClick={() => speechEngine.speakDiscreteChunk(selectedDictWord.word, 0, 1)}
-                title="Pronounce this word"
+                title="Pronounce word normally"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '24px',
-                  height: '24px',
+                  width: '26px',
+                  height: '26px',
                   borderRadius: '50%',
-                  backgroundColor: '#eff6ff',
-                  color: 'var(--brand-primary)',
+                  backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                  color: 'var(--accent)',
                   cursor: 'pointer',
-                  border: '1px solid #bfdbfe'
+                  border: '1px solid rgba(59, 130, 246, 0.4)'
                 }}
               >
                 <Volume2 size={13} />
               </button>
+
+              {/* Slow & Clear Pronunciation */}
+              <button
+                type="button"
+                onClick={() => speechEngine.speakDiscreteChunk(selectedDictWord.word, 0, 1, true)}
+                title="Pronounce word slowly and clearly"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '26px',
+                  height: '26px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                  color: '#38bdf8',
+                  cursor: 'pointer',
+                  border: '1px solid rgba(56, 189, 248, 0.4)'
+                }}
+              >
+                <Volume1 size={13} />
+              </button>
+
               <button
                 type="button"
                 onClick={() => setSelectedDictWord(null)}
@@ -404,12 +428,12 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                   backgroundColor: 'transparent'
                 }}
               >
-                <X size={15} />
+                <X size={16} />
               </button>
             </div>
           </div>
 
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.25rem' }}>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.3rem' }}>
             {selectedDictWord.definition}
           </p>
 

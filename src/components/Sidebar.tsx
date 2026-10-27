@@ -8,6 +8,7 @@ import {
   ChevronRight, 
   Play, 
   Search, 
+  PanelLeftClose,
   X
 } from 'lucide-react';
 
@@ -75,8 +76,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.5)',
-            backdropFilter: 'blur(3px)',
+            backgroundColor: 'rgba(9, 13, 22, 0.75)',
+            backdropFilter: 'blur(4px)',
             zIndex: 90
           }}
           className="mobile-only"
@@ -89,21 +90,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
           width: '320px',
           minWidth: '320px',
           height: '100vh',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-surface)',
           borderRight: '1.5px solid var(--border-main)',
           display: 'flex',
           flexDirection: 'column',
           zIndex: 95
         }}
-        className={`sidebar-container ${isOpen ? 'is-open' : ''}`}
+        className={`sidebar-container ${isOpen ? 'is-open' : 'collapsed'}`}
       >
         {/* Sidebar Header */}
         <div style={{
-          padding: '1.25rem 1.25rem 1rem 1.25rem',
+          padding: '1.1rem 1.15rem',
           borderBottom: '1px solid var(--border-subtle)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          backgroundColor: 'var(--bg-surface)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <div style={{
@@ -114,34 +116,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#ffffff'
+              color: '#ffffff',
+              boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
             }}>
               <BookOpen size={18} />
             </div>
             <div>
-              <h1 style={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+              <h1 style={{ fontSize: '1.15rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
                 Lessons
               </h1>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)' }}>
                 {completedCount} of 100 Completed
               </div>
             </div>
           </div>
 
+          {/* Hide Sidebar button (Both Desktop & Mobile) */}
           <button 
             onClick={onClose}
-            className="mobile-only"
-            style={{ padding: '6px', borderRadius: '6px', color: 'var(--text-secondary)' }}
-            aria-label="Close sidebar"
+            style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '6px 10px', 
+              borderRadius: '7px', 
+              backgroundColor: 'var(--bg-muted)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-secondary)',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+            title="Hide Sidebar"
+            aria-label="Hide sidebar"
           >
-            <X size={20} />
+            <PanelLeftClose size={15} />
+            <span>Hide</span>
           </button>
         </div>
 
         {/* Continue Where I Stopped Banner */}
         {lastActiveLesson && lastActiveLesson.id !== currentLessonId && (
-          <div style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-muted)' }}>
-            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+          <div style={{ padding: '0.75rem 1.15rem', borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-muted)' }}>
+            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
               Continue Practicing
             </div>
             <button
@@ -155,7 +172,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 padding: '0.55rem 0.75rem',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-surface)',
                 border: '1.5px solid var(--border-main)',
                 borderRadius: '8px',
                 textAlign: 'left'
@@ -175,7 +192,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* Search Input */}
-        <div style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid var(--border-subtle)' }}>
+        <div style={{ padding: '0.75rem 1.15rem', borderBottom: '1px solid var(--border-subtle)' }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -184,7 +201,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             padding: '0.45rem 0.65rem',
             border: '1px solid var(--border-subtle)'
           }}>
-            <Search size={15} style={{ color: 'var(--text-muted)', marginRight: '0.5rem' }} />
+            <Search size={15} style={{ color: 'var(--text-muted)', marginRight: '0.5rem', flexShrink: 0 }} />
             <input
               type="text"
               placeholder="Search 100 lessons..."
@@ -215,24 +232,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
               name: 'Level 1: Beginner',
               range: 'Lessons 1–35',
               desc: 'Everyday sight words • Short sentences • 1–3 words pacing',
-              color: '#15803d',
-              bgColor: '#dcfce7'
+              color: '#4ade80',
+              bgColor: 'rgba(34, 197, 94, 0.18)'
             },
             {
               level: 2,
               name: 'Level 2: Intermediate',
               range: 'Lessons 36–70',
               desc: 'Conversations & stories • Compound grammar • 3–4 words pacing',
-              color: '#0369a1',
-              bgColor: '#e0f2fe'
+              color: '#38bdf8',
+              bgColor: 'rgba(56, 189, 248, 0.18)'
             },
             {
               level: 3,
               name: 'Level 3: Advanced',
               range: 'Lessons 71–100',
               desc: 'Academic, professional & nuanced expressions • Fluent pacing',
-              color: '#7e22ce',
-              bgColor: '#f3e8ff'
+              color: '#c084fc',
+              bgColor: 'rgba(192, 132, 252, 0.18)'
             }
           ].map(({ level, name, range, desc, color, bgColor }) => {
             const lessons = levelGroups[level as 1 | 2 | 3];
@@ -258,7 +275,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                      {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                      {isExpanded ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
                       <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         {name}
                       </span>
@@ -313,7 +330,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               fontSize: '0.72rem',
                               fontFamily: 'var(--font-mono)',
                               fontWeight: 600,
-                              color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
+                              color: isActive ? 'var(--accent)' : 'var(--text-muted)',
                               minWidth: '24px'
                             }}>
                               {String(lesson.id).padStart(2, '0')}

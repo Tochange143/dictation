@@ -49,6 +49,19 @@ export function isIndianVoice(voice: { lang?: string; name?: string }): boolean 
   return indianKeywords.some(keyword => name.includes(keyword));
 }
 
+/**
+ * Clean text for audio synthesis to prevent glitches, slurring, or audio clipping
+ */
+export function sanitizeSpeechText(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/[“”"']/g, '') // strip quotes that cause pauses or murmur in TTS
+    .replace(/[()[\]{}]/g, ' ') // strip brackets
+    .replace(/--|—/g, ' , ') // turn em-dashes into pleasant pauses
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 class SpeechEngine {
   private synth: SpeechSynthesis | null = null;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
@@ -292,7 +305,7 @@ class SpeechEngine {
   /**
    * Speak a discrete chunk (e.g. 3 words at once) and stop, waiting for user input.
    */
-  public speakDiscreteChunk(chunkText: string, chunkIndex: number, totalChunks: number) {
+  public speakDiscreteChunk(chunkText: string, chunkIndex: number, totalChunks: number, slowClarity = false) {
     this.cancel();
     if (!chunkText || !chunkText.trim() || !this.synth) return;
 
@@ -300,9 +313,10 @@ class SpeechEngine {
     this.currentChunkIndex = chunkIndex;
     this.fullSentenceText = chunkText;
 
-    const utterance = new SpeechSynthesisUtterance(chunkText);
-    utterance.rate = this.speed;
-    utterance.pitch = this.pitch;
+    const cleanedText = sanitizeSpeechText(chunkText);
+    const utterance = new SpeechSynthesisUtterance(cleanedText);
+    utterance.rate = slowClarity ? 0.65 : this.speed;
+    utterance.pitch = slowClarity ? 1.02 : this.pitch;
     if (this.selectedVoice) {
       utterance.voice = this.selectedVoice;
       utterance.lang = this.selectedVoice.lang || (this.preferredAccent === 'en-IN' ? 'en-IN' : 'en-US');
