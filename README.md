@@ -1,114 +1,136 @@
-# English Dictation Practice Application
+# English Dictation Practice
 
-An English dictation web application designed to train English listening, spelling, typing accuracy, vocabulary acquisition, and sentence comprehension.
+An advanced English dictation and auditory transcription platform designed to build English listening comprehension, spelling accuracy, touch typing speed, and active vocabulary acquisition through continuous real-time story dictation.
 
-Built strictly according to the hand-drawn UI design specification:
-- **Left Sidebar**: "Lessons" navigation across 100 lessons organized into 3 difficulty tiers (Level 1: Beginner, Level 2: Intermediate, Level 3: Advanced), with completion tracking and "Continue where I stopped" resume functionality.
-- **Top Panel**: Large rounded rectangular **Live Dictation Feedback** panel where words are evaluated word-by-word in real time. Correct words turn green; incorrect words turn red; untyped words remain completely invisible. Never leaks the hidden sentence or length indicators.
-- **Bottom Panel**: Large rounded rectangular **Typing Area** with focus retention, smooth text wrapping, and distraction-free keyboard input.
+![English Dictation Practice App Preview](docs/screenshots/app-preview.png)
 
 ---
 
-## Key Features
+## Highlights & Key Features
 
-### 1. 100-Lesson Curriculum (~100,000 Total Words)
-All 100 lessons are fully generated and validated with **strict word counts between 950 and 1,050 words each** (total: 103,342 words):
+### 1. 100 Progressive Lessons (~100,000 Words)
+The curriculum is organized into three balanced difficulty tiers with **950 to 1,050 words per lesson** (over 100,000 total words):
 - **Level 1: Beginner (Lessons 1–35)**:
-  - Lessons 1–5 start with simple 2-letter and 3-letter words (*am, an, at, as, in, is, it, on, up, us, we, he, me, my, no, go, do, to, so, by, cat, dog, sun, man, pen, cup, bed, box, run, sit, big, red, hot, get, had, can, his, her, you, the*).
-  - Sentences such as *"I am Sam."*, *"I see a cat."*, *"The cat is on the bed."*, *"Tom has a red bag."*, *"We go to the park."*.
-  - Gradually progresses to sight words, phonics patterns, simple present and past tenses, everyday vocabulary, and short dialogues.
+  - Everyday sight words, short vowels, basic consonants, simple present & past tenses.
+  - Phonics patterns and simple sentence structures (*"I am Sam."*, *"The cat is on the mat."*, *"We go to the park."*).
 - **Level 2: Intermediate (Lessons 36–70)**:
-  - Longer, compound and complex sentences.
-  - Topics: University life, campus dorms, coffee shop jobs, cooking dinner with roommates, train travel, budgeting, bike repairs, job interviews, and community projects.
+  - Compound and complex sentences, everyday dialogues, travel stories, campus life, budgeting, cooking, and workplace communication.
 - **Level 3: Advanced (Lessons 71–100)**:
-  - Intricate sentence structures, nuanced vocabulary, idioms, and discourse.
-  - Topics: High-stakes negotiation, habit formation neurobiology, artificial intelligence ethics, biophilic architecture, sleep consolidation, literature craft, and philosophy of mind.
+  - Sophisticated academic, technical, philosophical, and professional discourse.
+  - Complex idioms, nuanced clauses, habit formation neurobiology, ethics, literature craft, and high-stakes negotiation.
 
-### 2. Live Word-by-Word Sequence Alignment & Missing Space Indicators
-- Uses a **Dynamic Programming sequence alignment algorithm** (Needleman-Wunsch variant) rather than naive index comparison.
-- If a word is omitted or extra words are inserted, subsequent correct words do not cascade into false negatives.
-- **Color rules**:
-  - **Green**: Correct word.
-  - **Red**: Incorrect word (displays the user's typed word; does *not* leak the correct spelling before submission).
-  - **Missing Space `[ ___ ]`**: If you forget or skip a word in the sentence, a distinct missing space indicator `[ ___ ]` appears above in the feedback panel so you immediately know where a word was missed!
-  - **Untyped words**: Completely invisible (no blank spots, dots, or underscores revealing word lengths).
-  - Preserves punctuation and natural capitalization handling (case-insensitive by default).
-
-### 3. Word-Chunk Dictation (3 Words at Once)
-- Dictates **3 words at a time** by default!
-- The teacher speaks 3 words → waits for you to write them → **only after you type them does the next 3 words sound**!
-- You can customize the word chunk setting anytime in the top bar:
+### 2. Natural 3-Word Chunk Dictation
+- Dictates **3 words at a time** by default:
+  1. The teacher speaks 3 words.
+  2. You write them in the notebook typing area.
+  3. As soon as you type them, the teacher speaks the **next 3 words** automatically.
+- Dictation pacing is fully customizable anytime from the top bar:
   - `1 word`, `2 words`, `3 words` (*Default*), `4 words`, or `Sentence` (full sentence mode).
-- Press <kbd>Alt + R</kbd> or click *Replay 3 Words* to hear the active words again anytime.
 
-### 4. Continuous Flow & Missing Space Indicators
-- **Zero Interruption**: No intrusive popup dialogs or roadblocks.
-- **Missing Space `[ ___ ]`**: If you forget or skip a word in the sentence, a distinct missing space indicator `[ ___ ]` appears above in the feedback panel so you immediately know where a word was missed.
-- As you write, correct words turn green, incorrect words turn red, and untyped words remain invisible.
-- Moving to the next sentence occurs automatically upon finishing or by pressing <kbd>Enter</kbd>.
+### 3. Real-Time Word Sequence Alignment
+- Uses a **Dynamic Programming sequence alignment algorithm** (Needleman-Wunsch variant) rather than naive index comparison.
+- Skipping a word or making a typo never causes downstream false negatives.
+- **Color Coding**:
+  - <strong style="color: #22c55e;">Green</strong>: Correct word.
+  - <strong style="color: #ef4444;">Red</strong>: Incorrect word (shows your typed letters with wavy underline; does not spoil correct spelling).
+  - <strong style="color: #fbbf24;">[ ___ ]</strong>: Distinct missing space indicator showing where a word was skipped.
+  - **Untyped words**: Remain invisible so the story is never spoiled before you hear it.
 
-### 5. Backend Server & Dual-Layer Persistence
-- Full Node.js Express backend server (`server/index.js`) running on port `3001`.
-- Automatically persists user progress, settings, and active lesson state to `server/data/`.
-- Dual-layer persistence: updates locally in `localStorage` for instant offline responsiveness while automatically synchronizing with the backend REST API:
-  - `GET /api/progress`, `POST /api/progress`
-  - `GET /api/settings`, `POST /api/settings`
-  - `GET /api/last-active`, `POST /api/last-active`
-  - `POST /api/reset`
+![Show Missing Words & Real-time Alignment](docs/screenshots/missing-words.png)
 
-### 6. Keyboard Shortcuts
-| Shortcut | Action |
-| :--- | :--- |
-| `Ctrl + Enter` | Start or resume dictation speech |
-| `Escape` | Pause speech immediately |
-| `Alt + R` | Replay current words |
-| `Alt + ←` | Go to previous sentence |
-| `Alt + →` | Skip to next sentence |
-| `Enter` | Move to next sentence in story |
-| `Ctrl + Backspace` | Clear typing box |
-| `Ctrl + Shift + ↑` | Increase speech speed (+0.1×) |
-| `Ctrl + Shift + ↓` | Decrease speech speed (-0.1×) |
-- Includes a safe "Reset Progress" option with confirmation.
+### 4. "Show Missing Words" & Instant Insertion
+- If you miss a word, click **"Show Missing Words"** in the Live Story header to replace `[ ___ ]` with the expected word `[ word ]`.
+- Click the **`+ Insert`** button to automatically append the missing word into your typing notebook without retyping.
+
+### 5. High-Clarity Audio & Pronunciation Tools
+- **🇮🇳 Indian Accent by Default**: Optimized for natural Indian English voices (`Microsoft Neerja Online Natural`, `Microsoft Heera`, `Google en-IN`, `Apple Rishi/Veena`), with one-click toggles for 🇺🇸 US and 🇬🇧 UK accents.
+- **"Slow & Clear" Audio**: When a word or phrase is difficult to understand, click the **"Slow & Clear"** button (<kbd>Volume</kbd>) to hear it articulated at `0.65×` speed with distinct consonants and syllables.
+- **Speech Sanitizer**: Automatically cleans raw punctuation, quotation marks, and brackets before audio synthesis to prevent audio clipping, stutters, or slurring.
+- **Sound-Wave Visualizer**: Animated equalizer visualizer confirms when the audio teacher is actively speaking.
+
+### 6. Click-to-Define Vocabulary Dictionary
+- Click any word in the continuous live story to open an instant offline vocabulary card showing:
+  - Word definition and part of speech
+  - Phonetic pronunciation
+  - Normal pronunciation and Slow Pronunciation audio buttons
+  - Real-world example sentence
+
+### 7. Modern Dark Mode & Tailwind CSS UI
+- Built with **Tailwind CSS** and dark mode by default (`#090d16` canvas, `#111827` surface cards, `#1e293b` muted controls, crisp `#f8fafc` text).
+- **Collapsible Sidebar**: Easily collapse or expand the 100-lesson sidebar using the **"Hide"** button or pressing <kbd>Ctrl + \</kbd>.
+- **Full-Width Responsive Layout**: Panels stretch smoothly across 100% of your monitor with zero wasted margin space.
+- **Live Typing Stats**: Real-time Words-Per-Minute (WPM) gauge and live match percentage indicator.
+
+### 8. SQLite Database & Cross-Browser Synchronization
+- High-performance **SQLite database** (`better-sqlite3` with Write-Ahead Logging `WAL` mode) running on the Node.js backend.
+- Automatically saves and restores typed continuous story text across page refreshes, tabs, and different browsers.
 
 ---
 
-## Getting Started
+## How to Use the Project
 
 ### Prerequisites
-- Node.js (v18 or higher recommended, tested on v22)
-- npm (v9 or higher)
+- **Node.js**: v18.0.0 or higher (tested with Node.js v22)
+- **npm**: v9.0.0 or higher
 
-### Installation
+### Step 1: Install Dependencies
+Open your terminal in the project directory and run:
 ```bash
-# Clone or navigate to the project directory
-cd dictation
-
-# Install dependencies
 npm install
 ```
 
-### Running the Application in Development Mode
+### Step 2: Start the Development Server
+Run the concurrent dev command to start both the SQLite backend API server (port 3001) and Vite frontend (port 5173):
 ```bash
 npm run dev
 ```
-Open `http://localhost:5173` in your browser.
 
-### Running Unit Tests
-```bash
-npm test
+### Step 3: Open in Browser
+Navigate to:
 ```
-Runs the 23 unit tests across sequence evaluation, sentence chunking, curriculum verification, storage persistence, and speech engine services.
+http://localhost:5173
+```
+The application will automatically load your last active lesson or start at **Lesson #1: Sam and His Cat**.
 
-### Building for Production
-```bash
-npm run build
-```
-Generates the optimized production build in `dist/` with on-demand code-splitting for all 100 lessons.
+### Step 4: Dictation Workflow
+1. Click **"Read (3 words)"** or press <kbd>Ctrl + Enter</kbd> to begin.
+2. Listen to the teacher speak the first 3 words.
+3. Type what you hear in the **Notebook Typing Area**.
+4. Watch your words appear in the **Live Dictation Story**:
+   - Correct words turn green.
+   - Mistyped words turn red.
+   - Skipped words show as `[ ___ ]`.
+5. As soon as you finish the 3 words, the next 3 words sound automatically.
+6. If you miss a word, click **"Slow & Clear"** or press <kbd>Alt + R</kbd> to replay.
+7. Upon completing all words in the lesson, the **Lesson Complete Summary Modal** provides accuracy metrics, total words, elapsed time, and tricky words to review.
 
-### Previewing Production Build
-```bash
-npm run preview
-```
+---
+
+## Keyboard Shortcuts
+
+| Shortcut | Description |
+| :--- | :--- |
+| <kbd>Ctrl + \</kbd> | Toggle / Hide Lessons Sidebar |
+| <kbd>Ctrl + Enter</kbd> | Start or resume audio dictation |
+| <kbd>Alt + R</kbd> | Replay current words |
+| <kbd>Alt + P</kbd> | Pause or resume speech |
+| <kbd>Ctrl + S</kbd> | Show / hide current words hint (Help peek) |
+| <kbd>Alt + →</kbd> | Skip to next chunk / sentence |
+| <kbd>Alt + ←</kbd> | Go back to previous chunk / sentence |
+| <kbd>Escape</kbd> | Pause speech or close open modal |
+
+---
+
+## Available Scripts
+
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Starts backend server (`server/index.js`) and Vite frontend concurrently |
+| `npm run server` | Starts only the Node.js / SQLite backend API server (port 3001) |
+| `npm run client` | Starts only the Vite development frontend (port 5173) |
+| `npm test` | Runs the Vitest test suites (47 tests across 8 suites) |
+| `npm run build` | Compiles TypeScript and builds production bundles to `dist/` |
+| `npm run preview` | Previews the production build locally |
 
 ---
 
@@ -116,43 +138,61 @@ npm run preview
 
 ```
 dictation/
+├── docs/
+│   └── screenshots/              # Application screenshots & feature previews
+├── server/
+│   ├── data/
+│   │   ├── dictation.db          # SQLite database (stores progress, stories, settings)
+│   │   ├── dictation.db-shm      # SQLite shared memory
+│   │   └── dictation.db-wal      # SQLite write-ahead log
+│   ├── db.js                     # SQLite schema, queries, and migrations
+│   └── index.js                  # Express API server (REST endpoints)
 ├── src/
 │   ├── components/
-│   │   ├── Sidebar.tsx             # Left lessons navigation & level accordion
-│   │   ├── TopControlsBar.tsx      # Playback, speed, sentence progress controls
-│   │   ├── FeedbackPanel.tsx       # Live word-by-word feedback (green/red/invisible)
-│   │   ├── TypingPanel.tsx         # Comfortable textarea with focus retention
-│   │   ├── SentenceReviewModal.tsx # Post-submission feedback & mistake breakdown
-│   │   ├── LessonSummaryModal.tsx  # End-of-lesson completion report & stats
-│   │   ├── ShortcutsModal.tsx      # Keyboard shortcuts cheat sheet
-│   │   └── SettingsModal.tsx       # Voice, speed, repeats, auto-advance options
+│   │   ├── FeedbackPanel.tsx     # Continuous story feedback, missing words, vocabulary card
+│   │   ├── LessonSummaryModal.tsx# Completion modal, accuracy report & tricky words
+│   │   ├── SettingsModal.tsx     # Voice accent, specific voices, speed & modes
+│   │   ├── ShortcutsModal.tsx    # Keyboard shortcuts cheat sheet
+│   │   ├── Sidebar.tsx           # Collapsible 100-lesson curriculum navigation
+│   │   ├── TopControlsBar.tsx    # Audio controls, speed stepper, sidebar toggle
+│   │   └── TypingPanel.tsx       # Notebook typing area, WPM meter, slow pronunciation
 │   ├── data/
-│   │   ├── lessons/                # 100 JSON lesson files (lesson-001.json to 100.json)
-│   │   ├── lessonsManifest.json    # Metadata manifest for all 100 lessons
-│   │   └── lessonsIndex.ts         # TypeScript dynamic loaders
+│   │   ├── lessons/              # 100 JSON lesson files (~1,000 words each)
+│   │   ├── lessonsIndex.ts       # Dynamic lesson loaders
+│   │   └── lessonsManifest.json  # Metadata manifest for all 100 lessons
 │   ├── services/
-│   │   ├── speechEngine.ts         # Web Speech API wrapper with chunking & repeat
-│   │   └── storage.ts              # LocalStorage persistence service
+│   │   ├── dictionary.ts         # Offline English learner dictionary service
+│   │   ├── speechEngine.ts       # Web Speech API wrapper with Indian accent prioritization
+│   │   └── storage.ts            # Client sync service with SQLite backend API
 │   ├── utils/
-│   │   ├── chunker.ts              # Natural clause-based sentence chunking
-│   │   └── evaluator.ts            # Dynamic programming word sequence alignment
+│   │   ├── chunker.ts            # 3-word chunking and boundary calculation
+│   │   └── evaluator.ts          # Needleman-Wunsch sequence alignment evaluator
 │   ├── types/
-│   │   └── index.ts                # TypeScript interfaces and types
-│   ├── App.tsx                     # Main application container
-│   ├── index.css                   # Minimalist design matching sketch
-│   └── main.tsx                    # React root mount
+│   │   └── index.ts              # TypeScript type definitions
+│   ├── App.tsx                   # Main dictation page container & router routes
+│   ├── index.css                 # Tailwind CSS directives & theme variables
+│   └── main.tsx                  # React DOM mount point
 ├── tests/
-│   ├── chunker.test.ts             # Chunker unit tests
-│   ├── curriculum.test.ts          # Validates all 100 lessons and word counts
-│   ├── evaluator.test.ts           # Evaluator word-by-word alignment tests
-│   ├── speechEngine.test.ts        # Speech engine methods and bounds tests
-│   └── storage.test.ts             # LocalStorage serialization tests
-├── scripts/
-│   ├── generate_level1.py          # Level 1 lesson content generator
-│   ├── generate_level2.py          # Level 2 lesson content generator
-│   ├── generate_level3.py          # Level 3 lesson content generator
-│   └── validate_and_build_manifest.py # Curriculum validator & manifest builder
-├── package.json
-├── tsconfig.json
-└── vite.config.ts
+│   ├── chunker.test.ts           # Sentence chunking tests
+│   ├── curriculum.test.ts        # Curriculum validation (100 lessons, 100k words)
+│   ├── dictionary.test.ts        # Dictionary lookups and morphology tests
+│   ├── evaluator.test.ts         # Sequence alignment evaluation tests
+│   ├── server.test.ts            # Express backend endpoints tests
+│   ├── speechEngine.test.ts      # Speech synthesis, voice selection, text sanitizer tests
+│   ├── sqlite.test.ts            # SQLite database queries and persistence tests
+│   └── storage.test.ts           # Local storage caching tests
+├── postcss.config.js             # PostCSS configuration for Tailwind CSS
+├── tailwind.config.js            # Tailwind CSS theme extension
+├── tsconfig.json                 # TypeScript compiler configuration
+└── vite.config.ts                # Vite build and proxy configuration
 ```
+
+---
+
+## Technical Architecture
+
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Canvas Confetti.
+- **Routing**: React Router DOM (`/lesson/:id`) with automatic deep-linking and state preservation.
+- **Audio Engine**: Browser Web Speech API (`SpeechSynthesis`) with natural voice discovery, pronunciation text preprocessing, and syllable speed controls.
+- **Backend & Database**: Node.js, Express, `better-sqlite3` with Write-Ahead Logging (`WAL`), ACID compliance, and instant cross-client synchronization.
+- **Evaluation Engine**: Dynamic Programming matrix alignment algorithm providing instantaneous $O(N \times M)$ token matching without false-negative cascade.
