@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { WordFeedback } from '../types';
-import { Volume2, Eye, EyeOff } from 'lucide-react';
+import { Volume2, Eye, EyeOff, BookOpen, Plus, X } from 'lucide-react';
+import { lookupWord, WordDefinition } from '../services/dictionary';
+import { speechEngine } from '../services/speechEngine';
 
 interface FeedbackPanelProps {
   feedbacks: WordFeedback[];
@@ -9,6 +11,7 @@ interface FeedbackPanelProps {
   totalChunks: number;
   totalWordsInLesson: number;
   lessonTitle: string;
+  onInsertWord?: (word: string) => void;
 }
 
 export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
@@ -17,11 +20,13 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   activeChunkIndex,
   totalChunks,
   totalWordsInLesson,
-  lessonTitle
+  lessonTitle,
+  onInsertWord
 }) => {
   const contentContainerRef = useRef<HTMLDivElement>(null);
   const [showMissingWords, setShowMissingWords] = useState<boolean>(false);
   const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set());
+  const [selectedDictWord, setSelectedDictWord] = useState<WordDefinition | null>(null);
 
   const hasAttemptedWords = feedbacks.length > 0;
   const correctCount = feedbacks.filter(f => f.status === 'correct').length;
@@ -109,15 +114,20 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '5px',
-              padding: '2px 9px',
+              gap: '6px',
+              padding: '2px 10px',
               borderRadius: '999px',
               backgroundColor: '#eff6ff',
               color: 'var(--accent)',
               fontSize: '0.72rem',
               fontWeight: 600
             }}>
-              <Volume2 size={13} className="animate-pulse" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '2px', height: '12px' }}>
+                <span className="wave-bar wave-bar-1" />
+                <span className="wave-bar wave-bar-2" />
+                <span className="wave-bar wave-bar-3" />
+                <span className="wave-bar wave-bar-4" />
+              </div>
               <span>
                 Teacher speaking...
                 {totalChunks > 0 ? ` (part ${activeChunkIndex + 1}/${totalChunks})` : ''}
@@ -227,27 +237,57 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                     borderRadius: '4px',
                     border: isRevealed ? '1.5px dashed #d97706' : 'none',
                     fontWeight: isRevealed ? 700 : 600,
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
                   }}
                   title={isRevealed ? `Missing word: "${missingWordText}". Click to hide.` : `Missing word! Click to reveal what word was skipped.`}
                 >
-                  {isRevealed ? `[ ${missingWordText} ]` : '[ ___ ]'}
+                  <span>{isRevealed ? `[ ${missingWordText} ]` : '[ ___ ]'}</span>
                   {isRevealed && item.expectedPunctuation && (
                     <span className="word-punct" style={{ color: '#b45309' }}>{item.expectedPunctuation}</span>
+                  )}
+                  {isRevealed && onInsertWord && item.expectedWord && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onInsertWord(missingWordText);
+                      }}
+                      style={{
+                        padding: '1px 5px',
+                        fontSize: '0.65rem',
+                        fontWeight: 700,
+                        borderRadius: '3px',
+                        backgroundColor: '#d97706',
+                        color: '#ffffff',
+                        border: 'none',
+                        cursor: 'pointer',
+                        lineHeight: '1.2'
+                      }}
+                      title="Insert this word into your typing notebook"
+                    >
+                      + Insert
+                    </button>
                   )}
                 </span>
               );
             }
 
             const isCorrect = item.status === 'correct';
+            const wordToLookup = item.expectedWord || item.word;
             return (
               <span
                 key={idx}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'baseline',
-                  position: 'relative'
+                  position: 'relative',
+                  cursor: 'pointer'
                 }}
+                onClick={() => setSelectedDictWord(lookupWord(wordToLookup))}
+                title={`Click to define "${wordToLookup}" & hear pronunciation`}
               >
                 <span
                   className={isCorrect ? 'word-correct' : 'word-incorrect'}
@@ -288,10 +328,98 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span><strong style={{ color: 'var(--color-green)' }}>Green</strong> = correct</span>
           <span><strong style={{ color: 'var(--color-red)' }}>Red</strong> = incorrect</span>
-          <span><strong style={{ color: '#d97706' }}>[ ___ ]</strong> = missing word space (click &ldquo;Show Missing Words&rdquo; to reveal)</span>
+          <span><strong style={{ color: '#d97706' }}>[ ___ ]</strong> = missing (click &ldquo;Show Missing Words&rdquo;)</span>
+          <span style={{ color: 'var(--brand-primary)', fontWeight: 600 }}>💡 Click any word to define</span>
         </div>
-        <span>Continuous story dictation • Screen never clears or blanks</span>
+        <span>Continuous story dictation • Screen never clears</span>
       </div>
+
+      {/* Floating Vocabulary Tooltip Card */}
+      {selectedDictWord && (
+        <div style={{
+          position: 'absolute',
+          bottom: '2.5rem',
+          right: '1.25rem',
+          maxWidth: '340px',
+          backgroundColor: '#ffffff',
+          borderRadius: '10px',
+          border: '1.5px solid var(--border-main)',
+          padding: '0.85rem 1rem',
+          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.16)',
+          zIndex: 40,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.45rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                {selectedDictWord.word}
+              </span>
+              {selectedDictWord.phonetic && (
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                  {selectedDictWord.phonetic}
+                </span>
+              )}
+              <span style={{
+                fontSize: '0.65rem',
+                fontWeight: 600,
+                padding: '1px 5px',
+                borderRadius: '4px',
+                backgroundColor: 'var(--bg-muted)',
+                color: 'var(--text-secondary)'
+              }}>
+                {selectedDictWord.partOfSpeech}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <button
+                type="button"
+                onClick={() => speechEngine.speakDiscreteChunk(selectedDictWord.word, 0, 1)}
+                title="Pronounce this word"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  backgroundColor: '#eff6ff',
+                  color: 'var(--brand-primary)',
+                  cursor: 'pointer',
+                  border: '1px solid #bfdbfe'
+                }}
+              >
+                <Volume2 size={13} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedDictWord(null)}
+                style={{
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  padding: '2px',
+                  border: 'none',
+                  backgroundColor: 'transparent'
+                }}
+              >
+                <X size={15} />
+              </button>
+            </div>
+          </div>
+
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.25rem' }}>
+            {selectedDictWord.definition}
+          </p>
+
+          {selectedDictWord.example && (
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0, fontStyle: 'italic' }}>
+              e.g. &ldquo;{selectedDictWord.example}&rdquo;
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

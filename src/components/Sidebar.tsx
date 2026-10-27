@@ -210,10 +210,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Lessons List categorized by Level */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '0.6rem 0.75rem' }}>
           {[
-            { level: 1, name: 'Level 1: Beginner' },
-            { level: 2, name: 'Level 2: Intermediate' },
-            { level: 3, name: 'Level 3: Advanced' }
-          ].map(({ level, name }) => {
+            {
+              level: 1,
+              name: 'Level 1: Beginner',
+              range: 'Lessons 1–35',
+              desc: 'Everyday sight words • Short sentences • 1–3 words pacing',
+              color: '#15803d',
+              bgColor: '#dcfce7'
+            },
+            {
+              level: 2,
+              name: 'Level 2: Intermediate',
+              range: 'Lessons 36–70',
+              desc: 'Conversations & stories • Compound grammar • 3–4 words pacing',
+              color: '#0369a1',
+              bgColor: '#e0f2fe'
+            },
+            {
+              level: 3,
+              name: 'Level 3: Advanced',
+              range: 'Lessons 71–100',
+              desc: 'Academic, professional & nuanced expressions • Fluent pacing',
+              color: '#7e22ce',
+              bgColor: '#f3e8ff'
+            }
+          ].map(({ level, name, range, desc, color, bgColor }) => {
             const lessons = levelGroups[level as 1 | 2 | 3];
             const isExpanded = expandedLevels[level];
             const completedInLevel = lessons.filter(l => progressMap[l.id]?.completed).length;
@@ -225,24 +246,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   style={{
                     width: '100%',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.5rem 0.65rem',
-                    borderRadius: '6px',
+                    flexDirection: 'column',
+                    gap: '2px',
+                    padding: '0.55rem 0.65rem',
+                    borderRadius: '8px',
                     backgroundColor: 'var(--bg-muted)',
-                    marginBottom: '0.3rem',
-                    textAlign: 'left'
+                    marginBottom: '0.35rem',
+                    textAlign: 'left',
+                    border: '1px solid var(--border-subtle)'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                      {name}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                      {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                        {name}
+                      </span>
+                      <span style={{
+                        fontSize: '0.65rem',
+                        fontWeight: 700,
+                        padding: '1px 5px',
+                        borderRadius: '4px',
+                        backgroundColor: bgColor,
+                        color: color
+                      }}>
+                        {range}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                      {completedInLevel}/{lessons.length}
                     </span>
                   </div>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                    {completedInLevel}/{lessons.length}
-                  </span>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', paddingLeft: '1.25rem' }}>
+                    {desc}
+                  </div>
                 </button>
 
                 {isExpanded && (

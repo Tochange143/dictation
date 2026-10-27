@@ -133,4 +133,19 @@ describe('Word-by-word Evaluator', () => {
     const missingFeedback = feedbacks.find(f => f.status === 'missing');
     expect(missingFeedback).toBeDefined();
   });
+
+  it('supports relaxed vs strict evaluation modes', () => {
+    const expected = 'The cat is on the bed.';
+    const typed = 'the cat is on the bed';
+
+    // Relaxed mode ignores casing and punctuation
+    const relaxed = getLiveFeedback(expected, typed, 'relaxed');
+    expect(relaxed.every(f => f.status === 'correct')).toBe(true);
+
+    // Strict mode requires exact casing and punctuation
+    const strict = getLiveFeedback(expected, typed, 'strict');
+    // First word "the" differs in casing from "The", last word lacks period "."
+    const strictIncorrect = strict.filter(f => f.status === 'incorrect');
+    expect(strictIncorrect.length).toBeGreaterThan(0);
+  });
 });

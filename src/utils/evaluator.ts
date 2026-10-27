@@ -80,7 +80,11 @@ interface AlignmentStep {
  * Global sequence alignment using Dynamic Programming (Needleman-Wunsch variant)
  * between typed tokens T and expected tokens E.
  */
-export function alignTokens(typed: TokenInfo[], expected: TokenInfo[]): AlignmentStep[] {
+export function alignTokens(
+  typed: TokenInfo[], 
+  expected: TokenInfo[], 
+  mode: 'relaxed' | 'strict' = 'relaxed'
+): AlignmentStep[] {
   const n = typed.length;
   const m = expected.length;
 
@@ -148,7 +152,10 @@ export function alignTokens(typed: TokenInfo[], expected: TokenInfo[]): Alignmen
     if (currI > 0 && currJ > 0 && traceback[currI][currJ] === 'diag') {
       const t = typed[currI - 1];
       const e = expected[currJ - 1];
-      const isMatch = t.clean === e.clean && t.clean.length > 0;
+      const spellingMatch = t.clean === e.clean && t.clean.length > 0;
+      const isMatch = mode === 'strict'
+        ? (spellingMatch && t.raw === e.raw && (t.trailingPunct || '') === (e.trailingPunct || ''))
+        : spellingMatch;
       steps.push({
         type: isMatch ? 'match' : 'substitution',
         typedIdx: currI - 1,
@@ -182,7 +189,8 @@ export function alignTokens(typed: TokenInfo[], expected: TokenInfo[]): Alignmen
 export function alignPrefixTokens(
   typed: TokenInfo[],
   expected: TokenInfo[],
-  band = 35
+  band = 35,
+  mode: 'relaxed' | 'strict' = 'relaxed'
 ): AlignmentStep[] {
   const n = typed.length;
   const m = expected.length;
@@ -280,7 +288,10 @@ export function alignPrefixTokens(
     if (currI > 0 && currJ > 0 && traceback[currI][currJ] === 'diag') {
       const t = typed[currI - 1];
       const e = expected[currJ - 1];
-      const isMatch = t.clean === e.clean && t.clean.length > 0;
+      const spellingMatch = t.clean === e.clean && t.clean.length > 0;
+      const isMatch = mode === 'strict'
+        ? (spellingMatch && t.raw === e.raw && (t.trailingPunct || '') === (e.trailingPunct || ''))
+        : spellingMatch;
       steps.push({
         type: isMatch ? 'match' : 'substitution',
         typedIdx: currI - 1,
@@ -312,14 +323,18 @@ export function alignPrefixTokens(
  * Correct words in green, incorrect words in red, missing words in slot.
  * Trailing untyped words remain completely invisible.
  */
-export function getLiveFeedback(expectedSentence: string, userTypedInput: string): WordFeedback[] {
+export function getLiveFeedback(
+  expectedSentence: string, 
+  userTypedInput: string,
+  mode: 'relaxed' | 'strict' = 'relaxed'
+): WordFeedback[] {
   const typedTokens = tokenizeSentence(userTypedInput);
   if (typedTokens.length === 0) return [];
 
   const expectedTokens = tokenizeSentence(expectedSentence);
   if (expectedTokens.length === 0) return [];
 
-  const steps = alignPrefixTokens(typedTokens, expectedTokens);
+  const steps = alignPrefixTokens(typedTokens, expectedTokens, 35, mode);
   const feedbacks: WordFeedback[] = [];
 
   for (const step of steps) {
@@ -367,11 +382,15 @@ export function getLiveFeedback(expectedSentence: string, userTypedInput: string
 /**
  * Full Sentence Evaluation when submitted or finished.
  */
-export function evaluateSentence(expectedSentence: string, userTypedInput: string): SentenceEvaluation {
+export function evaluateSentence(
+  expectedSentence: string, 
+  userTypedInput: string,
+  mode: 'relaxed' | 'strict' = 'relaxed'
+): SentenceEvaluation {
   const expectedTokens = tokenizeSentence(expectedSentence);
   const typedTokens = tokenizeSentence(userTypedInput);
 
-  const steps = alignTokens(typedTokens, expectedTokens);
+  const steps = alignTokens(typedTokens, expectedTokens, mode);
   const feedbacks: WordFeedback[] = [];
   const missedWords: string[] = [];
   const extraWords: string[] = [];

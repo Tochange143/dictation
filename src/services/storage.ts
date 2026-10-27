@@ -9,6 +9,8 @@ export const DEFAULT_SETTINGS: UserSettings = {
   speechPitch: 1.0,
   selectedVoiceURI: null,
   voiceAccent: 'en-IN', // Indian accent by default
+  evaluationMode: 'relaxed', // Default to relaxed for learner-friendly dictation!
+  announcePunctuation: false,
   repeatCount: 1,
   wordsPerChunk: 3, // Default 3 words at once!
   chunkThreshold: 15,

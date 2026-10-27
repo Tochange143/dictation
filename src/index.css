@@ -160,3 +160,22 @@ input, textarea, select {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
 }
+
+/* Sound Wave Equalizer Animation */
+.wave-bar {
+  display: inline-block;
+  width: 2.5px;
+  background-color: var(--accent);
+  border-radius: 2px;
+  animation: sound-wave 0.8s ease-in-out infinite alternate;
+}
+
+.wave-bar-1 { height: 6px; animation-delay: 0.1s; }
+.wave-bar-2 { height: 12px; animation-delay: 0.3s; }
+.wave-bar-3 { height: 8px; animation-delay: 0.2s; }
+.wave-bar-4 { height: 11px; animation-delay: 0.4s; }
+
+@keyframes sound-wave {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1.1); }
+}

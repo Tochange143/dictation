@@ -336,6 +336,55 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </p>
         </div>
 
+        {/* Evaluation Mode: Relaxed vs Strict */}
+        <div>
+          <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: '0.35rem' }}>
+            Spelling & Punctuation Evaluation Mode
+          </label>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <button
+              type="button"
+              onClick={() => handleChange('evaluationMode', 'relaxed')}
+              style={{
+                padding: '8px 10px',
+                borderRadius: '8px',
+                border: (settings.evaluationMode || 'relaxed') === 'relaxed' ? '2px solid #16a34a' : '1px solid var(--border-main)',
+                backgroundColor: (settings.evaluationMode || 'relaxed') === 'relaxed' ? '#f0fdf4' : '#ffffff',
+                textAlign: 'left',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#15803d', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span>🟢 Relaxed Mode</span>
+                <span style={{ fontSize: '0.65rem', backgroundColor: '#dcfce7', padding: '1px 5px', borderRadius: '3px' }}>Recommended</span>
+              </div>
+              <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                Focuses on spelling & listening. Ignores capitalization & punctuation errors.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleChange('evaluationMode', 'strict')}
+              style={{
+                padding: '8px 10px',
+                borderRadius: '8px',
+                border: settings.evaluationMode === 'strict' ? '2px solid var(--brand-primary)' : '1px solid var(--border-main)',
+                backgroundColor: settings.evaluationMode === 'strict' ? '#eff6ff' : '#ffffff',
+                textAlign: 'left',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--brand-primary)' }}>
+                🎯 Strict Mode
+              </div>
+              <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                Requires exact spelling, capital letters, commas, and periods.
+              </p>
+            </button>
+          </div>
+        </div>
+
         {/* Automatic Repeat Count */}
         <div>
           <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: '0.35rem' }}>

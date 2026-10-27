@@ -24,6 +24,7 @@ import { TypingPanel } from './components/TypingPanel';
 import { LessonSummaryModal } from './components/LessonSummaryModal';
 import { ShortcutsModal } from './components/ShortcutsModal';
 import { SettingsModal } from './components/SettingsModal';
+import { MistakesModal } from './components/MistakesModal';
 
 const RootRedirect: React.FC = () => {
   const lastActive = loadLastActive();
@@ -82,6 +83,7 @@ export const DictationPage: React.FC = () => {
   const [sessionStartTime, setSessionStartTime] = useState<number>(Date.now());
   const [sessionRetries, setSessionRetries] = useState<number>(0);
   const [misspelledTracker, setMisspelledTracker] = useState<Record<string, number>>({});
+  const [isMistakesOpen, setIsMistakesOpen] = useState<boolean>(false);
 
   // Sync with backend server on startup
   useEffect(() => {
@@ -250,11 +252,18 @@ export const DictationPage: React.FC = () => {
     };
   }, [currentLessonId, currentChunk, activeChunkIndex, typedInput, currentLesson]);
 
+  const handleInsertWord = useCallback((word: string) => {
+    setTypedInput(prev => {
+      const trimmed = prev.trimEnd();
+      return trimmed ? `${trimmed} ${word} ` : `${word} `;
+    });
+  }, []);
+
   // Compute live word-by-word feedback for continuous story
   const liveFeedbacks: WordFeedback[] = useMemo(() => {
     if (!fullLessonStory || !typedInput.trim()) return [];
-    return getLiveFeedback(fullLessonStory, typedInput);
-  }, [fullLessonStory, typedInput]);
+    return getLiveFeedback(fullLessonStory, typedInput, settings.evaluationMode || 'relaxed');
+  }, [fullLessonStory, typedInput, settings.evaluationMode]);
 
   // Live match accuracy
   const liveAccuracy = useMemo(() => {
@@ -607,6 +616,7 @@ export const DictationPage: React.FC = () => {
                 totalChunks={storyChunks.length}
                 totalWordsInLesson={totalLessonWords}
                 lessonTitle={currentLesson.title}
+                onInsertWord={handleInsertWord}
               />
 
               {/* Bottom Panel: Live Continuous Notebook Writing Area */}
@@ -621,6 +631,8 @@ export const DictationPage: React.FC = () => {
                 helpText={currentHelpText}
                 isHelpVisible={isHelpVisible}
                 onToggleHelp={() => setIsHelpVisible(prev => !prev)}
+                mistakesCount={Object.keys(misspelledTracker).length}
+                onOpenMistakes={() => setIsMistakesOpen(true)}
               />
             </div>
           </>
@@ -673,6 +685,14 @@ export const DictationPage: React.FC = () => {
         }}
         onResetProgress={handleResetAllProgress}
         onClose={() => setIsSettingsOpen(false)}
+      />
+
+      {/* Misspelled Words Practice Drill Modal */}
+      <MistakesModal
+        isOpen={isMistakesOpen}
+        misspelledCounts={misspelledTracker}
+        onClose={() => setIsMistakesOpen(false)}
+        onClearMistakes={() => setMisspelledTracker({})}
       />
     </div>
   );

@@ -59,6 +59,8 @@ export interface UserSettings {
   speechPitch: number;
   selectedVoiceURI: string | null;
   voiceAccent?: VoiceAccent; // 'en-IN' (Indian), 'en-US', 'en-GB', 'all'
+  evaluationMode?: 'relaxed' | 'strict'; // 'relaxed' = focus on spelling words, ignore punctuation/casing; 'strict' = exact punctuation & case
+  announcePunctuation?: boolean; // announce "comma", "period" or play soft cue
   repeatCount: 1 | 2 | 3;
   wordsPerChunk: number; // 0 for full sentence, or 1, 2, 3, 4, 5 (default 3)
   chunkThreshold: number; // default 15 words
