@@ -136,23 +136,23 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
       {/* Help / Peek Banner when Ctrl+S is triggered */}
       {isHelpVisible && helpText && (
         <div style={{
-          backgroundColor: 'rgba(34, 197, 94, 0.15)',
-          border: '1.5px solid rgba(34, 197, 94, 0.4)',
-          borderRadius: '8px',
+          backgroundColor: 'var(--color-green-bg)',
+          border: '1px solid var(--color-green)',
+          borderRadius: 'var(--radius-md)',
           padding: '0.65rem 0.9rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           fontSize: '0.95rem',
-          color: '#4ade80',
+          color: 'var(--color-green)',
           flexWrap: 'wrap',
           gap: '0.5rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <Eye size={16} style={{ color: '#4ade80' }} />
+            <Eye size={16} style={{ color: 'var(--color-green)' }} />
             <span><strong>Help / Spoken Words:</strong> &ldquo;{helpText}&rdquo;</span>
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#86efac', fontWeight: 600 }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-green)', fontWeight: 600 }}>
             Press Ctrl+S to hide
           </span>
         </div>
@@ -299,9 +299,9 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
                 fontSize: '0.68rem',
                 padding: '1px 5px',
                 borderRadius: '3px',
-                backgroundColor: isHelpVisible ? 'rgba(34, 197, 94, 0.25)' : 'var(--bg-surface)',
+                backgroundColor: isHelpVisible ? 'var(--color-green-bg)' : 'var(--bg-surface)',
                 marginLeft: '2px',
-                color: isHelpVisible ? '#4ade80' : 'var(--text-muted)',
+                color: isHelpVisible ? 'var(--color-green)' : 'var(--text-muted)',
                 border: '1px solid var(--border-subtle)'
               }}>
                 Ctrl+S

@@ -82,16 +82,17 @@ export const DictationPage: React.FC = () => {
       const saved = localStorage.getItem('dictation_theme');
       if (saved) return saved;
     }
-    return 'carbon';
+    return 'dark';
   });
 
   const [isFocusMode, setIsFocusMode] = useState<boolean>(false);
+  const [isSoundOutMode, setIsSoundOutMode] = useState<boolean>(false);
   const toggleFocusMode = () => setIsFocusMode(prev => !prev);
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-theme', theme);
-      if (theme === 'paper' || theme === 'light') {
+      if (theme === 'light') {
         document.documentElement.className = 'light';
       } else {
         document.documentElement.className = 'dark';
@@ -307,9 +308,13 @@ export const DictationPage: React.FC = () => {
     const idx = chunkIdx !== undefined ? chunkIdx : activeChunkIndex;
     if (idx >= 0 && idx < storyChunks.length) {
       const chunk = storyChunks[idx];
-      speechEngine.speakDiscreteChunk(chunk.text, idx, storyChunks.length, slowClarity);
+      if (isSoundOutMode) {
+        speechEngine.speakPhonicSyllables(chunk.text, idx, storyChunks.length);
+      } else {
+        speechEngine.speakDiscreteChunk(chunk.text, idx, storyChunks.length, slowClarity);
+      }
     }
-  }, [storyChunks, activeChunkIndex]);
+  }, [storyChunks, activeChunkIndex, isSoundOutMode]);
 
   // Speak active chunk articulated into syllables (Sound It Out)
   const speakActiveChunkPhonics = useCallback((chunkIdx?: number) => {
@@ -478,7 +483,21 @@ export const DictationPage: React.FC = () => {
     saveSettings(updated);
   }, [settings]);
 
-  const handlePacingPreset = useCallback((preset: 'slow' | 'teacher' | 'natural') => {
+  const handlePacingPreset = useCallback((preset: 'slow' | 'teacher' | 'natural' | 'sound_out') => {
+    if (preset === 'sound_out') {
+      setIsSoundOutMode(prev => {
+        const next = !prev;
+        if (next && storyChunks && storyChunks.length > 0) {
+          const chunk = storyChunks[activeChunkIndex];
+          if (chunk) {
+            speechEngine.speakPhonicSyllables(chunk.text, activeChunkIndex, storyChunks.length);
+          }
+        }
+        return next;
+      });
+      return;
+    }
+    setIsSoundOutMode(false);
     let speed = 0.8;
     let words = 3;
 
@@ -648,6 +667,8 @@ export const DictationPage: React.FC = () => {
               onChangeTheme={setTheme}
               isFocusMode={isFocusMode}
               onToggleFocusMode={toggleFocusMode}
+              onSoundItOut={() => speakActiveChunkPhonics()}
+              isSoundOutMode={isSoundOutMode}
             />
 
             {/* Optional Focus Mode status strip */}
@@ -693,6 +714,7 @@ export const DictationPage: React.FC = () => {
               <FeedbackPanel
                 feedbacks={liveFeedbacks}
                 isSpeaking={speechState.isPlaying}
+                isPhonicSoundOut={speechState.isPhonicSoundOut || isSoundOutMode}
                 activeChunkIndex={activeChunkIndex}
                 totalChunks={storyChunks.length}
                 totalWordsInLesson={totalLessonWords}

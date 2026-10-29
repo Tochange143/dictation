@@ -231,24 +231,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
               name: 'Level 1: Beginner',
               range: 'Lessons 1–35',
               desc: 'Everyday sight words • Short sentences • 1–3 words pacing',
-              color: '#4ade80',
-              bgColor: 'rgba(34, 197, 94, 0.18)'
+              color: 'var(--color-green)',
+              bgColor: 'var(--color-green-bg)'
             },
             {
               level: 2,
               name: 'Level 2: Intermediate',
               range: 'Lessons 36–70',
               desc: 'Conversations & stories • Compound grammar • 3–4 words pacing',
-              color: '#e5a93b',
-              bgColor: 'rgba(229, 169, 59, 0.15)'
+              color: 'var(--color-amber)',
+              bgColor: 'var(--color-amber-bg)'
             },
             {
               level: 3,
               name: 'Level 3: Advanced',
               range: 'Lessons 71–100',
               desc: 'Academic, professional & nuanced expressions • Fluent pacing',
-              color: '#c084fc',
-              bgColor: 'rgba(192, 132, 252, 0.18)'
+              color: 'var(--color-purple)',
+              bgColor: 'var(--color-purple-bg)'
             }
           ].map(({ level, name, range, desc, color, bgColor }) => {
             const lessons = levelGroups[level as 1 | 2 | 3];

@@ -6,6 +6,7 @@ export interface SpeechState {
   currentChunkIndex: number;
   totalChunks: number;
   currentSentenceText: string;
+  isPhonicSoundOut?: boolean;
 }
 
 export type SpeechCallback = (state: SpeechState) => void;
@@ -376,9 +377,13 @@ class SpeechEngine {
    * Speak words articulated into individual syllables for phonic clarity.
    * e.g. "beau ... ti ... ful"
    */
-  public speakPhonicSyllables(text: string) {
+  public speakPhonicSyllables(text: string, chunkIndex = 0, totalChunks = 0) {
     this.cancel();
     if (!text || !text.trim() || !this.synth) return;
+
+    this.currentChunks = [text];
+    this.currentChunkIndex = chunkIndex;
+    this.fullSentenceText = text;
 
     const words = text.trim().split(/\s+/);
     const syllableParts: string[] = [];
@@ -393,21 +398,40 @@ class SpeechEngine {
     utterance.pitch = 1.05;
     if (this.selectedVoice) {
       utterance.voice = this.selectedVoice;
-      utterance.lang = this.selectedVoice.lang || 'en-IN';
+      utterance.lang = this.selectedVoice.lang || (this.preferredAccent === 'en-IN' ? 'en-IN' : 'en-US');
     } else {
       utterance.lang = this.preferredAccent === 'en-IN' ? 'en-IN' : 'en-US';
     }
 
     utterance.onstart = () => {
       this.isPlaying = true;
-      this.notify();
+      this.isPaused = false;
+      const state: SpeechState = {
+        isPlaying: true,
+        isPaused: false,
+        currentChunkIndex: chunkIndex,
+        totalChunks: totalChunks,
+        currentSentenceText: text,
+        isPhonicSoundOut: true
+      };
+      this.listeners.forEach(cb => cb(state));
     };
     utterance.onend = () => {
       this.isPlaying = false;
-      this.notify();
+      this.isPaused = false;
+      const state: SpeechState = {
+        isPlaying: false,
+        isPaused: false,
+        currentChunkIndex: chunkIndex,
+        totalChunks: totalChunks,
+        currentSentenceText: text,
+        isPhonicSoundOut: false
+      };
+      this.listeners.forEach(cb => cb(state));
     };
     utterance.onerror = () => {
       this.isPlaying = false;
+      this.isPaused = false;
       this.notify();
     };
 

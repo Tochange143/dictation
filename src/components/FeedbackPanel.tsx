@@ -13,6 +13,7 @@ interface FeedbackPanelProps {
   totalWordsInLesson: number;
   lessonTitle: string;
   onInsertWord?: (word: string) => void;
+  isPhonicSoundOut?: boolean;
 }
 
 export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
@@ -22,7 +23,8 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   totalChunks,
   totalWordsInLesson,
   lessonTitle,
-  onInsertWord
+  onInsertWord,
+  isPhonicSoundOut = false
 }) => {
   const contentContainerRef = useRef<HTMLDivElement>(null);
   const [showMissingWords, setShowMissingWords] = useState<boolean>(false);
@@ -117,11 +119,11 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
               gap: '6px',
               padding: '2px 8px',
               borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'var(--color-amber-bg)',
-              color: 'var(--color-amber)',
+              backgroundColor: isPhonicSoundOut ? 'var(--color-amber-bg)' : 'var(--color-green-bg)',
+              color: isPhonicSoundOut ? 'var(--color-amber)' : 'var(--color-green)',
               fontSize: '0.72rem',
               fontWeight: 600,
-              border: '1px solid var(--border-main)'
+              border: `1px solid ${isPhonicSoundOut ? 'var(--color-amber)' : 'var(--border-main)'}`
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '2px', height: '12px' }}>
                 <span className="wave-bar wave-bar-1" />
@@ -130,7 +132,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 <span className="wave-bar wave-bar-4" />
               </div>
               <span>
-                Teacher speaking...
+                {isPhonicSoundOut ? '🔤 Sounding out syllables...' : 'Teacher speaking...'}
                 {totalChunks > 0 ? ` (part ${activeChunkIndex + 1}/${totalChunks})` : ''}
               </span>
             </div>
@@ -153,7 +155,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 
               {missingCount > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <span style={{ color: '#fbbf24', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--color-amber)', fontWeight: 600 }}>
                     {missingCount} missing
                   </span>
                   <button
@@ -164,9 +166,9 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                       gap: '4px',
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      border: '1.5px solid #f59e0b',
-                      backgroundColor: showMissingWords ? 'rgba(245, 158, 11, 0.25)' : 'var(--bg-muted)',
-                      color: '#fbbf24',
+                      border: '1px solid var(--color-amber)',
+                      backgroundColor: showMissingWords ? 'var(--color-amber-bg)' : 'var(--bg-muted)',
+                      color: 'var(--color-amber)',
                       fontSize: '0.72rem',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -232,11 +234,11 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                   onClick={() => toggleRevealIndex(idx)}
                   style={{
                     cursor: 'pointer',
-                    backgroundColor: isRevealed ? 'rgba(245, 158, 11, 0.25)' : 'transparent',
-                    color: '#fbbf24',
+                    backgroundColor: isRevealed ? 'var(--color-amber-bg)' : 'transparent',
+                    color: 'var(--color-amber)',
                     padding: isRevealed ? '0 6px' : '0',
                     borderRadius: '4px',
-                    border: isRevealed ? '1.5px dashed #f59e0b' : 'none',
+                    border: isRevealed ? '1.5px dashed var(--color-amber)' : 'none',
                     fontWeight: isRevealed ? 700 : 600,
                     transition: 'all 0.15s ease',
                     display: 'inline-flex',
@@ -247,7 +249,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 >
                   <span>{isRevealed ? `[ ${missingWordText} ]` : '[ ___ ]'}</span>
                   {isRevealed && item.expectedPunctuation && (
-                    <span className="word-punct" style={{ color: '#fbbf24' }}>{item.expectedPunctuation}</span>
+                    <span className="word-punct" style={{ color: 'var(--color-amber)' }}>{item.expectedPunctuation}</span>
                   )}
                   {isRevealed && onInsertWord && item.expectedWord && (
                     <button
@@ -261,8 +263,8 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                         fontSize: '0.65rem',
                         fontWeight: 700,
                         borderRadius: '3px',
-                        backgroundColor: '#f59e0b',
-                        color: '#090d16',
+                        backgroundColor: 'var(--color-amber)',
+                        color: 'var(--brand-text)',
                         border: 'none',
                         cursor: 'pointer',
                         lineHeight: '1.2'
@@ -342,8 +344,8 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span><strong style={{ color: 'var(--color-green)' }}>Green</strong> = correct</span>
           <span><strong style={{ color: 'var(--color-red)' }}>Red</strong> = incorrect</span>
-          <span><strong style={{ color: '#fbbf24' }}>🎯 Amber</strong> = sound match (click for rule)</span>
-          <span><strong style={{ color: '#fbbf24' }}>[ ___ ]</strong> = missing (click &ldquo;Show Missing Words&rdquo;)</span>
+          <span><strong style={{ color: 'var(--color-amber)' }}>🎯 Amber</strong> = sound match (click for rule)</span>
+          <span><strong style={{ color: 'var(--color-amber)' }}>[ ___ ]</strong> = missing (click &ldquo;Show Missing Words&rdquo;)</span>
           <span style={{ color: 'var(--accent)', fontWeight: 600 }}>💡 Click any word to define & hear</span>
         </div>
         <span>Continuous story dictation • Screen never clears</span>
@@ -457,9 +459,9 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 gap: '4px',
                 padding: '2px 8px',
                 borderRadius: '4px',
-                backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                color: '#fbbf24',
-                border: '1px solid rgba(245, 158, 11, 0.4)',
+                backgroundColor: 'var(--color-amber-bg)',
+                color: 'var(--color-amber)',
+                border: '1px solid var(--color-amber)',
                 fontSize: '0.72rem',
                 fontWeight: 600,
                 cursor: 'pointer'
@@ -477,17 +479,17 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
               marginTop: '0.35rem',
               padding: '0.5rem 0.75rem',
               borderRadius: '6px',
-              backgroundColor: 'rgba(245, 158, 11, 0.15)',
-              border: '1px solid rgba(245, 158, 11, 0.35)',
+              backgroundColor: 'var(--color-amber-bg)',
+              border: '1px solid var(--color-amber)',
               display: 'flex',
               flexDirection: 'column',
               gap: '2px'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#fbbf24' }}>
+                <span style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--color-amber)' }}>
                   🎯 {selectedPhonicHint.title}
                 </span>
-                <span style={{ fontSize: '0.68rem', color: '#fde68a', fontFamily: 'var(--font-mono)' }}>
+                <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
                   {selectedPhonicHint.soundPattern}
                 </span>
               </div>

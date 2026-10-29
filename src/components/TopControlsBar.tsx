@@ -47,9 +47,11 @@ interface TopControlsBarProps {
   onChangeAccent: (accent: VoiceAccent) => void;
   onChangeRepeat: (newRepeat: 1 | 2 | 3) => void;
   onChangeWordsPerChunk: (words: number) => void;
-  onPacingPreset: (preset: 'slow' | 'teacher' | 'natural') => void;
+  onPacingPreset: (preset: 'slow' | 'teacher' | 'natural' | 'sound_out') => void;
   onOpenShortcuts: () => void;
   onOpenSettings: () => void;
+  onSoundItOut?: () => void;
+  isSoundOutMode?: boolean;
   theme?: string;
   onChangeTheme?: (theme: string) => void;
   isFocusMode?: boolean;
@@ -82,7 +84,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
   onPacingPreset,
   onOpenShortcuts,
   onOpenSettings,
-  theme = 'carbon',
+  onSoundItOut,
+  isSoundOutMode = false,
+  theme = 'dark',
   onChangeTheme,
   isFocusMode = false,
   onToggleFocusMode
@@ -140,8 +144,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               padding: '5px 10px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-main)',
-              backgroundColor: isSidebarOpen ? 'var(--bg-muted)' : 'var(--brand-primary)',
-              color: isSidebarOpen ? 'var(--text-secondary)' : '#ffffff',
+              backgroundColor: isSidebarOpen ? 'var(--bg-muted)' : 'var(--bg-surface)',
+              color: 'var(--text-primary)',
               fontSize: '0.8rem',
               fontWeight: 600,
               cursor: 'pointer'
@@ -194,9 +198,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                   fontWeight: 600
                 }}
               >
-                <option value="carbon">Charcoal Dark (No Blue)</option>
-                <option value="gruvbox">Gruvbox Warm</option>
-                <option value="paper">E-Ink Paper</option>
+                <option value="dark">AMOLED Dark (Pure Black)</option>
+                <option value="light">Crisp White</option>
               </select>
             </div>
           )}
@@ -300,8 +303,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                   fontSize: '0.75rem',
                   fontWeight: wordsPerChunk === opt.val ? 700 : 500,
                   backgroundColor: wordsPerChunk === opt.val ? 'var(--brand-primary)' : 'var(--bg-surface)',
-                  color: wordsPerChunk === opt.val ? '#121212' : 'var(--text-secondary)',
-                  border: '1px solid var(--border-main)'
+                  color: wordsPerChunk === opt.val ? 'var(--brand-text)' : 'var(--text-secondary)',
+                  border: wordsPerChunk === opt.val ? '1px solid var(--brand-primary)' : '1px solid var(--border-main)'
                 }}
               >
                 {opt.label}
@@ -341,10 +344,10 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 padding: '6px 14px',
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--brand-primary)',
-                color: '#121212',
+                color: 'var(--brand-text)',
                 fontWeight: 700,
                 fontSize: '0.85rem',
-                border: '1px solid var(--border-main)'
+                border: '1px solid var(--brand-primary)'
               }}
             >
               <Pause size={15} />
@@ -361,14 +364,14 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 padding: '6px 14px',
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--brand-primary)',
-                color: '#121212',
+                color: 'var(--brand-text)',
                 fontWeight: 700,
                 fontSize: '0.85rem',
-                border: '1px solid var(--border-main)'
+                border: '1px solid var(--brand-primary)'
               }}
             >
               <Play size={15} />
-              <span>{speechState.isPaused ? 'Resume' : wordsPerChunk > 0 ? `Read (${wordsPerChunk} words)` : 'Teacher Read'}</span>
+              <span>{speechState.isPaused ? 'Resume' : isSoundOutMode ? `Sound Out (${wordsPerChunk > 0 ? `${wordsPerChunk} words` : 'sentence'})` : wordsPerChunk > 0 ? `Read (${wordsPerChunk} words)` : 'Teacher Read'}</span>
             </button>
           )}
 
@@ -413,6 +416,28 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
             <Volume1 size={14} />
             <span>Slow & Clear</span>
           </button>
+
+          {onSoundItOut && (
+            <button
+              onClick={onSoundItOut}
+              title="Sound Out (articulates each syllable slowly for phonics spelling)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '6px 11px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--color-amber)',
+                fontSize: '0.82rem',
+                color: 'var(--color-amber)',
+                fontWeight: 600,
+                backgroundColor: 'var(--color-amber-bg)',
+                cursor: 'pointer'
+              }}
+            >
+              <span>🔤 Sound It Out</span>
+            </button>
+          )}
 
           {wordsPerChunk > 0 && (
             <button
@@ -506,9 +531,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: voiceAccent === 'en-IN' ? 700 : 500,
-                backgroundColor: voiceAccent === 'en-IN' ? 'rgba(245, 158, 11, 0.2)' : 'transparent',
-                color: voiceAccent === 'en-IN' ? '#fbbf24' : 'var(--text-secondary)',
-                border: voiceAccent === 'en-IN' ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid transparent',
+                backgroundColor: voiceAccent === 'en-IN' ? 'var(--color-amber-bg)' : 'transparent',
+                color: voiceAccent === 'en-IN' ? 'var(--color-amber)' : 'var(--text-secondary)',
+                border: voiceAccent === 'en-IN' ? '1px solid var(--color-amber)' : '1px solid transparent',
                 cursor: 'pointer'
               }}
             >
@@ -522,9 +547,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: voiceAccent === 'en-US' ? 700 : 500,
-                backgroundColor: voiceAccent === 'en-US' ? 'var(--bg-surface)' : 'transparent',
-                color: voiceAccent === 'en-US' ? 'var(--accent)' : 'var(--text-secondary)',
-                border: voiceAccent === 'en-US' ? '1px solid var(--border-main)' : '1px solid transparent',
+                backgroundColor: voiceAccent === 'en-US' ? 'var(--brand-primary)' : 'transparent',
+                color: voiceAccent === 'en-US' ? 'var(--brand-text)' : 'var(--text-secondary)',
+                border: voiceAccent === 'en-US' ? '1px solid var(--brand-primary)' : '1px solid transparent',
                 cursor: 'pointer'
               }}
             >
@@ -538,9 +563,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: voiceAccent === 'en-GB' ? 700 : 500,
-                backgroundColor: voiceAccent === 'en-GB' ? 'var(--bg-surface)' : 'transparent',
-                color: voiceAccent === 'en-GB' ? 'var(--accent)' : 'var(--text-secondary)',
-                border: voiceAccent === 'en-GB' ? '1px solid var(--border-main)' : '1px solid transparent',
+                backgroundColor: voiceAccent === 'en-GB' ? 'var(--brand-primary)' : 'transparent',
+                color: voiceAccent === 'en-GB' ? 'var(--brand-text)' : 'var(--text-secondary)',
+                border: voiceAccent === 'en-GB' ? '1px solid var(--brand-primary)' : '1px solid transparent',
                 cursor: 'pointer'
               }}
             >
@@ -548,7 +573,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
             </button>
           </div>
 
-          {/* Teacher Pacing Presets */}
+          {/* Teacher Pacing Presets & Reading Modes */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -564,9 +589,10 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 padding: '3px 8px',
                 borderRadius: '6px',
                 fontSize: '0.75rem',
-                fontWeight: speechSpeed === 0.7 ? 700 : 500,
-                backgroundColor: speechSpeed === 0.7 ? 'var(--bg-surface)' : 'transparent',
-                color: speechSpeed === 0.7 ? 'var(--accent)' : 'var(--text-secondary)'
+                fontWeight: !isSoundOutMode && speechSpeed === 0.7 ? 700 : 500,
+                backgroundColor: !isSoundOutMode && speechSpeed === 0.7 ? 'var(--brand-primary)' : 'transparent',
+                color: !isSoundOutMode && speechSpeed === 0.7 ? 'var(--brand-text)' : 'var(--text-secondary)',
+                border: !isSoundOutMode && speechSpeed === 0.7 ? '1px solid var(--brand-primary)' : '1px solid transparent'
               }}
             >
               Slow
@@ -581,9 +607,10 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 padding: '3px 8px',
                 borderRadius: '6px',
                 fontSize: '0.75rem',
-                fontWeight: speechSpeed === 0.8 ? 700 : 500,
-                backgroundColor: speechSpeed === 0.8 ? 'var(--bg-surface)' : 'transparent',
-                color: speechSpeed === 0.8 ? 'var(--accent)' : 'var(--text-secondary)'
+                fontWeight: !isSoundOutMode && speechSpeed === 0.8 ? 700 : 500,
+                backgroundColor: !isSoundOutMode && speechSpeed === 0.8 ? 'var(--brand-primary)' : 'transparent',
+                color: !isSoundOutMode && speechSpeed === 0.8 ? 'var(--brand-text)' : 'var(--text-secondary)',
+                border: !isSoundOutMode && speechSpeed === 0.8 ? '1px solid var(--brand-primary)' : '1px solid transparent'
               }}
             >
               <GraduationCap size={13} />
@@ -596,12 +623,31 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 padding: '3px 8px',
                 borderRadius: '6px',
                 fontSize: '0.75rem',
-                fontWeight: speechSpeed === 1.0 ? 700 : 500,
-                backgroundColor: speechSpeed === 1.0 ? 'var(--bg-surface)' : 'transparent',
-                color: speechSpeed === 1.0 ? 'var(--accent)' : 'var(--text-secondary)'
+                fontWeight: !isSoundOutMode && speechSpeed === 1.0 ? 700 : 500,
+                backgroundColor: !isSoundOutMode && speechSpeed === 1.0 ? 'var(--brand-primary)' : 'transparent',
+                color: !isSoundOutMode && speechSpeed === 1.0 ? 'var(--brand-text)' : 'var(--text-secondary)',
+                border: !isSoundOutMode && speechSpeed === 1.0 ? '1px solid var(--brand-primary)' : '1px solid transparent'
               }}
             >
               Normal
+            </button>
+            <button
+              onClick={() => onPacingPreset('sound_out')}
+              title="Sound Out Reading Mode: Automatically speaks phonics syllables"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3px',
+                padding: '3px 8px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: isSoundOutMode ? 700 : 500,
+                backgroundColor: isSoundOutMode ? 'var(--color-amber-bg)' : 'transparent',
+                color: isSoundOutMode ? 'var(--color-amber)' : 'var(--text-secondary)',
+                border: isSoundOutMode ? '1px solid var(--color-amber)' : '1px solid transparent'
+              }}
+            >
+              <span>🔤 Sound Out</span>
             </button>
           </div>
 
