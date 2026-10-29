@@ -1,4 +1,5 @@
-import { ipcMain } from 'electron';
+import electron from 'electron';
+const { ipcMain } = electron;
 import {
   lessonsDao,
   progressDao,
