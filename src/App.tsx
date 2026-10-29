@@ -77,22 +77,28 @@ export const DictationPage: React.FC = () => {
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isHelpVisible, setIsHelpVisible] = useState<boolean>(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+  const [theme, setTheme] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('dictation_theme');
-      if (saved === 'light' || saved === 'dark') return saved;
+      if (saved) return saved;
     }
-    return 'dark';
+    return 'carbon';
   });
+
+  const [isFocusMode, setIsFocusMode] = useState<boolean>(false);
+  const toggleFocusMode = () => setIsFocusMode(prev => !prev);
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      document.documentElement.className = theme;
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'paper' || theme === 'light') {
+        document.documentElement.className = 'light';
+      } else {
+        document.documentElement.className = 'dark';
+      }
       localStorage.setItem('dictation_theme', theme);
     }
   }, [theme]);
-
-  const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
 
   // Final evaluation when lesson completes
   const [currentEvaluation, setCurrentEvaluation] = useState<SentenceEvaluation | null>(null);
@@ -639,8 +645,40 @@ export const DictationPage: React.FC = () => {
               onOpenShortcuts={() => setIsShortcutsOpen(true)}
               onOpenSettings={() => setIsSettingsOpen(true)}
               theme={theme}
-              onToggleTheme={toggleTheme}
+              onChangeTheme={setTheme}
+              isFocusMode={isFocusMode}
+              onToggleFocusMode={toggleFocusMode}
             />
+
+            {/* Optional Focus Mode status strip */}
+            {isFocusMode && (
+              <div style={{
+                backgroundColor: 'var(--bg-surface)',
+                borderBottom: '1px solid var(--border-main)',
+                padding: '4px 1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                fontSize: '0.75rem',
+                color: 'var(--color-amber)',
+                fontWeight: 600
+              }}>
+                <span>🎯 FOCUS PRACTICE ACTIVE — Listening & typing only.</span>
+                <button
+                  onClick={() => setIsFocusMode(false)}
+                  style={{
+                    padding: '1px 8px',
+                    fontSize: '0.7rem',
+                    border: '1px solid var(--border-main)',
+                    backgroundColor: 'var(--bg-muted)',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Exit Focus Mode (Esc)
+                </button>
+              </div>
+            )}
 
             {/* Core Practice Layout: Full Width without empty side gaps */}
             <div style={{

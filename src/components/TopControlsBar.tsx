@@ -50,8 +50,10 @@ interface TopControlsBarProps {
   onPacingPreset: (preset: 'slow' | 'teacher' | 'natural') => void;
   onOpenShortcuts: () => void;
   onOpenSettings: () => void;
-  theme?: 'dark' | 'light';
-  onToggleTheme?: () => void;
+  theme?: string;
+  onChangeTheme?: (theme: string) => void;
+  isFocusMode?: boolean;
+  onToggleFocusMode?: () => void;
 }
 
 export const TopControlsBar: React.FC<TopControlsBarProps> = ({
@@ -80,8 +82,10 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
   onPacingPreset,
   onOpenShortcuts,
   onOpenSettings,
-  theme = 'dark',
-  onToggleTheme
+  theme = 'carbon',
+  onChangeTheme,
+  isFocusMode = false,
+  onToggleFocusMode
 }) => {
   const progressPct = Math.round(((sentenceIndex + 1) / totalSentences) * 100);
 
@@ -155,9 +159,10 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 fontSize: '0.72rem',
                 fontWeight: 700,
                 padding: '2px 7px',
-                borderRadius: '4px',
-                backgroundColor: lesson.level === 1 ? 'rgba(34, 197, 94, 0.2)' : lesson.level === 2 ? 'rgba(56, 189, 248, 0.2)' : 'rgba(192, 132, 252, 0.2)',
-                color: lesson.level === 1 ? '#4ade80' : lesson.level === 2 ? '#38bdf8' : '#c084fc'
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'var(--bg-muted)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--border-main)'
               }}>
                 {lesson.levelName}
               </span>
@@ -173,6 +178,50 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
 
         {/* Right side tools */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {onChangeTheme && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <select
+                value={theme}
+                onChange={(e) => onChangeTheme(e.target.value)}
+                style={{
+                  fontSize: '0.75rem',
+                  padding: '4px 6px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-main)',
+                  backgroundColor: 'var(--bg-surface)',
+                  color: 'var(--text-primary)',
+                  cursor: 'pointer',
+                  fontWeight: 600
+                }}
+              >
+                <option value="carbon">Charcoal Dark (No Blue)</option>
+                <option value="gruvbox">Gruvbox Warm</option>
+                <option value="paper">E-Ink Paper</option>
+              </select>
+            </div>
+          )}
+
+          {onToggleFocusMode && (
+            <button
+              onClick={onToggleFocusMode}
+              title="Toggle Distraction-Free Focus Practice (Esc)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '5px 8px',
+                borderRadius: 'var(--radius-sm)',
+                border: `1px solid ${isFocusMode ? 'var(--accent)' : 'var(--border-main)'}`,
+                backgroundColor: isFocusMode ? 'var(--color-amber-bg)' : 'var(--bg-surface)',
+                fontSize: '0.78rem',
+                color: isFocusMode ? 'var(--color-amber)' : 'var(--text-primary)',
+                fontWeight: 600
+              }}
+            >
+              <span>🎯 Focus</span>
+            </button>
+          )}
+
           <button
             onClick={onOpenShortcuts}
             title="Keyboard Shortcuts"
@@ -180,52 +229,30 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
-              padding: '6px 10px',
+              padding: '5px 8px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-main)',
               backgroundColor: 'var(--bg-surface)',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               color: 'var(--text-secondary)'
             }}
           >
-            <HelpCircle size={15} />
+            <HelpCircle size={14} />
             <span className="desktop-only">Shortcuts</span>
           </button>
-
-          {onToggleTheme && (
-            <button
-              onClick={onToggleTheme}
-              title={theme === 'dark' ? "Switch to Light Mode (Classic Desktop Paper)" : "Switch to Dark Mode (Calm Charcoal Slate)"}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                padding: '6px 10px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border-main)',
-                backgroundColor: 'var(--bg-surface)',
-                fontSize: '0.8rem',
-                color: 'var(--text-primary)',
-                fontWeight: 600
-              }}
-            >
-              {theme === 'dark' ? <Sun size={14} style={{ color: '#fbbf24' }} /> : <Moon size={14} style={{ color: '#4f46e5' }} />}
-              <span className="desktop-only">{theme === 'dark' ? 'Light' : 'Dark'}</span>
-            </button>
-          )}
 
           <button
             onClick={onOpenSettings}
             title="Settings"
             style={{
-              padding: '6px 8px',
+              padding: '5px 7px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-main)',
               backgroundColor: 'var(--bg-surface)',
               color: 'var(--text-secondary)'
             }}
           >
-            <SettingsIcon size={16} />
+            <SettingsIcon size={15} />
           </button>
         </div>
       </div>
@@ -269,13 +296,12 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 onClick={() => onChangeWordsPerChunk(opt.val)}
                 style={{
                   padding: '3px 8px',
-                  borderRadius: '6px',
+                  borderRadius: 'var(--radius-sm)',
                   fontSize: '0.75rem',
                   fontWeight: wordsPerChunk === opt.val ? 700 : 500,
                   backgroundColor: wordsPerChunk === opt.val ? 'var(--brand-primary)' : 'var(--bg-surface)',
-                  color: wordsPerChunk === opt.val ? '#ffffff' : 'var(--text-secondary)',
-                  border: '1px solid var(--border-main)',
-                  boxShadow: wordsPerChunk === opt.val ? '0 1px 3px rgba(59, 130, 246, 0.3)' : 'none'
+                  color: wordsPerChunk === opt.val ? '#121212' : 'var(--text-secondary)',
+                  border: '1px solid var(--border-main)'
                 }}
               >
                 {opt.label}
@@ -313,12 +339,12 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 alignItems: 'center',
                 gap: '6px',
                 padding: '6px 14px',
-                borderRadius: '8px',
+                borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--brand-primary)',
-                color: '#ffffff',
-                fontWeight: 600,
+                color: '#121212',
+                fontWeight: 700,
                 fontSize: '0.85rem',
-                boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
+                border: '1px solid var(--border-main)'
               }}
             >
               <Pause size={15} />
@@ -333,12 +359,12 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 alignItems: 'center',
                 gap: '6px',
                 padding: '6px 14px',
-                borderRadius: '8px',
+                borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--brand-primary)',
-                color: '#ffffff',
-                fontWeight: 600,
+                color: '#121212',
+                fontWeight: 700,
                 fontSize: '0.85rem',
-                boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
+                border: '1px solid var(--border-main)'
               }}
             >
               <Play size={15} />
@@ -354,8 +380,8 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               alignItems: 'center',
               gap: '4px',
               padding: '6px 10px',
-              borderRadius: '8px',
-              border: '1.5px solid var(--border-main)',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border-main)',
               fontSize: '0.82rem',
               color: 'var(--text-primary)',
               fontWeight: 600,
@@ -375,12 +401,12 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               alignItems: 'center',
               gap: '4px',
               padding: '6px 10px',
-              borderRadius: '8px',
-              border: '1.5px solid rgba(56, 189, 248, 0.4)',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border-main)',
               fontSize: '0.82rem',
-              color: '#38bdf8',
+              color: 'var(--text-primary)',
               fontWeight: 600,
-              backgroundColor: 'rgba(56, 189, 248, 0.1)',
+              backgroundColor: 'var(--bg-surface)',
               cursor: 'pointer'
             }}
           >

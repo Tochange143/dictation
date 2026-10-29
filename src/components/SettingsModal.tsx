@@ -168,10 +168,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 justifyContent: 'center',
                 gap: '5px',
                 padding: '7px 8px',
-                borderRadius: '8px',
-                border: currentAccent === 'en-US' ? '2px solid var(--brand-primary)' : '1px solid var(--border-main)',
-                backgroundColor: currentAccent === 'en-US' ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-muted)',
-                color: currentAccent === 'en-US' ? 'var(--accent)' : 'var(--text-primary)',
+                borderRadius: 'var(--radius-sm)',
+                border: currentAccent === 'en-US' ? '1px solid var(--accent)' : '1px solid var(--border-main)',
+                backgroundColor: currentAccent === 'en-US' ? 'var(--color-amber-bg)' : 'var(--bg-muted)',
+                color: currentAccent === 'en-US' ? 'var(--color-amber)' : 'var(--text-primary)',
                 fontSize: '0.82rem',
                 fontWeight: currentAccent === 'en-US' ? 700 : 500,
                 cursor: 'pointer'
@@ -189,10 +189,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 justifyContent: 'center',
                 gap: '5px',
                 padding: '7px 8px',
-                borderRadius: '8px',
-                border: currentAccent === 'en-GB' ? '2px solid var(--brand-primary)' : '1px solid var(--border-main)',
-                backgroundColor: currentAccent === 'en-GB' ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-muted)',
-                color: currentAccent === 'en-GB' ? 'var(--accent)' : 'var(--text-primary)',
+                borderRadius: 'var(--radius-sm)',
+                border: currentAccent === 'en-GB' ? '1px solid var(--accent)' : '1px solid var(--border-main)',
+                backgroundColor: currentAccent === 'en-GB' ? 'var(--color-amber-bg)' : 'var(--bg-muted)',
+                color: currentAccent === 'en-GB' ? 'var(--color-amber)' : 'var(--text-primary)',
                 fontSize: '0.82rem',
                 fontWeight: currentAccent === 'en-GB' ? 700 : 500,
                 cursor: 'pointer'
@@ -288,12 +288,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 onClick={() => handleChange('wordsPerChunk', opt.val)}
                 style={{
                   padding: '6px 12px',
-                  borderRadius: '8px',
-                  border: settings.wordsPerChunk === opt.val ? '1.5px solid var(--accent)' : '1px solid var(--border-main)',
-                  backgroundColor: settings.wordsPerChunk === opt.val ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-muted)',
+                  borderRadius: 'var(--radius-sm)',
+                  border: settings.wordsPerChunk === opt.val ? '1px solid var(--accent)' : '1px solid var(--border-main)',
+                  backgroundColor: settings.wordsPerChunk === opt.val ? 'var(--color-amber-bg)' : 'var(--bg-muted)',
                   fontWeight: 600,
                   fontSize: '0.82rem',
-                  color: settings.wordsPerChunk === opt.val ? 'var(--accent)' : 'var(--text-secondary)'
+                  color: settings.wordsPerChunk === opt.val ? 'var(--color-amber)' : 'var(--text-secondary)'
                 }}
               >
                 {opt.label}
@@ -316,16 +316,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onClick={() => handleChange('evaluationMode', 'relaxed')}
               style={{
                 padding: '8px 10px',
-                borderRadius: '8px',
-                border: (settings.evaluationMode || 'relaxed') === 'relaxed' ? '2px solid #22c55e' : '1px solid var(--border-main)',
-                backgroundColor: (settings.evaluationMode || 'relaxed') === 'relaxed' ? 'rgba(34, 197, 94, 0.15)' : 'var(--bg-muted)',
+                borderRadius: 'var(--radius-sm)',
+                border: (settings.evaluationMode || 'relaxed') === 'relaxed' ? '1.5px solid var(--color-green)' : '1px solid var(--border-main)',
+                backgroundColor: (settings.evaluationMode || 'relaxed') === 'relaxed' ? 'var(--color-green-bg)' : 'var(--bg-muted)',
                 textAlign: 'left',
                 cursor: 'pointer'
               }}
             >
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-green)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>🟢 Relaxed Mode</span>
-                <span style={{ fontSize: '0.65rem', backgroundColor: 'rgba(34, 197, 94, 0.25)', padding: '1px 5px', borderRadius: '3px' }}>Recommended</span>
+                <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--color-green-bg)', padding: '1px 5px', borderRadius: '3px' }}>Recommended</span>
               </div>
               <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
                 Focuses on spelling & listening. Ignores capitalization & punctuation errors.
@@ -337,14 +337,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onClick={() => handleChange('evaluationMode', 'strict')}
               style={{
                 padding: '8px 10px',
-                borderRadius: '8px',
-                border: settings.evaluationMode === 'strict' ? '2px solid var(--brand-primary)' : '1px solid var(--border-main)',
-                backgroundColor: settings.evaluationMode === 'strict' ? 'rgba(59, 130, 246, 0.18)' : 'var(--bg-muted)',
+                borderRadius: 'var(--radius-sm)',
+                border: settings.evaluationMode === 'strict' ? '1.5px solid var(--accent)' : '1px solid var(--border-main)',
+                backgroundColor: settings.evaluationMode === 'strict' ? 'var(--color-amber-bg)' : 'var(--bg-muted)',
                 textAlign: 'left',
                 cursor: 'pointer'
               }}
             >
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent)' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-amber)' }}>
                 🎯 Strict Mode
               </div>
               <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
@@ -371,12 +371,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 style={{
                   flex: 1,
                   padding: '0.5rem',
-                  borderRadius: '8px',
-                  border: settings.repeatCount === num ? '1.5px solid var(--accent)' : '1px solid var(--border-main)',
-                  backgroundColor: settings.repeatCount === num ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-muted)',
+                  borderRadius: 'var(--radius-sm)',
+                  border: settings.repeatCount === num ? '1px solid var(--accent)' : '1px solid var(--border-main)',
+                  backgroundColor: settings.repeatCount === num ? 'var(--color-amber-bg)' : 'var(--bg-muted)',
                   fontWeight: 600,
                   fontSize: '0.85rem',
-                  color: settings.repeatCount === num ? 'var(--accent)' : 'var(--text-secondary)'
+                  color: settings.repeatCount === num ? 'var(--color-amber)' : 'var(--text-secondary)'
                 }}
               >
                 {num}x {num === 1 ? '(Once)' : `${num} times`}

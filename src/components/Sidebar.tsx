@@ -239,8 +239,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               name: 'Level 2: Intermediate',
               range: 'Lessons 36–70',
               desc: 'Conversations & stories • Compound grammar • 3–4 words pacing',
-              color: '#38bdf8',
-              bgColor: 'rgba(56, 189, 248, 0.18)'
+              color: '#e5a93b',
+              bgColor: 'rgba(229, 169, 59, 0.15)'
             },
             {
               level: 3,

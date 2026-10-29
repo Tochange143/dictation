@@ -3,32 +3,34 @@
 @tailwind utilities;
 
 @layer base {
-  :root, html.dark {
-    /* 2001-Style Classic Dark Mode (Calm charcoal workstation - zero glare or eye strain) */
-    --bg-primary: #16171a;
-    --bg-surface: #202227;
-    --bg-surface-elevated: #282a30;
-    --bg-muted: #2d3037;
-    --bg-input: #121315;
-    
-    --border-main: #3a3e46;
-    --border-focus: #4b82c2;
-    --border-subtle: #292c33;
+  /* ========================================================
+     THEME 1: CHARCOAL FOCUS (Pure Warm Dark, ZERO Blue Tint)
+     ======================================================== */
+  :root, html[data-theme="carbon"], html.dark {
+    --bg-primary: #141414;
+    --bg-surface: #1e1e1e;
+    --bg-surface-elevated: #252525;
+    --bg-muted: #2a2a2a;
+    --bg-input: #161616;
 
-    --text-primary: #e6e8ec;
-    --text-secondary: #9da3af;
-    --text-muted: #6f7582;
+    --border-main: #333333;
+    --border-focus: #e5a93b;
+    --border-subtle: #242424;
 
-    --color-green: #34d399;
-    --color-green-bg: rgba(52, 211, 153, 0.12);
+    --text-primary: #ededed;
+    --text-secondary: #9e9e9e;
+    --text-muted: #666666;
+
+    --color-green: #4ade80;
+    --color-green-bg: rgba(74, 222, 128, 0.12);
     --color-red: #f87171;
     --color-red-bg: rgba(248, 113, 113, 0.14);
-    --color-amber: #fbbf24;
-    --color-amber-bg: rgba(251, 191, 36, 0.14);
+    --color-amber: #e5a93b;
+    --color-amber-bg: rgba(229, 169, 59, 0.14);
 
-    --brand-primary: #3b74b4;
-    --brand-hover: #2f629d;
-    --accent: #5c92d1;
+    --brand-primary: #e5a93b;
+    --brand-hover: #cf952c;
+    --accent: #e5a93b;
 
     --radius-lg: 2px;
     --radius-md: 2px;
@@ -38,32 +40,71 @@
     --font-mono: "Consolas", "Courier New", "Lucida Console", monospace;
   }
 
-  html.light {
-    /* 2001-Style Classic Light Mode (Clean desktop chrome + paper-white writing canvas) */
-    --bg-primary: #e6e9ee;
-    --bg-surface: #f1f3f6;
+  /* ========================================================
+     THEME 2: E-INK PAPER (Natural Paperback Warm Light)
+     ======================================================== */
+  html[data-theme="paper"], html.light {
+    --bg-primary: #f6f3eb;
+    --bg-surface: #eeeae0;
     --bg-surface-elevated: #ffffff;
-    --bg-muted: #dbe0e8;
+    --bg-muted: #e4dfd3;
     --bg-input: #ffffff;
-    
-    --border-main: #a4adba;
-    --border-focus: #1d4ed8;
-    --border-subtle: #ccd2db;
 
-    --text-primary: #111827;
-    --text-secondary: #374151;
-    --text-muted: #6b7280;
+    --border-main: #c4beaf;
+    --border-focus: #181818;
+    --border-subtle: #dcd6c8;
 
-    --color-green: #15803d;
+    --text-primary: #181818;
+    --text-secondary: #4a4a4a;
+    --text-muted: #747474;
+
+    --color-green: #166534;
     --color-green-bg: #dcfce7;
-    --color-red: #b91c1c;
+    --color-red: #991b1b;
     --color-red-bg: #fee2e2;
-    --color-amber: #b45309;
+    --color-amber: #92400e;
     --color-amber-bg: #fef3c7;
 
-    --brand-primary: #1e40af;
-    --brand-hover: #1e3a8a;
-    --accent: #1d4ed8;
+    --brand-primary: #262626;
+    --brand-hover: #121212;
+    --accent: #181818;
+
+    --radius-lg: 2px;
+    --radius-md: 2px;
+    --radius-sm: 1px;
+
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Tahoma", "Verdana", sans-serif;
+    --font-mono: "Consolas", "Courier New", "Lucida Console", monospace;
+  }
+
+  /* ========================================================
+     THEME 3: GRUVBOX FOCUS (Warm Earthy Dark, Zero Glare)
+     ======================================================== */
+  html[data-theme="gruvbox"] {
+    --bg-primary: #1d2021;
+    --bg-surface: #282828;
+    --bg-surface-elevated: #32302f;
+    --bg-muted: #3c3836;
+    --bg-input: #1d2021;
+
+    --border-main: #504945;
+    --border-focus: #fabd2f;
+    --border-subtle: #3c3836;
+
+    --text-primary: #ebdbb2;
+    --text-secondary: #a89984;
+    --text-muted: #7c6f64;
+
+    --color-green: #b8bb26;
+    --color-green-bg: rgba(184, 187, 38, 0.15);
+    --color-red: #fb4934;
+    --color-red-bg: rgba(251, 73, 52, 0.15);
+    --color-amber: #fabd2f;
+    --color-amber-bg: rgba(250, 189, 47, 0.15);
+
+    --brand-primary: #d79921;
+    --brand-hover: #b57614;
+    --accent: #fabd2f;
 
     --radius-lg: 2px;
     --radius-md: 2px;

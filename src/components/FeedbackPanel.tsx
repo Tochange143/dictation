@@ -115,13 +115,13 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '2px 10px',
-              borderRadius: '999px',
-              backgroundColor: 'rgba(59, 130, 246, 0.18)',
-              color: 'var(--accent)',
+              padding: '2px 8px',
+              borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'var(--color-amber-bg)',
+              color: 'var(--color-amber)',
               fontSize: '0.72rem',
               fontWeight: 600,
-              border: '1px solid rgba(59, 130, 246, 0.3)'
+              border: '1px solid var(--border-main)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '2px', height: '12px' }}>
                 <span className="wave-bar wave-bar-1" />
@@ -371,7 +371,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 {selectedDictWord.word}
               </span>
               {selectedDictWord.phonetic && (
-                <span style={{ fontSize: '0.75rem', color: '#38bdf8', fontFamily: 'var(--font-mono)' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--color-amber)', fontFamily: 'var(--font-mono)' }}>
                   {selectedDictWord.phonetic}
                 </span>
               )}
@@ -379,7 +379,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                 fontSize: '0.65rem',
                 fontWeight: 600,
                 padding: '1px 6px',
-                borderRadius: '4px',
+                borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--bg-muted)',
                 color: 'var(--text-secondary)'
               }}>
@@ -399,11 +399,11 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                   justifyContent: 'center',
                   width: '26px',
                   height: '26px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                  color: 'var(--accent)',
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'var(--bg-surface)',
+                  color: 'var(--text-primary)',
                   cursor: 'pointer',
-                  border: '1px solid rgba(59, 130, 246, 0.4)'
+                  border: '1px solid var(--border-main)'
                 }}
               >
                 <Volume2 size={13} />
@@ -420,11 +420,11 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                   justifyContent: 'center',
                   width: '26px',
                   height: '26px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(56, 189, 248, 0.2)',
-                  color: '#38bdf8',
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'var(--bg-surface)',
+                  color: 'var(--text-primary)',
                   cursor: 'pointer',
-                  border: '1px solid rgba(56, 189, 248, 0.4)'
+                  border: '1px solid var(--border-main)'
                 }}
               >
                 <Volume1 size={13} />
