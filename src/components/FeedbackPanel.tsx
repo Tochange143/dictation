@@ -66,17 +66,15 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
     <div
       style={{
         backgroundColor: 'var(--bg-surface)',
-        border: '1.5px solid var(--border-main)',
+        border: '1px solid var(--border-main)',
         borderRadius: 'var(--radius-lg)',
-        padding: '1.1rem 1.25rem',
+        padding: '1rem 1.25rem',
         minHeight: '170px',
         maxHeight: '280px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        position: 'relative',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
-        transition: 'border-color 0.2s ease'
+        position: 'relative'
       }}
     >
       {/* Top Status Header */}
@@ -359,10 +357,9 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
           right: '1.25rem',
           maxWidth: '360px',
           backgroundColor: 'var(--bg-surface)',
-          borderRadius: '12px',
-          border: '1.5px solid var(--border-main)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--border-main)',
           padding: '0.9rem 1.1rem',
-          boxShadow: '0 12px 30px rgba(0, 0, 0, 0.45)',
           zIndex: 40,
           display: 'flex',
           flexDirection: 'column',

@@ -24,8 +24,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(9, 13, 22, 0.75)',
-        backdropFilter: 'blur(4px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -37,11 +36,10 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
         style={{
           backgroundColor: 'var(--bg-surface)',
           borderRadius: 'var(--radius-lg)',
-          border: '1.5px solid var(--border-main)',
+          border: '1px solid var(--border-main)',
           maxWidth: '480px',
           width: '100%',
-          padding: '1.5rem',
-          boxShadow: '0 20px 35px rgba(0, 0, 0, 0.45)',
+          padding: '1.25rem 1.5rem',
           display: 'flex',
           flexDirection: 'column',
           gap: '1rem'

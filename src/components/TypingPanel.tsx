@@ -67,17 +67,15 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
     <div
       style={{
         backgroundColor: 'var(--bg-surface)',
-        border: '1.5px solid var(--border-main)',
+        border: '1px solid var(--border-main)',
         borderRadius: 'var(--radius-lg)',
-        padding: '1.1rem 1.25rem',
+        padding: '1rem 1.25rem',
         display: 'flex',
         flexDirection: 'column',
         gap: '0.65rem',
         flex: 1,
         minHeight: '210px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
-        position: 'relative',
-        transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
+        position: 'relative'
       }}
     >
       {/* Top Header: Label, Word & Accuracy Counters */}
@@ -210,7 +208,7 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               fontSize: '0.82rem',
               color: 'var(--text-primary)',
               padding: '6px 12px',
-              borderRadius: '6px',
+              borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-main)',
               backgroundColor: 'var(--bg-muted)',
               cursor: 'pointer',
@@ -241,11 +239,11 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
                 alignItems: 'center',
                 gap: '5px',
                 fontSize: '0.82rem',
-                color: '#38bdf8',
+                color: 'var(--accent)',
                 padding: '6px 12px',
-                borderRadius: '6px',
-                border: '1px solid rgba(56, 189, 248, 0.4)',
-                backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-main)',
+                backgroundColor: 'var(--bg-muted)',
                 cursor: 'pointer',
                 fontWeight: 600
               }}
@@ -264,11 +262,11 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
                 alignItems: 'center',
                 gap: '5px',
                 fontSize: '0.82rem',
-                color: '#fbbf24',
+                color: 'var(--color-amber)',
                 padding: '6px 12px',
-                borderRadius: '6px',
-                border: '1px solid rgba(245, 158, 11, 0.4)',
-                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-main)',
+                backgroundColor: 'var(--color-amber-bg)',
                 cursor: 'pointer',
                 fontWeight: 600
               }}
@@ -286,11 +284,11 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
                 alignItems: 'center',
                 gap: '6px',
                 fontSize: '0.82rem',
-                color: isHelpVisible ? '#4ade80' : 'var(--text-primary)',
+                color: isHelpVisible ? 'var(--color-green)' : 'var(--text-primary)',
                 padding: '6px 12px',
-                borderRadius: '6px',
-                border: `1px solid ${isHelpVisible ? 'rgba(34, 197, 94, 0.5)' : 'var(--border-main)'}`,
-                backgroundColor: isHelpVisible ? 'rgba(34, 197, 94, 0.15)' : 'var(--bg-muted)',
+                borderRadius: 'var(--radius-sm)',
+                border: `1px solid ${isHelpVisible ? 'var(--color-green)' : 'var(--border-main)'}`,
+                backgroundColor: isHelpVisible ? 'var(--color-green-bg)' : 'var(--bg-muted)',
                 cursor: 'pointer',
                 fontWeight: 500
               }}

@@ -77,6 +77,22 @@ export const DictationPage: React.FC = () => {
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isHelpVisible, setIsHelpVisible] = useState<boolean>(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dictation_theme');
+      if (saved === 'light' || saved === 'dark') return saved;
+    }
+    return 'dark';
+  });
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.className = theme;
+      localStorage.setItem('dictation_theme', theme);
+    }
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
 
   // Final evaluation when lesson completes
   const [currentEvaluation, setCurrentEvaluation] = useState<SentenceEvaluation | null>(null);
@@ -622,6 +638,8 @@ export const DictationPage: React.FC = () => {
               onPacingPreset={handlePacingPreset}
               onOpenShortcuts={() => setIsShortcutsOpen(true)}
               onOpenSettings={() => setIsSettingsOpen(true)}
+              theme={theme}
+              onToggleTheme={toggleTheme}
             />
 
             {/* Core Practice Layout: Full Width without empty side gaps */}

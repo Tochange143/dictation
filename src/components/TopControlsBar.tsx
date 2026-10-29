@@ -12,7 +12,9 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   GraduationCap,
-  Repeat
+  Repeat,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Lesson, VoiceAccent } from '../types';
 
@@ -48,6 +50,8 @@ interface TopControlsBarProps {
   onPacingPreset: (preset: 'slow' | 'teacher' | 'natural') => void;
   onOpenShortcuts: () => void;
   onOpenSettings: () => void;
+  theme?: 'dark' | 'light';
+  onToggleTheme?: () => void;
 }
 
 export const TopControlsBar: React.FC<TopControlsBarProps> = ({
@@ -75,7 +79,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
   onChangeWordsPerChunk,
   onPacingPreset,
   onOpenShortcuts,
-  onOpenSettings
+  onOpenSettings,
+  theme = 'dark',
+  onToggleTheme
 }) => {
   const progressPct = Math.round(((sentenceIndex + 1) / totalSentences) * 100);
 
@@ -105,12 +111,11 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
       top: 0,
       zIndex: 30,
       backgroundColor: 'var(--bg-surface)',
-      borderBottom: '1.5px solid var(--border-main)',
-      padding: '0.65rem 1.25rem',
+      borderBottom: '1px solid var(--border-main)',
+      padding: '0.6rem 1.25rem',
       display: 'flex',
       flexDirection: 'column',
-      gap: '0.5rem',
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.25)'
+      gap: '0.5rem'
     }}>
       {/* Upper line: Sidebar Toggle, Title, Progress, and Action triggers */}
       <div style={{
@@ -128,15 +133,14 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '6px 11px',
-              borderRadius: '8px',
-              border: '1.5px solid var(--border-main)',
+              padding: '5px 10px',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border-main)',
               backgroundColor: isSidebarOpen ? 'var(--bg-muted)' : 'var(--brand-primary)',
               color: isSidebarOpen ? 'var(--text-secondary)' : '#ffffff',
               fontSize: '0.8rem',
               fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
+              cursor: 'pointer'
             }}
             title={isSidebarOpen ? "Hide Lessons Sidebar (Ctrl+\\)" : "Show Lessons Sidebar (Ctrl+\\)"}
             aria-label="Toggle Lessons Sidebar"
@@ -177,9 +181,9 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               alignItems: 'center',
               gap: '4px',
               padding: '6px 10px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-subtle)',
-              backgroundColor: 'var(--bg-muted)',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border-main)',
+              backgroundColor: 'var(--bg-surface)',
               fontSize: '0.8rem',
               color: 'var(--text-secondary)'
             }}
@@ -188,14 +192,36 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
             <span className="desktop-only">Shortcuts</span>
           </button>
 
+          {onToggleTheme && (
+            <button
+              onClick={onToggleTheme}
+              title={theme === 'dark' ? "Switch to Light Mode (Classic Desktop Paper)" : "Switch to Dark Mode (Calm Charcoal Slate)"}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '6px 10px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-main)',
+                backgroundColor: 'var(--bg-surface)',
+                fontSize: '0.8rem',
+                color: 'var(--text-primary)',
+                fontWeight: 600
+              }}
+            >
+              {theme === 'dark' ? <Sun size={14} style={{ color: '#fbbf24' }} /> : <Moon size={14} style={{ color: '#4f46e5' }} />}
+              <span className="desktop-only">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+            </button>
+          )}
+
           <button
             onClick={onOpenSettings}
             title="Settings"
             style={{
               padding: '6px 8px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-subtle)',
-              backgroundColor: 'var(--bg-muted)',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border-main)',
+              backgroundColor: 'var(--bg-surface)',
               color: 'var(--text-secondary)'
             }}
           >

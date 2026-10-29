@@ -91,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           minWidth: '320px',
           height: '100vh',
           backgroundColor: 'var(--bg-surface)',
-          borderRight: '1.5px solid var(--border-main)',
+          borderRight: '1px solid var(--border-main)',
           display: 'flex',
           flexDirection: 'column',
           zIndex: 95
@@ -100,8 +100,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         {/* Sidebar Header */}
         <div style={{
-          padding: '1.1rem 1.15rem',
-          borderBottom: '1px solid var(--border-subtle)',
+          padding: '0.85rem 1.15rem',
+          borderBottom: '1px solid var(--border-main)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -109,20 +109,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <div style={{
-              width: '34px',
-              height: '34px',
-              borderRadius: '8px',
+              width: '30px',
+              height: '30px',
+              borderRadius: 'var(--radius-sm)',
               backgroundColor: 'var(--brand-primary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#ffffff',
-              boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
+              color: '#ffffff'
             }}>
-              <BookOpen size={18} />
+              <BookOpen size={16} />
             </div>
             <div>
-              <h1 style={{ fontSize: '1.15rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+              <h1 style={{ fontSize: '1.05rem', fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--text-primary)' }}>
                 Lessons
               </h1>
               <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)' }}>
@@ -138,10 +137,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
-              padding: '6px 10px', 
-              borderRadius: '7px', 
-              backgroundColor: 'var(--bg-muted)',
-              border: '1px solid var(--border-subtle)',
+              padding: '5px 8px', 
+              borderRadius: 'var(--radius-sm)', 
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-main)',
               color: 'var(--text-secondary)',
               fontSize: '0.75rem',
               fontWeight: 600,
@@ -319,9 +318,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             alignItems: 'center',
                             justifyContent: 'space-between',
                             padding: '0.45rem 0.65rem',
-                            borderRadius: '8px',
-                            border: isActive ? '1.5px solid var(--brand-primary)' : '1px solid transparent',
-                            backgroundColor: isActive ? 'var(--bg-muted)' : 'transparent',
+                            borderRadius: 'var(--radius-sm)',
+                            border: isActive ? '1px solid var(--border-focus)' : '1px solid transparent',
+                            backgroundColor: isActive ? 'var(--brand-primary)' : 'transparent',
                             textAlign: 'left'
                           }}
                         >
@@ -329,16 +328,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             <span style={{
                               fontSize: '0.72rem',
                               fontFamily: 'var(--font-mono)',
-                              fontWeight: 600,
-                              color: isActive ? 'var(--accent)' : 'var(--text-muted)',
+                              fontWeight: 700,
+                              color: isActive ? '#ffffff' : 'var(--text-muted)',
                               minWidth: '24px'
                             }}>
                               {String(lesson.id).padStart(2, '0')}
                             </span>
                             <span style={{
                               fontSize: '0.82rem',
-                              fontWeight: isActive ? 700 : 400,
-                              color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                              fontWeight: isActive ? 700 : 500,
+                              color: isActive ? '#ffffff' : 'var(--text-primary)',
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis'
