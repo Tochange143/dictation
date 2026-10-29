@@ -1,22 +1,19 @@
 import React from 'react';
+import { Lesson, VoiceAccent } from '../types';
 import { 
   Play, 
   Pause, 
   RotateCcw, 
-  SkipBack, 
   SkipForward, 
   Volume2, 
-  Volume1,
-  HelpCircle, 
-  Settings as SettingsIcon,
+  Volume1, 
+  Settings as SettingsIcon, 
+  HelpCircle,
   PanelLeftClose,
   PanelLeftOpen,
   GraduationCap,
-  Repeat,
-  Sun,
-  Moon
+  Repeat
 } from 'lucide-react';
-import { Lesson, VoiceAccent } from '../types';
 
 interface TopControlsBarProps {
   lesson: Lesson;
@@ -106,10 +103,10 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
   };
 
   const chunkOptions = [
-    { label: '1 word', val: 1 },
-    { label: '2 words', val: 2 },
-    { label: '3 words', val: 3 },
-    { label: '4 words', val: 4 },
+    { label: '1w', val: 1 },
+    { label: '2w', val: 2 },
+    { label: '3w', val: 3 },
+    { label: '4w', val: 4 },
     { label: 'Sentence', val: 0 }
   ];
 
@@ -120,90 +117,194 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
       zIndex: 30,
       backgroundColor: 'var(--bg-surface)',
       borderBottom: '1px solid var(--border-main)',
-      padding: '0.6rem 1.25rem',
+      padding: '0.35rem 0.85rem',
       display: 'flex',
       flexDirection: 'column',
-      gap: '0.5rem'
+      gap: '0.3rem'
     }}>
-      {/* Upper line: Sidebar Toggle, Title, Progress, and Action triggers */}
+      {/* Row 1: Lesson info, Primary Playback Controls, Utility triggers */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '0.5rem'
+        gap: '0.45rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {/* Permanent Desktop & Mobile Sidebar Toggle Button */}
+        {/* Left: Lessons toggle, title, sentence count */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           <button 
             onClick={onToggleSidebar}
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '5px 10px',
+              gap: '4px',
+              padding: '3px 8px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-main)',
               backgroundColor: isSidebarOpen ? 'var(--bg-muted)' : 'var(--bg-surface)',
               color: 'var(--text-primary)',
-              fontSize: '0.8rem',
+              fontSize: '0.76rem',
               fontWeight: 600,
               cursor: 'pointer'
             }}
-            title={isSidebarOpen ? "Hide Lessons Sidebar (Ctrl+\\)" : "Show Lessons Sidebar (Ctrl+\\)"}
-            aria-label="Toggle Lessons Sidebar"
+            title={isSidebarOpen ? "Hide Sidebar (Ctrl+\\)" : "Show Sidebar (Ctrl+\\)"}
           >
-            {isSidebarOpen ? <PanelLeftClose size={16} /> : <PanelLeftOpen size={16} />}
+            {isSidebarOpen ? <PanelLeftClose size={14} /> : <PanelLeftOpen size={14} />}
             <span>{isSidebarOpen ? 'Hide' : 'Lessons'}</span>
           </button>
 
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                padding: '2px 7px',
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
+            <span style={{
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              padding: '1px 5px',
+              borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'var(--bg-muted)',
+              color: 'var(--text-secondary)',
+              border: '1px solid var(--border-subtle)'
+            }}>
+              {lesson.levelName}
+            </span>
+            <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              #{lesson.id} {lesson.title}
+            </span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              ({sentenceIndex + 1}/{totalSentences} • {progressPct}%)
+            </span>
+          </div>
+
+          {/* Primary Playback buttons right in Row 1 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginLeft: '0.4rem' }}>
+            {speechState.isPlaying && !speechState.isPaused ? (
+              <button
+                onClick={onPause}
+                title="Pause Voice (Esc)"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '4px 10px',
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'var(--brand-primary)',
+                  color: 'var(--brand-text)',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  border: '1px solid var(--brand-primary)'
+                }}
+              >
+                <Pause size={13} />
+                <span>Pause</span>
+              </button>
+            ) : (
+              <button
+                onClick={onStartOrResume}
+                title={`Read ${wordsPerChunk > 0 ? `${wordsPerChunk} words` : 'sentence'} (Ctrl+Enter)`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '4px 10px',
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'var(--brand-primary)',
+                  color: 'var(--brand-text)',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  border: '1px solid var(--brand-primary)'
+                }}
+              >
+                <Play size={13} />
+                <span>
+                  {speechState.isPaused ? 'Resume' : isSoundOutMode ? `Sound Out (${wordsPerChunk > 0 ? `${wordsPerChunk}w` : 'Sent'})` : wordsPerChunk > 0 ? `Read (${wordsPerChunk}w)` : 'Read'}
+                </span>
+              </button>
+            )}
+
+            <button
+              onClick={onReplayActiveChunk}
+              title="Replay Current Words (Alt+R)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3px',
+                padding: '4px 8px',
                 borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--bg-muted)',
-                color: 'var(--text-secondary)',
-                border: '1px solid var(--border-main)'
-              }}>
-                {lesson.levelName}
-              </span>
-              <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                #{lesson.id} {lesson.title}
-              </h2>
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Sentence {sentenceIndex + 1} of {totalSentences} ({progressPct}% completed)
-            </div>
+                border: '1px solid var(--border-main)',
+                fontSize: '0.78rem',
+                color: 'var(--text-primary)',
+                fontWeight: 600,
+                backgroundColor: 'var(--bg-surface)'
+              }}
+            >
+              <RotateCcw size={12} />
+              <span>Replay</span>
+            </button>
+
+            {onSoundItOut && (
+              <button
+                onClick={onSoundItOut}
+                title="Sound Out (articulates each syllable slowly for phonics spelling)"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                  padding: '4px 8px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--color-amber)',
+                  fontSize: '0.78rem',
+                  color: 'var(--color-amber)',
+                  fontWeight: 600,
+                  backgroundColor: 'var(--color-amber-bg)',
+                  cursor: 'pointer'
+                }}
+              >
+                <span>🔤 Sound Out</span>
+              </button>
+            )}
+
+            <button
+              onClick={onPronounceSlow}
+              title="Slow & Clear Pronunciation"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3px',
+                padding: '4px 8px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-main)',
+                fontSize: '0.78rem',
+                color: 'var(--text-primary)',
+                fontWeight: 500,
+                backgroundColor: 'var(--bg-surface)'
+              }}
+            >
+              <Volume1 size={13} />
+              <span>Slow</span>
+            </button>
+
+            <button
+              onClick={onSkipSentence}
+              title="Next Sentence (Ctrl+Right)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3px',
+                padding: '4px 8px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-main)',
+                fontSize: '0.78rem',
+                color: 'var(--text-primary)',
+                fontWeight: 500,
+                backgroundColor: 'var(--bg-surface)'
+              }}
+            >
+              <span>Next</span>
+              <SkipForward size={12} />
+            </button>
           </div>
         </div>
 
-        {/* Right side tools */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {onChangeTheme && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <select
-                value={theme}
-                onChange={(e) => onChangeTheme(e.target.value)}
-                style={{
-                  fontSize: '0.75rem',
-                  padding: '4px 6px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border-main)',
-                  backgroundColor: 'var(--bg-surface)',
-                  color: 'var(--text-primary)',
-                  cursor: 'pointer',
-                  fontWeight: 600
-                }}
-              >
-                <option value="dark">AMOLED Dark (Pure Black)</option>
-                <option value="light">Crisp White</option>
-              </select>
-            </div>
-          )}
-
+        {/* Right side: Focus, Theme, Shortcuts, Settings */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
           {onToggleFocusMode && (
             <button
               onClick={onToggleFocusMode}
@@ -211,12 +312,12 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
-                padding: '5px 8px',
+                gap: '3px',
+                padding: '3px 7px',
                 borderRadius: 'var(--radius-sm)',
                 border: `1px solid ${isFocusMode ? 'var(--accent)' : 'var(--border-main)'}`,
                 backgroundColor: isFocusMode ? 'var(--color-amber-bg)' : 'var(--bg-surface)',
-                fontSize: '0.78rem',
+                fontSize: '0.75rem',
                 color: isFocusMode ? 'var(--color-amber)' : 'var(--text-primary)',
                 fontWeight: 600
               }}
@@ -225,82 +326,84 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
             </button>
           )}
 
+          {onChangeTheme && (
+            <select
+              value={theme}
+              onChange={(e) => onChangeTheme(e.target.value)}
+              style={{
+                fontSize: '0.72rem',
+                padding: '3px 5px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-main)',
+                backgroundColor: 'var(--bg-surface)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                fontWeight: 600
+              }}
+            >
+              <option value="dark">AMOLED Black</option>
+              <option value="light">Crisp White</option>
+            </select>
+          )}
+
           <button
             onClick={onOpenShortcuts}
             title="Keyboard Shortcuts"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '4px',
-              padding: '5px 8px',
+              gap: '3px',
+              padding: '3px 6px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-main)',
               backgroundColor: 'var(--bg-surface)',
-              fontSize: '0.78rem',
+              fontSize: '0.72rem',
               color: 'var(--text-secondary)'
             }}
           >
-            <HelpCircle size={14} />
-            <span className="desktop-only">Shortcuts</span>
+            <HelpCircle size={13} />
+            <span className="desktop-only">Keys</span>
           </button>
 
           <button
             onClick={onOpenSettings}
             title="Settings"
             style={{
-              padding: '5px 7px',
+              padding: '3px 6px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-main)',
               backgroundColor: 'var(--bg-surface)',
               color: 'var(--text-secondary)'
             }}
           >
-            <SettingsIcon size={15} />
+            <SettingsIcon size={14} />
           </button>
         </div>
       </div>
 
-      {/* Progress bar */}
-      <div style={{
-        width: '100%',
-        height: '4px',
-        backgroundColor: 'var(--bg-muted)',
-        borderRadius: '2px',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          width: `${progressPct}%`,
-          height: '100%',
-          backgroundColor: 'var(--brand-primary)',
-          transition: 'width 0.3s ease'
-        }} />
-      </div>
-
-      {/* Middle line: Words at once setting */}
+      {/* Row 2: Words-at-a-time, Accent, Pacing Presets, Repeat, Speed */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '0.6rem',
-        padding: '0.4rem 0.65rem',
-        backgroundColor: 'var(--bg-muted)',
-        borderRadius: '8px',
-        border: '1px solid var(--border-subtle)'
+        gap: '0.4rem',
+        paddingTop: '0.1rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-            Dictate Words at Once:
+        {/* Left: Words Per Chunk */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+            Chunk:
           </span>
-          <div style={{ display: 'flex', gap: '4px' }}>
+          <div style={{ display: 'flex', gap: '2px' }}>
             {chunkOptions.map(opt => (
               <button
                 key={opt.val}
                 onClick={() => onChangeWordsPerChunk(opt.val)}
                 style={{
-                  padding: '3px 8px',
+                  padding: '2px 6px',
                   borderRadius: 'var(--radius-sm)',
-                  fontSize: '0.75rem',
+                  fontSize: '0.72rem',
                   fontWeight: wordsPerChunk === opt.val ? 700 : 500,
                   backgroundColor: wordsPerChunk === opt.val ? 'var(--brand-primary)' : 'var(--bg-surface)',
                   color: wordsPerChunk === opt.val ? 'var(--brand-text)' : 'var(--text-secondary)',
@@ -313,223 +416,24 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
           </div>
         </div>
 
-        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-          {wordsPerChunk > 0 ? (
-            <span>Sounds {wordsPerChunk} words → you write → next {wordsPerChunk} words sound</span>
-          ) : (
-            <span>Full sentence dictation mode</span>
-          )}
-        </div>
-      </div>
-
-      {/* Lower line: Voice controls & Pacing */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '0.75rem',
-        paddingTop: '0.1rem'
-      }}>
-        {/* Playback action buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-          {speechState.isPlaying && !speechState.isPaused ? (
-            <button
-              onClick={onPause}
-              title="Pause Voice (Esc)"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 14px',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--brand-primary)',
-                color: 'var(--brand-text)',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                border: '1px solid var(--brand-primary)'
-              }}
-            >
-              <Pause size={15} />
-              <span>Pause</span>
-            </button>
-          ) : (
-            <button
-              onClick={onStartOrResume}
-              title={`Read ${wordsPerChunk > 0 ? `${wordsPerChunk} words` : 'sentence'} (Ctrl+Enter)`}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 14px',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--brand-primary)',
-                color: 'var(--brand-text)',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                border: '1px solid var(--brand-primary)'
-              }}
-            >
-              <Play size={15} />
-              <span>{speechState.isPaused ? 'Resume' : isSoundOutMode ? `Sound Out (${wordsPerChunk > 0 ? `${wordsPerChunk} words` : 'sentence'})` : wordsPerChunk > 0 ? `Read (${wordsPerChunk} words)` : 'Teacher Read'}</span>
-            </button>
-          )}
-
-          <button
-            onClick={onReplayActiveChunk}
-            title="Replay Current Words (Alt+R)"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '6px 10px',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--border-main)',
-              fontSize: '0.82rem',
-              color: 'var(--text-primary)',
-              fontWeight: 600,
-              backgroundColor: 'var(--bg-surface)'
-            }}
-          >
-            <RotateCcw size={14} />
-            <span>Replay {wordsPerChunk > 0 ? `${wordsPerChunk} Words` : 'Phrase'}</span>
-          </button>
-
-          {/* Slow & Clear Pronunciation Button */}
-          <button
-            onClick={onPronounceSlow}
-            title="Listen with slow, crystal-clear word pronunciation"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '6px 10px',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--border-main)',
-              fontSize: '0.82rem',
-              color: 'var(--text-primary)',
-              fontWeight: 600,
-              backgroundColor: 'var(--bg-surface)',
-              cursor: 'pointer'
-            }}
-          >
-            <Volume1 size={14} />
-            <span>Slow & Clear</span>
-          </button>
-
-          {onSoundItOut && (
-            <button
-              onClick={onSoundItOut}
-              title="Sound Out (articulates each syllable slowly for phonics spelling)"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                padding: '6px 11px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--color-amber)',
-                fontSize: '0.82rem',
-                color: 'var(--color-amber)',
-                fontWeight: 600,
-                backgroundColor: 'var(--color-amber-bg)',
-                cursor: 'pointer'
-              }}
-            >
-              <span>🔤 Sound It Out</span>
-            </button>
-          )}
-
-          {wordsPerChunk > 0 && (
-            <button
-              onClick={onReplaySentence}
-              title="Replay Full Sentence"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                padding: '6px 10px',
-                borderRadius: '8px',
-                border: '1px solid var(--border-subtle)',
-                fontSize: '0.8rem',
-                color: 'var(--text-secondary)',
-                backgroundColor: 'var(--bg-surface)'
-              }}
-            >
-              <Volume2 size={13} />
-              <span>Full Sentence</span>
-            </button>
-          )}
-
-          <button
-            onClick={onPreviousSentence}
-            disabled={sentenceIndex === 0}
-            title="Previous Sentence (Alt+Left)"
-            style={{
-              padding: '6px 8px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-main)',
-              backgroundColor: 'var(--bg-surface)',
-              color: sentenceIndex === 0 ? 'var(--text-muted)' : 'var(--text-primary)',
-              opacity: sentenceIndex === 0 ? 0.4 : 1
-            }}
-          >
-            <SkipBack size={15} />
-          </button>
-
-          <button
-            onClick={onSkipSentence}
-            title="Next Sentence (Alt+Right)"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '6px 10px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-main)',
-              fontSize: '0.82rem',
-              backgroundColor: 'var(--bg-surface)',
-              color: 'var(--text-primary)'
-            }}
-          >
-            <span>Next</span>
-            <SkipForward size={14} />
-          </button>
-
-          <button
-            onClick={onRestartSentence}
-            title="Clear and Restart Current Sentence"
-            style={{
-              fontSize: '0.78rem',
-              padding: '6px 8px',
-              borderRadius: '8px',
-              color: 'var(--text-muted)'
-            }}
-          >
-            Restart
-          </button>
-        </div>
-
-        {/* Voice accent, pacing presets, repeat mode, and speed controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {/* Accent Switcher (Indian / US / UK) */}
+        {/* Right: Accent, Pacing, Repeat, Speed */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
+          {/* Accent switcher */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             backgroundColor: 'var(--bg-muted)',
-            borderRadius: '8px',
-            padding: '2px',
+            borderRadius: '4px',
+            padding: '1px',
             border: '1px solid var(--border-subtle)'
           }}>
             <button
               onClick={() => onChangeAccent('en-IN')}
               title="Indian English Accent (en-IN)"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '3px',
-                padding: '3px 8px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
+                padding: '2px 6px',
+                borderRadius: '3px',
+                fontSize: '0.7rem',
                 fontWeight: voiceAccent === 'en-IN' ? 700 : 500,
                 backgroundColor: voiceAccent === 'en-IN' ? 'var(--color-amber-bg)' : 'transparent',
                 color: voiceAccent === 'en-IN' ? 'var(--color-amber)' : 'var(--text-secondary)',
@@ -537,15 +441,15 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 cursor: 'pointer'
               }}
             >
-              <span>🇮🇳 Indian Accent</span>
+              🇮🇳 IN
             </button>
             <button
               onClick={() => onChangeAccent('en-US')}
               title="US English Accent (en-US)"
               style={{
-                padding: '3px 7px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
+                padding: '2px 6px',
+                borderRadius: '3px',
+                fontSize: '0.7rem',
                 fontWeight: voiceAccent === 'en-US' ? 700 : 500,
                 backgroundColor: voiceAccent === 'en-US' ? 'var(--brand-primary)' : 'transparent',
                 color: voiceAccent === 'en-US' ? 'var(--brand-text)' : 'var(--text-secondary)',
@@ -553,15 +457,15 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 cursor: 'pointer'
               }}
             >
-              <span>🇺🇸 US</span>
+              🇺🇸 US
             </button>
             <button
               onClick={() => onChangeAccent('en-GB')}
               title="UK English Accent (en-GB)"
               style={{
-                padding: '3px 7px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
+                padding: '2px 6px',
+                borderRadius: '3px',
+                fontSize: '0.7rem',
                 fontWeight: voiceAccent === 'en-GB' ? 700 : 500,
                 backgroundColor: voiceAccent === 'en-GB' ? 'var(--brand-primary)' : 'transparent',
                 color: voiceAccent === 'en-GB' ? 'var(--brand-text)' : 'var(--text-secondary)',
@@ -569,7 +473,7 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
                 cursor: 'pointer'
               }}
             >
-              <span>🇬🇧 UK</span>
+              🇬🇧 UK
             </button>
           </div>
 
@@ -578,17 +482,17 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
             display: 'flex',
             alignItems: 'center',
             backgroundColor: 'var(--bg-muted)',
-            borderRadius: '8px',
-            padding: '2px',
+            borderRadius: '4px',
+            padding: '1px',
             border: '1px solid var(--border-subtle)'
           }}>
             <button
               onClick={() => onPacingPreset('slow')}
               title="Slow speed (0.7x)"
               style={{
-                padding: '3px 8px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
+                padding: '2px 6px',
+                borderRadius: '3px',
+                fontSize: '0.7rem',
                 fontWeight: !isSoundOutMode && speechSpeed === 0.7 ? 700 : 500,
                 backgroundColor: !isSoundOutMode && speechSpeed === 0.7 ? 'var(--brand-primary)' : 'transparent',
                 color: !isSoundOutMode && speechSpeed === 0.7 ? 'var(--brand-text)' : 'var(--text-secondary)',
@@ -603,26 +507,26 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '3px',
-                padding: '3px 8px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
+                gap: '2px',
+                padding: '2px 6px',
+                borderRadius: '3px',
+                fontSize: '0.7rem',
                 fontWeight: !isSoundOutMode && speechSpeed === 0.8 ? 700 : 500,
                 backgroundColor: !isSoundOutMode && speechSpeed === 0.8 ? 'var(--brand-primary)' : 'transparent',
                 color: !isSoundOutMode && speechSpeed === 0.8 ? 'var(--brand-text)' : 'var(--text-secondary)',
                 border: !isSoundOutMode && speechSpeed === 0.8 ? '1px solid var(--brand-primary)' : '1px solid transparent'
               }}
             >
-              <GraduationCap size={13} />
+              <GraduationCap size={11} />
               <span>Teacher</span>
             </button>
             <button
               onClick={() => onPacingPreset('natural')}
               title="Natural speed (1.0x)"
               style={{
-                padding: '3px 8px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
+                padding: '2px 6px',
+                borderRadius: '3px',
+                fontSize: '0.7rem',
                 fontWeight: !isSoundOutMode && speechSpeed === 1.0 ? 700 : 500,
                 backgroundColor: !isSoundOutMode && speechSpeed === 1.0 ? 'var(--brand-primary)' : 'transparent',
                 color: !isSoundOutMode && speechSpeed === 1.0 ? 'var(--brand-text)' : 'var(--text-secondary)',
@@ -637,10 +541,10 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '3px',
-                padding: '3px 8px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
+                gap: '2px',
+                padding: '2px 6px',
+                borderRadius: '3px',
+                fontSize: '0.7rem',
                 fontWeight: isSoundOutMode ? 700 : 500,
                 backgroundColor: isSoundOutMode ? 'var(--color-amber-bg)' : 'transparent',
                 color: isSoundOutMode ? 'var(--color-amber)' : 'var(--text-secondary)',
@@ -654,21 +558,21 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
           {/* Repeat count toggle */}
           <button
             onClick={cycleRepeat}
-            title="Repeat words 1x, 2x, or 3x"
+            title={`Repeat words ${repeatCount} time(s). Click to change.`}
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '4px',
-              padding: '4px 8px',
-              borderRadius: '6px',
+              gap: '2px',
+              padding: '2px 6px',
+              borderRadius: '3px',
               border: '1px solid var(--border-subtle)',
-              backgroundColor: repeatCount > 1 ? 'var(--color-green-bg)' : 'transparent',
-              fontSize: '0.78rem',
+              backgroundColor: repeatCount > 1 ? 'var(--color-green-bg)' : 'var(--bg-surface)',
               color: repeatCount > 1 ? 'var(--color-green)' : 'var(--text-secondary)',
-              fontWeight: 700
+              fontSize: '0.7rem',
+              fontWeight: 600
             }}
           >
-            <Repeat size={13} />
+            <Repeat size={11} />
             <span>{repeatCount}x</span>
           </button>
 
@@ -677,29 +581,30 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
             display: 'flex',
             alignItems: 'center',
             backgroundColor: 'var(--bg-muted)',
+            borderRadius: '4px',
             border: '1px solid var(--border-subtle)',
-            borderRadius: '8px',
-            padding: '2px 4px'
+            padding: '1px 3px'
           }}>
             <button
               onClick={() => handleSpeedStep(-0.1)}
               disabled={speechSpeed <= 0.5}
               style={{
-                padding: '2px 6px',
-                fontSize: '0.9rem',
+                padding: '1px 4px',
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: speechSpeed <= 0.5 ? 'var(--text-muted)' : 'var(--text-primary)',
+                fontSize: '0.75rem',
                 fontWeight: 700,
-                color: speechSpeed <= 0.5 ? 'var(--text-muted)' : 'var(--text-primary)'
+                cursor: speechSpeed <= 0.5 ? 'not-allowed' : 'pointer'
               }}
-              aria-label="Decrease speed"
             >
               -
             </button>
             <span style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.8rem',
+              fontSize: '0.7rem',
               fontWeight: 600,
-              minWidth: '38px',
-              textAlign: 'center',
+              padding: '0 4px',
+              fontFamily: 'var(--font-mono)',
               color: 'var(--text-primary)'
             }}>
               {speechSpeed.toFixed(1)}x
@@ -708,17 +613,37 @@ export const TopControlsBar: React.FC<TopControlsBarProps> = ({
               onClick={() => handleSpeedStep(0.1)}
               disabled={speechSpeed >= 1.5}
               style={{
-                padding: '2px 6px',
-                fontSize: '0.9rem',
+                padding: '1px 4px',
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: speechSpeed >= 1.5 ? 'var(--text-muted)' : 'var(--text-primary)',
+                fontSize: '0.75rem',
                 fontWeight: 700,
-                color: speechSpeed >= 1.5 ? 'var(--text-muted)' : 'var(--text-primary)'
+                cursor: speechSpeed >= 1.5 ? 'not-allowed' : 'pointer'
               }}
-              aria-label="Increase speed"
             >
               +
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Thin 2px Progress Bar */}
+      <div style={{
+        width: '100%',
+        height: '2px',
+        backgroundColor: 'var(--border-subtle)',
+        borderRadius: '1px',
+        overflow: 'hidden'
+      }}>
+        <div
+          style={{
+            height: '100%',
+            backgroundColor: 'var(--brand-primary)',
+            width: `${progressPct}%`,
+            transition: 'width 0.2s ease'
+          }}
+        />
       </div>
     </header>
   );

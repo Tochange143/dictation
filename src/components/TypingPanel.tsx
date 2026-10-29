@@ -68,13 +68,13 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
       style={{
         backgroundColor: 'var(--bg-surface)',
         border: '1px solid var(--border-main)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '1rem 1.25rem',
+        borderRadius: 'var(--radius-md)',
+        padding: '0.45rem 0.8rem',
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.65rem',
-        flex: 1,
-        minHeight: '210px',
+        gap: '0.35rem',
+        flex: 2,
+        minHeight: '220px',
         position: 'relative'
       }}
     >
@@ -173,12 +173,12 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
           border: 'none',
           outline: 'none',
           resize: 'none',
-          fontSize: '1.35rem',
-          lineHeight: '2.2rem',
+          fontSize: '1.25rem',
+          lineHeight: '1.95rem',
           fontFamily: 'var(--font-sans)',
           color: 'var(--text-primary)',
           backgroundColor: 'transparent',
-          minHeight: '120px'
+          minHeight: '140px'
         }}
         autoComplete="off"
         autoCorrect="off"
@@ -192,22 +192,22 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '0.75rem',
-        paddingTop: '0.75rem',
+        gap: '0.45rem',
+        paddingTop: '0.35rem',
         borderTop: '1px solid var(--border-subtle)'
       }}>
         {/* Left helper tools */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
           <button
             onClick={onReplayCurrent}
             title="Replay Voice (Alt+R)"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.82rem',
+              gap: '4px',
+              fontSize: '0.78rem',
               color: 'var(--text-primary)',
-              padding: '6px 12px',
+              padding: '4px 8px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-main)',
               backgroundColor: 'var(--bg-muted)',
@@ -215,12 +215,12 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               fontWeight: 500
             }}
           >
-            <RotateCcw size={14} />
-            <span>Replay Words</span>
+            <RotateCcw size={13} />
+            <span>Replay</span>
             <kbd style={{
-              fontSize: '0.68rem',
-              padding: '1px 5px',
-              borderRadius: '3px',
+              fontSize: '0.65rem',
+              padding: '1px 4px',
+              borderRadius: '2px',
               backgroundColor: 'var(--bg-surface)',
               marginLeft: '2px',
               color: 'var(--text-muted)',
@@ -237,19 +237,19 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '5px',
-                fontSize: '0.82rem',
+                gap: '4px',
+                fontSize: '0.78rem',
                 color: 'var(--accent)',
-                padding: '6px 12px',
+                padding: '4px 8px',
                 borderRadius: 'var(--radius-sm)',
                 border: '1px solid var(--border-main)',
                 backgroundColor: 'var(--bg-muted)',
                 cursor: 'pointer',
-                fontWeight: 600
+                fontWeight: 500
               }}
             >
-              <Volume1 size={14} />
-              <span>Slow Pronounce</span>
+              <Volume1 size={13} />
+              <span>Slow</span>
             </button>
           )}
 
@@ -260,18 +260,18 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '5px',
-                fontSize: '0.82rem',
+                gap: '4px',
+                fontSize: '0.78rem',
                 color: 'var(--color-amber)',
-                padding: '6px 12px',
+                padding: '4px 8px',
                 borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border-main)',
+                border: '1px solid var(--color-amber)',
                 backgroundColor: 'var(--color-amber-bg)',
                 cursor: 'pointer',
                 fontWeight: 600
               }}
             >
-              <span>🔤 Sound It Out</span>
+              <span>🔤 Sound Out</span>
             </button>
           )}
 
@@ -282,10 +282,10 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-                fontSize: '0.82rem',
+                gap: '4px',
+                fontSize: '0.78rem',
                 color: isHelpVisible ? 'var(--color-green)' : 'var(--text-primary)',
-                padding: '6px 12px',
+                padding: '4px 8px',
                 borderRadius: 'var(--radius-sm)',
                 border: `1px solid ${isHelpVisible ? 'var(--color-green)' : 'var(--border-main)'}`,
                 backgroundColor: isHelpVisible ? 'var(--color-green-bg)' : 'var(--bg-muted)',
@@ -293,12 +293,12 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
                 fontWeight: 500
               }}
             >
-              {isHelpVisible ? <EyeOff size={14} /> : <Eye size={14} />}
-              <span>{isHelpVisible ? 'Hide Words' : 'Show Words'}</span>
+              {isHelpVisible ? <EyeOff size={13} /> : <Eye size={13} />}
+              <span>{isHelpVisible ? 'Hide' : 'Words'}</span>
               <kbd style={{
-                fontSize: '0.68rem',
-                padding: '1px 5px',
-                borderRadius: '3px',
+                fontSize: '0.65rem',
+                padding: '1px 4px',
+                borderRadius: '2px',
                 backgroundColor: isHelpVisible ? 'var(--color-green-bg)' : 'var(--bg-surface)',
                 marginLeft: '2px',
                 color: isHelpVisible ? 'var(--color-green)' : 'var(--text-muted)',
@@ -316,11 +316,11 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
-                fontSize: '0.78rem',
+                gap: '3px',
+                fontSize: '0.75rem',
                 color: 'var(--text-muted)',
-                padding: '6px 10px',
-                borderRadius: '6px',
+                padding: '4px 8px',
+                borderRadius: '4px',
                 border: '1px solid transparent',
                 backgroundColor: 'transparent',
                 cursor: 'pointer'
@@ -337,13 +337,13 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          fontSize: '0.75rem',
-          color: 'var(--text-secondary)'
+          fontSize: '0.72rem',
+          color: 'var(--text-muted)'
         }}>
           {isSpeaking ? (
             <span style={{ color: 'var(--accent)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Volume2 size={13} className="animate-pulse" />
-              Listening to teacher...
+              <Volume2 size={12} />
+              Listening...
             </span>
           ) : (
             <span>Continuous live writing</span>

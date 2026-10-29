@@ -69,10 +69,10 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
       style={{
         backgroundColor: 'var(--bg-surface)',
         border: '1px solid var(--border-main)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '1rem 1.25rem',
-        minHeight: '170px',
-        maxHeight: '280px',
+        borderRadius: 'var(--radius-md)',
+        padding: '0.45rem 0.8rem',
+        minHeight: '110px',
+        maxHeight: '185px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -84,11 +84,11 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: '0.75rem',
-        paddingBottom: '0.6rem',
+        marginBottom: '0.35rem',
+        paddingBottom: '0.3rem',
         borderBottom: '1px solid var(--border-subtle)',
         flexWrap: 'wrap',
-        gap: '0.5rem'
+        gap: '0.4rem'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
           <span style={{
@@ -196,25 +196,25 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
       <div
         ref={contentContainerRef}
         style={{
-          fontSize: '1.45rem',
-          lineHeight: '2.4rem',
+          fontSize: '1.2rem',
+          lineHeight: '1.9rem',
           fontWeight: 500,
           color: 'var(--text-primary)',
           wordBreak: 'break-word',
           flex: 1,
           overflowY: 'auto',
-          paddingRight: '0.5rem',
+          paddingRight: '0.4rem',
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'baseline',
-          columnGap: '0.45rem',
-          rowGap: '0.4rem'
+          columnGap: '0.4rem',
+          rowGap: '0.3rem'
         }}
       >
         {!hasAttemptedWords ? (
           <span style={{
             color: 'var(--text-muted)',
-            fontSize: '1.25rem',
+            fontSize: '1.05rem',
             fontWeight: 400,
             userSelect: 'none',
             fontStyle: 'italic',
@@ -330,25 +330,25 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
 
       {/* Bottom helper guidance */}
       <div style={{
-        marginTop: '0.75rem',
-        paddingTop: '0.5rem',
+        marginTop: '0.3rem',
+        paddingTop: '0.25rem',
         borderTop: '1px solid var(--border-subtle)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        fontSize: '0.72rem',
+        fontSize: '0.68rem',
         color: 'var(--text-muted)',
         flexWrap: 'wrap',
-        gap: '0.5rem'
+        gap: '0.4rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
           <span><strong style={{ color: 'var(--color-green)' }}>Green</strong> = correct</span>
           <span><strong style={{ color: 'var(--color-red)' }}>Red</strong> = incorrect</span>
-          <span><strong style={{ color: 'var(--color-amber)' }}>🎯 Amber</strong> = sound match (click for rule)</span>
-          <span><strong style={{ color: 'var(--color-amber)' }}>[ ___ ]</strong> = missing (click &ldquo;Show Missing Words&rdquo;)</span>
-          <span style={{ color: 'var(--accent)', fontWeight: 600 }}>💡 Click any word to define & hear</span>
+          <span><strong style={{ color: 'var(--color-amber)' }}>🎯 Amber</strong> = sound match</span>
+          <span><strong style={{ color: 'var(--color-amber)' }}>[ ___ ]</strong> = missing</span>
+          <span style={{ color: 'var(--accent)', fontWeight: 600 }}>💡 Click word to define</span>
         </div>
-        <span>Continuous story dictation • Screen never clears</span>
+        <span>Continuous dictation</span>
       </div>
 
       {/* Floating Vocabulary Tooltip Card */}

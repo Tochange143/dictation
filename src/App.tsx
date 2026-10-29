@@ -603,7 +603,7 @@ export const DictationPage: React.FC = () => {
         flexDirection: 'column',
         minWidth: 0,
         height: '100vh',
-        overflowY: 'auto',
+        overflow: 'hidden',
         backgroundColor: 'var(--bg-primary)'
       }}>
         {isLoadingLesson || !currentLesson ? (
@@ -701,14 +701,16 @@ export const DictationPage: React.FC = () => {
               </div>
             )}
 
-            {/* Core Practice Layout: Full Width without empty side gaps */}
+            {/* Core Practice Layout: Maximized Space for Typing & Reading */}
             <div style={{
               flex: 1,
-              padding: '1rem 1.5rem',
+              padding: '0.45rem 0.75rem',
               width: '100%',
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.85rem'
+              gap: '0.45rem',
+              overflow: 'hidden',
+              minHeight: 0
             }}>
               {/* Top Panel: Live Dictation Continuous Story Feedback */}
               <FeedbackPanel
