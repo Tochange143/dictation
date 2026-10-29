@@ -125,10 +125,13 @@ The application will automatically load your last active lesson or start at **Le
 
 | Command | Description |
 | :--- | :--- |
-| `npm run dev` | Starts backend server (`server/index.js`) and Vite frontend concurrently |
+| `npm run dev` | Starts Vite and launches the Electron desktop application with hot reload |
+| `npm run dev:electron` | Explicit alias for starting the Electron development environment |
+| `npm run dev:web` | Starts the Express server and Vite in web browser mode |
+| `npm start` / `npm run electron` | Launches the built Electron desktop application using local files |
 | `npm run server` | Starts only the Node.js / SQLite backend API server (port 3001) |
 | `npm run client` | Starts only the Vite development frontend (port 5173) |
-| `npm test` | Runs the Vitest test suites (47 tests across 8 suites) |
+| `npm test` | Runs the Vitest test suites (53 tests across 9 suites) |
 | `npm run build` | Compiles TypeScript and builds production bundles to `dist/` |
 | `npm run preview` | Previews the production build locally |
 
@@ -191,8 +194,9 @@ dictation/
 
 ## Technical Architecture
 
+- **Desktop Framework**: Electron v45 with secure `contextBridge` preload isolation and native IPC communication.
 - **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Canvas Confetti.
+- **Database Layer**: `better-sqlite3` embedded directly in the Electron main process via IPC channels (eliminating localhost HTTP server overhead, port conflicts, and OS firewall prompts), with fallback HTTP server for web mode.
 - **Routing**: React Router DOM (`/lesson/:id`) with automatic deep-linking and state preservation.
-- **Audio Engine**: Browser Web Speech API (`SpeechSynthesis`) with natural voice discovery, pronunciation text preprocessing, and syllable speed controls.
-- **Backend & Database**: Node.js, Express, `better-sqlite3` with Write-Ahead Logging (`WAL`), ACID compliance, and instant cross-client synchronization.
+- **Audio Engine**: Web Speech API (`SpeechSynthesis`) with natural voice discovery, pronunciation text preprocessing, and syllable speed controls.
 - **Evaluation Engine**: Dynamic Programming matrix alignment algorithm providing instantaneous $O(N \times M)$ token matching without false-negative cascade.

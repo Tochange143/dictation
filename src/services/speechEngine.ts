@@ -1,3 +1,5 @@
+import { syllabifyWord } from '../utils/phonics';
+
 export interface SpeechState {
   isPlaying: boolean;
   isPaused: boolean;
@@ -353,6 +355,59 @@ class SpeechEngine {
     utterance.onerror = () => {
       this.isPlaying = false;
       this.isPaused = false;
+      this.notify();
+    };
+
+    this.currentUtterance = utterance;
+    if (this.synth.paused) {
+      this.synth.resume();
+    }
+    setTimeout(() => {
+      if (this.synth && this.currentUtterance === utterance) {
+        if (this.synth.paused) {
+          this.synth.resume();
+        }
+        this.synth.speak(utterance);
+      }
+    }, 25);
+  }
+
+  /**
+   * Speak words articulated into individual syllables for phonic clarity.
+   * e.g. "beau ... ti ... ful"
+   */
+  public speakPhonicSyllables(text: string) {
+    this.cancel();
+    if (!text || !text.trim() || !this.synth) return;
+
+    const words = text.trim().split(/\s+/);
+    const syllableParts: string[] = [];
+    for (const w of words) {
+      const syls = syllabifyWord(w);
+      syllableParts.push(syls.join(' , '));
+    }
+    const articulatedText = syllableParts.join(' ... ');
+
+    const utterance = new SpeechSynthesisUtterance(articulatedText);
+    utterance.rate = 0.58;
+    utterance.pitch = 1.05;
+    if (this.selectedVoice) {
+      utterance.voice = this.selectedVoice;
+      utterance.lang = this.selectedVoice.lang || 'en-IN';
+    } else {
+      utterance.lang = this.preferredAccent === 'en-IN' ? 'en-IN' : 'en-US';
+    }
+
+    utterance.onstart = () => {
+      this.isPlaying = true;
+      this.notify();
+    };
+    utterance.onend = () => {
+      this.isPlaying = false;
+      this.notify();
+    };
+    utterance.onerror = () => {
+      this.isPlaying = false;
       this.notify();
     };
 

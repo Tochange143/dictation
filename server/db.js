@@ -6,12 +6,13 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DATA_DIR = path.join(__dirname, 'data');
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+const DEFAULT_DATA_DIR = path.join(__dirname, 'data');
+export const DB_PATH = process.env.DICTATION_DB_PATH || path.join(DEFAULT_DATA_DIR, 'dictation.db');
+const dbDir = path.dirname(DB_PATH);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
 }
 
-const DB_PATH = path.join(DATA_DIR, 'dictation.db');
 export const db = new Database(DB_PATH);
 
 // Enable WAL mode for high concurrency and performance
@@ -97,8 +98,8 @@ export function initDatabase() {
 }
 
 export function seedLessonsFromDisk() {
-  const lessonsDir = path.join(DATA_DIR, 'lessons');
-  const manifestFile = path.join(DATA_DIR, 'lessonsManifest.json');
+  const lessonsDir = path.join(DEFAULT_DATA_DIR, 'lessons');
+  const manifestFile = path.join(DEFAULT_DATA_DIR, 'lessonsManifest.json');
 
   if (!fs.existsSync(manifestFile) || !fs.existsSync(lessonsDir)) {
     console.warn('Cannot seed lessons: missing manifest or lessons directory');

@@ -24,6 +24,14 @@ export interface WordFeedback {
   status: 'correct' | 'incorrect' | 'missing';
   punctuation?: string;
   expectedPunctuation?: string;
+  isPhoneticMatch?: boolean;
+  phonicHint?: {
+    type: string;
+    title: string;
+    soundPattern: string;
+    ruleExplanation: string;
+    example: string;
+  };
 }
 
 export interface SentenceEvaluation {

@@ -289,6 +289,16 @@ export const DictationPage: React.FC = () => {
     }
   }, [storyChunks, activeChunkIndex]);
 
+  // Speak active chunk articulated into syllables (Sound It Out)
+  const speakActiveChunkPhonics = useCallback((chunkIdx?: number) => {
+    if (!storyChunks || storyChunks.length === 0) return;
+    const idx = chunkIdx !== undefined ? chunkIdx : activeChunkIndex;
+    if (idx >= 0 && idx < storyChunks.length) {
+      const chunk = storyChunks[idx];
+      speechEngine.speakPhonicSyllables(chunk.text);
+    }
+  }, [storyChunks, activeChunkIndex]);
+
   // Speak full current sentence
   const speakCurrentSentence = useCallback(() => {
     if (!currentLesson || !currentChunk) return;
@@ -641,6 +651,7 @@ export const DictationPage: React.FC = () => {
                 onClear={() => setTypedInput('')}
                 onReplayCurrent={() => speakActiveChunk()}
                 onPronounceSlow={() => speakActiveChunk(undefined, true)}
+                onSoundItOut={() => speakActiveChunkPhonics()}
                 accuracy={liveAccuracy}
                 wordCount={typedInput.trim() ? tokenizeSentence(typedInput).length : 0}
                 isSpeaking={speechState.isPlaying}

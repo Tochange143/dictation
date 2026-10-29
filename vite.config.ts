@@ -172,6 +172,7 @@ function serverApiPlugin(): Plugin {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [react(), serverApiPlugin()],
   server: {
     port: 5173,

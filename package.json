@@ -3,11 +3,16 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "main": "electron/main.js",
   "scripts": {
-    "dev": "concurrently \"node server/index.js\" \"vite\"",
+    "dev": "concurrently -k \"vite\" \"wait-on tcp:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .\"",
+    "dev:electron": "concurrently -k \"vite\" \"wait-on tcp:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .\"",
+    "dev:web": "concurrently \"node server/index.js\" \"vite\"",
     "client": "vite",
     "server": "node server/index.js",
     "build": "tsc && vite build",
+    "start": "electron .",
+    "electron": "electron .",
     "preview": "vite preview",
     "test": "vitest run"
   },
@@ -32,10 +37,34 @@
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.6.2",
     "concurrently": "^10.0.6",
+    "cross-env": "^10.1.0",
+    "electron": "^45.1.0",
+    "electron-builder": "^26.18.0",
     "postcss": "^8.5.32",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.5",
+    "wait-on": "^9.5.1"
+  },
+  "build": {
+    "appId": "com.english.dictationtrainer",
+    "productName": "English Dictation Trainer",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "server/db.js",
+      "server/data/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**"
+    ],
+    "linux": {
+      "target": ["dir"]
+    }
   }
 }

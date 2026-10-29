@@ -3,6 +3,7 @@ import { WordFeedback } from '../types';
 import { Volume2, Volume1, Eye, EyeOff, BookOpen, Plus, X } from 'lucide-react';
 import { lookupWord, WordDefinition } from '../services/dictionary';
 import { speechEngine } from '../services/speechEngine';
+import { syllabifyWord } from '../utils/phonics';
 
 interface FeedbackPanelProps {
   feedbacks: WordFeedback[];
@@ -27,6 +28,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   const [showMissingWords, setShowMissingWords] = useState<boolean>(false);
   const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set());
   const [selectedDictWord, setSelectedDictWord] = useState<WordDefinition | null>(null);
+  const [selectedPhonicHint, setSelectedPhonicHint] = useState<WordFeedback['phonicHint'] | null>(null);
 
   const hasAttemptedWords = feedbacks.length > 0;
   const correctCount = feedbacks.filter(f => f.status === 'correct').length;
@@ -277,6 +279,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
             }
 
             const isCorrect = item.status === 'correct';
+            const isPhonetic = Boolean(!isCorrect && item.isPhoneticMatch && item.phonicHint);
             const wordToLookup = item.expectedWord || item.word;
             return (
               <span
@@ -287,18 +290,30 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                   position: 'relative',
                   cursor: 'pointer'
                 }}
-                onClick={() => setSelectedDictWord(lookupWord(wordToLookup))}
-                title={`Click to define "${wordToLookup}" & hear pronunciation`}
+                onClick={() => {
+                  setSelectedDictWord(lookupWord(wordToLookup));
+                  setSelectedPhonicHint(item.phonicHint || null);
+                }}
+                title={isPhonetic
+                  ? `Sound Match: "${item.word}" sounded right for "${wordToLookup}"! Click to see the phonics spelling rule.`
+                  : `Click to define "${wordToLookup}" & hear pronunciation`}
               >
                 <span
-                  className={isCorrect ? 'word-correct' : 'word-incorrect'}
+                  className={isCorrect ? 'word-correct' : isPhonetic ? 'word-phonetic' : 'word-incorrect'}
                   style={{
-                    backgroundColor: isCorrect ? 'transparent' : 'var(--color-red-bg)',
+                    backgroundColor: isCorrect ? 'transparent' : isPhonetic ? 'rgba(245, 158, 11, 0.2)' : 'var(--color-red-bg)',
+                    borderBottom: isPhonetic ? '2px dashed #f59e0b' : 'none',
+                    color: isPhonetic ? '#fbbf24' : undefined,
                     padding: isCorrect ? '0' : '0 4px',
                     borderRadius: isCorrect ? '0' : '4px'
                   }}
                 >
                   {item.word}
+                  {isPhonetic && (
+                    <span style={{ fontSize: '0.65rem', marginLeft: '3px', verticalAlign: 'baseline', fontWeight: 700 }} title="Sound Match!">
+                      🎯
+                    </span>
+                  )}
                 </span>
                 {/* Preserve original punctuation when word is correct */}
                 {isCorrect && item.expectedPunctuation && (
@@ -329,6 +344,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span><strong style={{ color: 'var(--color-green)' }}>Green</strong> = correct</span>
           <span><strong style={{ color: 'var(--color-red)' }}>Red</strong> = incorrect</span>
+          <span><strong style={{ color: '#fbbf24' }}>🎯 Amber</strong> = sound match (click for rule)</span>
           <span><strong style={{ color: '#fbbf24' }}>[ ___ ]</strong> = missing (click &ldquo;Show Missing Words&rdquo;)</span>
           <span style={{ color: 'var(--accent)', fontWeight: 600 }}>💡 Click any word to define & hear</span>
         </div>
@@ -432,6 +448,57 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
               </button>
             </div>
           </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '2px' }}>
+            <button
+              type="button"
+              onClick={() => speechEngine.speakPhonicSyllables(selectedDictWord.word)}
+              title="Pronounce by syllables (Sound it out)"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                color: '#fbbf24',
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                fontSize: '0.72rem',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              <span>🔤 Sound It Out:</span>
+              <span style={{ fontFamily: 'var(--font-mono)' }}>
+                {syllabifyWord(selectedDictWord.word).join(' · ')}
+              </span>
+            </button>
+          </div>
+
+          {selectedPhonicHint && (
+            <div style={{
+              marginTop: '0.35rem',
+              padding: '0.5rem 0.75rem',
+              borderRadius: '6px',
+              backgroundColor: 'rgba(245, 158, 11, 0.15)',
+              border: '1px solid rgba(245, 158, 11, 0.35)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#fbbf24' }}>
+                  🎯 {selectedPhonicHint.title}
+                </span>
+                <span style={{ fontSize: '0.68rem', color: '#fde68a', fontFamily: 'var(--font-mono)' }}>
+                  {selectedPhonicHint.soundPattern}
+                </span>
+              </div>
+              <p style={{ fontSize: '0.74rem', color: 'var(--text-primary)', margin: 0, lineHeight: '1.25rem' }}>
+                {selectedPhonicHint.ruleExplanation}
+              </p>
+            </div>
+          )}
 
           <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.3rem' }}>
             {selectedDictWord.definition}

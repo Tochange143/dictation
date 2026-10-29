@@ -22,15 +22,26 @@ export async function fetchLessonById(id: number): Promise<Lesson> {
     return lessonCache.get(id)!;
   }
 
-  const res = await fetch(`/api/lessons/${id}`, {
-    signal: AbortSignal.timeout(3000)
-  });
+  let lesson: Lesson | null = null;
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch lesson ${id} from backend server (status ${res.status})`);
+  if (typeof window !== 'undefined' && window.electronAPI) {
+    lesson = await window.electronAPI.getLesson(id);
+  } else {
+    const res = await fetch(`/api/lessons/${id}`, {
+      signal: AbortSignal.timeout(3000)
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch lesson ${id} from backend server (status ${res.status})`);
+    }
+
+    lesson = await res.json();
   }
 
-  const lesson: Lesson = await res.json();
+  if (!lesson) {
+    throw new Error(`Failed to fetch lesson ${id}: lesson not found`);
+  }
+
   lessonCache.set(id, lesson);
   return lesson;
 }

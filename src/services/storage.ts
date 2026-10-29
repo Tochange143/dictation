@@ -45,15 +45,19 @@ export function saveLessonProgress(progress: LessonProgress): void {
     all[progress.lessonId] = progress;
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
 
-    // Asynchronously sync with backend server with fast timeout
-    fetch('/api/progress', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(progress),
-      signal: AbortSignal.timeout(800)
-    }).catch(() => {
-      // Offline fallback: already saved in localStorage
-    });
+    // Asynchronously sync with SQLite backend (Electron IPC or HTTP fallback)
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      window.electronAPI.saveProgress(progress).catch(() => {});
+    } else {
+      fetch('/api/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(progress),
+        signal: AbortSignal.timeout(800)
+      }).catch(() => {
+        // Offline fallback: already saved in localStorage
+      });
+    }
   } catch (err) {
     console.error('Failed to save progress', err);
   }
@@ -85,21 +89,24 @@ export function saveLessonTypedStory(lessonId: number, typedText: string, active
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
   } catch {}
 
-  // Sync to SQLite backend server
-  fetch(`/api/story/${lessonId}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ typedText, activeChunkIndex }),
-    signal: AbortSignal.timeout(1200)
-  }).catch(() => {});
+  // Sync to SQLite backend (Electron IPC or HTTP fallback)
+  if (typeof window !== 'undefined' && window.electronAPI) {
+    window.electronAPI.saveStory(lessonId, typedText, activeChunkIndex).catch(() => {});
+  } else {
+    fetch(`/api/story/${lessonId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ typedText, activeChunkIndex }),
+      signal: AbortSignal.timeout(1200)
+    }).catch(() => {});
+  }
 }
 
 export async function fetchLessonStory(lessonId: number): Promise<{ typedText: string; activeChunkIndex: number }> {
   try {
-    const res = await fetch(`/api/story/${lessonId}`, { signal: AbortSignal.timeout(1200) });
-    if (res.ok) {
-      const data = await res.json();
-      if (typeof data.typedText === 'string') {
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      const data = await window.electronAPI.getStory(lessonId);
+      if (data && typeof data.typedText === 'string') {
         localStorage.setItem(`dictation_story_${lessonId}`, JSON.stringify({
           typedText: data.typedText,
           activeChunkIndex: data.activeChunkIndex || 0
@@ -108,6 +115,21 @@ export async function fetchLessonStory(lessonId: number): Promise<{ typedText: s
           typedText: data.typedText,
           activeChunkIndex: Number(data.activeChunkIndex) || 0
         };
+      }
+    } else {
+      const res = await fetch(`/api/story/${lessonId}`, { signal: AbortSignal.timeout(1200) });
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data.typedText === 'string') {
+          localStorage.setItem(`dictation_story_${lessonId}`, JSON.stringify({
+            typedText: data.typedText,
+            activeChunkIndex: data.activeChunkIndex || 0
+          }));
+          return {
+            typedText: data.typedText,
+            activeChunkIndex: Number(data.activeChunkIndex) || 0
+          };
+        }
       }
     }
   } catch {}
@@ -145,8 +167,12 @@ export function resetAllProgress(): void {
       localStorage.removeItem(`dictation_story_${i}`);
     }
 
-    // Sync with backend server
-    fetch('/api/reset', { method: 'POST', signal: AbortSignal.timeout(800) }).catch(() => {});
+    // Sync with backend (Electron IPC or HTTP fallback)
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      window.electronAPI.resetAll().catch(() => {});
+    } else {
+      fetch('/api/reset', { method: 'POST', signal: AbortSignal.timeout(800) }).catch(() => {});
+    }
   } catch (err) {
     console.error('Failed to reset progress', err);
   }
@@ -172,13 +198,17 @@ export function saveSettings(settings: UserSettings): void {
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 
-    // Sync with backend server
-    fetch('/api/settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(settings),
-      signal: AbortSignal.timeout(800)
-    }).catch(() => {});
+    // Sync with backend (Electron IPC or HTTP fallback)
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      window.electronAPI.saveSettings(settings).catch(() => {});
+    } else {
+      fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+        signal: AbortSignal.timeout(800)
+      }).catch(() => {});
+    }
   } catch (err) {
     console.error('Failed to save settings', err);
   }
@@ -198,13 +228,17 @@ export function saveLastActive(state: LastActiveState): void {
   try {
     localStorage.setItem(LAST_STATE_KEY, JSON.stringify(state));
 
-    // Sync with backend server
-    fetch('/api/last-active', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(state),
-      signal: AbortSignal.timeout(800)
-    }).catch(() => {});
+    // Sync with backend (Electron IPC or HTTP fallback)
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      window.electronAPI.saveLastActive(state).catch(() => {});
+    } else {
+      fetch('/api/last-active', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(state),
+        signal: AbortSignal.timeout(800)
+      }).catch(() => {});
+    }
   } catch (err) {
     console.error('Failed to save last active state', err);
   }
@@ -217,11 +251,23 @@ export async function syncFromServer(): Promise<{
   lastActive: LastActiveState | null;
 }> {
   try {
-    const [progRes, setRes, actRes] = await Promise.all([
-      fetch('/api/progress', { signal: AbortSignal.timeout(800) }).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch('/api/settings', { signal: AbortSignal.timeout(800) }).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch('/api/last-active', { signal: AbortSignal.timeout(800) }).then(r => r.ok ? r.json() : null).catch(() => null)
-    ]);
+    let progRes: Record<number, LessonProgress> | null = null;
+    let setRes: UserSettings | null = null;
+    let actRes: LastActiveState | null = null;
+
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      [progRes, setRes, actRes] = await Promise.all([
+        window.electronAPI.getProgress().catch(() => null),
+        window.electronAPI.getSettings().catch(() => null),
+        window.electronAPI.getLastActive().catch(() => null)
+      ]);
+    } else {
+      [progRes, setRes, actRes] = await Promise.all([
+        fetch('/api/progress', { signal: AbortSignal.timeout(800) }).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('/api/settings', { signal: AbortSignal.timeout(800) }).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('/api/last-active', { signal: AbortSignal.timeout(800) }).then(r => r.ok ? r.json() : null).catch(() => null)
+      ]);
+    }
 
     if (progRes && Object.keys(progRes).length > 0) {
       localStorage.setItem(PROGRESS_KEY, JSON.stringify(progRes));

@@ -7,6 +7,7 @@ interface TypingPanelProps {
   onClear: () => void;
   onReplayCurrent: () => void;
   onPronounceSlow?: () => void;
+  onSoundItOut?: () => void;
   disabled?: boolean;
   wordCount: number;
   accuracy?: number;
@@ -22,6 +23,7 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
   onClear,
   onReplayCurrent,
   onPronounceSlow,
+  onSoundItOut,
   disabled = false,
   wordCount,
   accuracy,
@@ -250,6 +252,28 @@ export const TypingPanel: React.FC<TypingPanelProps> = ({
             >
               <Volume1 size={14} />
               <span>Slow Pronounce</span>
+            </button>
+          )}
+
+          {onSoundItOut && (
+            <button
+              onClick={onSoundItOut}
+              title="Pronounce syllables slowly for phonic spelling (e.g. beau · ti · ful)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '0.82rem',
+                color: '#fbbf24',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                cursor: 'pointer',
+                fontWeight: 600
+              }}
+            >
+              <span>🔤 Sound It Out</span>
             </button>
           )}
 

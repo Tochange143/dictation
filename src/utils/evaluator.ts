@@ -1,4 +1,5 @@
 import { WordFeedback, SentenceEvaluation } from '../types';
+import { getPhonicHint } from './phonics';
 
 /**
  * Clean a word token:
@@ -350,12 +351,15 @@ export function getLiveFeedback(
     } else if (step.type === 'substitution' && step.typedIdx !== undefined && step.expectedIdx !== undefined) {
       const t = typedTokens[step.typedIdx];
       const e = expectedTokens[step.expectedIdx];
+      const phonic = getPhonicHint(t.raw, e.raw);
       feedbacks.push({
         word: t.raw,
         expectedWord: e.raw,
         status: 'incorrect',
         punctuation: t.trailingPunct,
-        expectedPunctuation: e.trailingPunct
+        expectedPunctuation: e.trailingPunct,
+        isPhoneticMatch: phonic !== null,
+        phonicHint: phonic || undefined
       });
     } else if (step.type === 'insertion' && step.typedIdx !== undefined) {
       const t = typedTokens[step.typedIdx];
@@ -415,12 +419,15 @@ export function evaluateSentence(
       const e = expectedTokens[step.expectedIdx];
       incorrectWordsCount++;
       misspelledWords.push({ typed: t.raw, expected: e.raw });
+      const phonic = getPhonicHint(t.raw, e.raw);
       feedbacks.push({
         word: t.raw,
         expectedWord: e.raw,
         status: 'incorrect',
         punctuation: t.trailingPunct,
-        expectedPunctuation: e.trailingPunct
+        expectedPunctuation: e.trailingPunct,
+        isPhoneticMatch: phonic !== null,
+        phonicHint: phonic || undefined
       });
     } else if (step.type === 'insertion' && step.typedIdx !== undefined) {
       const t = typedTokens[step.typedIdx];
