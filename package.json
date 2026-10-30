@@ -11,6 +11,9 @@
     "client": "vite",
     "server": "node server/index.js",
     "build": "tsc && vite build",
+    "build:electron": "npm run build && electron-builder --win",
+    "dist": "npm run build && electron-builder --win",
+    "pack": "npm run build && electron-builder --win --dir",
     "start": "electron .",
     "electron": "electron .",
     "preview": "vite preview",
@@ -56,6 +59,7 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
+      "build/**/*",
       "server/db.js",
       "server/data/**/*",
       "package.json"
@@ -63,6 +67,19 @@
     "asarUnpack": [
       "**/node_modules/better-sqlite3/**"
     ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "include": "build/installer.nsh"
+    },
     "linux": {
       "target": ["dir"]
     }

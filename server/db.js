@@ -2,12 +2,31 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 
+const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DEFAULT_DATA_DIR = path.join(__dirname, 'data');
-export const DB_PATH = process.env.DICTATION_DB_PATH || path.join(DEFAULT_DATA_DIR, 'dictation.db');
+
+function resolveDbPath() {
+  if (process.env.DICTATION_DB_PATH) {
+    return process.env.DICTATION_DB_PATH;
+  }
+  if (process.versions && process.versions.electron) {
+    try {
+      const electron = require('electron');
+      const app = electron.app || electron.default?.app;
+      if (app && (app.isPackaged || !fs.existsSync(DEFAULT_DATA_DIR))) {
+        return path.join(app.getPath('userData'), 'dictation.db');
+      }
+    } catch {}
+  }
+  return path.join(DEFAULT_DATA_DIR, 'dictation.db');
+}
+
+export const DB_PATH = resolveDbPath();
 const dbDir = path.dirname(DB_PATH);
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
